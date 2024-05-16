@@ -12,6 +12,8 @@ pub struct State {
   pub operators: Vec<Pubkey>,
   /// Current target of SOL each pool should receive
   pub current_sol_target: u64,
+  /// Bump of the cpi_authority PDA
+  pub cpi_authority_bump: u8,
 }
 
 impl State {
@@ -23,11 +25,13 @@ impl State {
     owner: Pubkey,
     operators: Vec<Pubkey>,
     current_sol_target: u64,
+    cpi_authority_bump: u8,
   ) -> Self {
     Self {
       owner,
       operators,
       current_sol_target,
+      cpi_authority_bump,
     }
   }
 }

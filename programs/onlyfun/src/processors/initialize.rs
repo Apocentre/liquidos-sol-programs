@@ -8,7 +8,7 @@ pub fn exec(
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
   let state = &mut ctx.accounts.state;
-  **state = State::new(owner, operators, current_sol_target);
+  **state = State::new(owner, operators, current_sol_target, ctx.bumps.cpi_authority);
 
   Ok(())
 }
