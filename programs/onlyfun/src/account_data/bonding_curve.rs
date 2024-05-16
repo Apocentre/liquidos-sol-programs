@@ -23,14 +23,18 @@ impl BondingCurve {
   /// This function is used when user buys the token with SOL
   pub fn calculate_purchase_return(&self, reserve_tokens_received: u64) -> Result<Decimal> {
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    println!("a >>>>>>>>> {:?}", a);
     let b = dec!(17.5970429);
     let c = dec!(299215564.8);
     let total_supply: Decimal = self.total_supply.into();
-    let d = Decimal::E.safe_powd(a.safe_mul(total_supply)?.safe_sub(b)?)?;
+    let d = a.safe_mul(total_supply)?.safe_sub(b)?;
+    println!("d >>>>>>>>> {:?}", d);
+    let e = d.safe_exp()?;
+    println!("e >>>>>>>>> {:?}", e);
     let reserve_tokens_received: Decimal = reserve_tokens_received.into();
     
     let k = reserve_tokens_received.safe_div(c)?
-    .safe_add(d)?
+    .safe_add(e)?
     .safe_ln()?
     .safe_add(b)?
     .safe_div(a)?
@@ -54,5 +58,21 @@ impl BondingCurve {
     let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?;
 
     Ok(reserve_tokens_returned) 
+  }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::BondingCurve;
+
+  #[test]
+  fn returns_correct_purchase_amount() {
+    let curve = BondingCurve {
+      total_supply: 0,
+      reserve_token_balance: 0,
+    };
+
+    let received = curve.calculate_purchase_return(89800000000).unwrap();
+    println!(">>>>>>>>>>>>>> {:?}", received);
   }
 }

@@ -13,6 +13,7 @@ pub trait DecimalErrorHandler {
   fn safe_sub(&self, rhs: Decimal) -> Result<Decimal>;
   fn safe_mul(&self, rhs: Decimal) -> Result<Decimal>;
   fn safe_powd(&self, rhs: Decimal) -> Result<Decimal>;
+  fn safe_exp(&self) -> Result<Decimal>;
   fn safe_div(&self, rhs: Decimal) -> Result<Decimal>;
   fn safe_ln(&self) -> Result<Decimal>;
 }
@@ -41,6 +42,13 @@ impl DecimalErrorHandler for Decimal {
 
   fn safe_powd(&self, rhs: Decimal) -> Result<Decimal> {
     match self.checked_powd(rhs) {
+      Some(val) => Ok(val),
+      None => Err(error!(ErrorCode::DecimalError)),
+    }
+  }
+
+  fn safe_exp(&self) -> Result<Decimal> {
+    match self.checked_exp() {
       Some(val) => Ok(val),
       None => Err(error!(ErrorCode::DecimalError)),
     }
