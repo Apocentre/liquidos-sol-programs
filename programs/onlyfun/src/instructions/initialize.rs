@@ -11,6 +11,16 @@ pub struct Initialize<'info> {
   )]
   pub state: Account<'info, State>,
 
+  /// CHECK: The PDA that will be sending CPI to other programs i.e. Raydium DEX Program
+  #[account(
+    init,
+    payer = owner,
+    space = 0,
+    seeds = [b"cpi_authority", state.key().as_ref()],
+    bump,
+  )]
+  pub cpi_authority: AccountInfo<'info>,
+  
   #[account(mut)]
   pub owner: Signer<'info>,
   
