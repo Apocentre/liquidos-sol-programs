@@ -2,6 +2,7 @@ pub mod account_data;
 pub mod instructions;
 pub mod processors;
 pub mod program_error;
+pub mod math;
 
 use anchor_lang::prelude::*;
 use crate::instructions::initialize::*;

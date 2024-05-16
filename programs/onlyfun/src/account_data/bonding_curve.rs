@@ -2,6 +2,8 @@
 use std::mem::size_of;
 use anchor_lang::prelude::*;
 use rust_decimal::prelude::*;
+use rust_decimal_macros::dec;
+use crate::math::decimal_error::DecimalErrorHandler;
 
 pub const MAX_OPERATORS: usize = 5;
 
@@ -19,8 +21,23 @@ impl BondingCurve {
 
   /// Calculates the number of tokens to mint based on the given amount of reserve tokens.
   /// This function is used when user buys the token with SOL
-  pub fn calculate_purchase_return() -> Decimal {
-    todo!()
+  pub fn calculate_purchase_return(&self, tokens_received: u64) -> Result<Decimal> {
+    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let b = dec!(17.5970429);
+    let c = dec!(299215564.8);
+    let total_supply: Decimal = self.total_supply.into();
+    let d = Decimal::E.safe_powd(a.safe_mul(total_supply)?.safe_sub(b)?)?;
+    let tokens_received: Decimal = tokens_received.into();
+    
+    let k = tokens_received.safe_div(c)?
+    .safe_add(d)?
+    .safe_ln()?
+    .safe_add(b)?
+    .safe_div(a)?
+    .safe_sub(total_supply)?;
+
+
+    Ok(k)
   }
 
   /// Given an amount of tokens, calucates the amount of reserve tokens to be sent back.
