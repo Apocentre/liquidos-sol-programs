@@ -19,27 +19,32 @@ impl BondingCurve {
   pub const MAX_SIZE: usize = 8
   + size_of::<Self>();
 
+  const ONE_TOKEN: Decimal = dec!(1_000_000);
+  const SOL_LAMPORT: Decimal = dec!(1_000_000_000);
+
   /// Calculates the number of tokens to mint based on the given amount of reserve tokens.
   /// This function is used when user buys the token with SOL
-  pub fn calculate_purchase_return(&self, reserve_tokens_received: u64) -> Result<Decimal> {
+  pub fn calculate_purchase_return(&self, reserve_tokens_received: u64) -> Result<u64> {
+    // divide by 10e9 to convert lamports to SOL
+    let reserve_tokens_received: Decimal = Decimal::safe_from_u64(reserve_tokens_received)?.safe_div(Self::SOL_LAMPORT)?;
+
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    println!("a >>>>>>>>> {:?}", a);
     let b = dec!(17.5970429);
     let c = dec!(299215564.8);
-    let total_supply: Decimal = self.total_supply.into();
-    let d = a.safe_mul(total_supply)?.safe_sub(b)?;
-    println!("d >>>>>>>>> {:?}", d);
-    let e = d.safe_exp()?;
-    println!("e >>>>>>>>> {:?}", e);
-    let reserve_tokens_received: Decimal = reserve_tokens_received.into();
+    // divide by 10e6 to convert token amount to the highest denomination
+    let total_supply: Decimal = Decimal::safe_from_u64(self.total_supply)?.safe_div(Self::ONE_TOKEN)?;
+    let d = a.safe_mul(total_supply)?.safe_sub(b)?.to_f64().unwrap();
+    let e = std::f64::consts::E.powf(d);
+    let e = Decimal::from_f64(e).unwrap();
     
     let k = reserve_tokens_received.safe_div(c)?
     .safe_add(e)?
     .safe_ln()?
     .safe_add(b)?
     .safe_div(a)?
-    .safe_sub(total_supply)?;
-
+    .safe_sub(total_supply)?
+    .safe_mul(Self::ONE_TOKEN)?
+    .safe_to_u64()?;
 
     Ok(k)
   }
@@ -73,6 +78,7 @@ mod tests {
     };
 
     let received = curve.calculate_purchase_return(89800000000).unwrap();
-    println!(">>>>>>>>>>>>>> {:?}", received);
+    println!("received >>>>>>>>>>>>>> {:?}", received);
+    panic!()
   }
 }

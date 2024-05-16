@@ -16,6 +16,8 @@ pub trait DecimalErrorHandler {
   fn safe_exp(&self) -> Result<Decimal>;
   fn safe_div(&self, rhs: Decimal) -> Result<Decimal>;
   fn safe_ln(&self) -> Result<Decimal>;
+  fn safe_from_u64(rhs: u64)-> Result<Decimal>;
+  fn safe_to_u64(&self)-> Result<u64>;
 }
 
 impl DecimalErrorHandler for Decimal {
@@ -63,6 +65,20 @@ impl DecimalErrorHandler for Decimal {
 
   fn safe_ln(&self) -> Result<Decimal> {
     match self.checked_ln() {
+      Some(val) => Ok(val),
+      None => Err(error!(ErrorCode::DecimalError)),
+    }
+  }
+  
+  fn safe_from_u64(rhs: u64)-> Result<Decimal> {
+    match Decimal::from_u64(rhs) {
+      Some(val) => Ok(val),
+      None => Err(error!(ErrorCode::DecimalError)),
+    }
+  }
+  
+  fn safe_to_u64(&self)-> Result<u64> {
+    match Decimal::to_u64(self) {
       Some(val) => Ok(val),
       None => Err(error!(ErrorCode::DecimalError)),
     }
