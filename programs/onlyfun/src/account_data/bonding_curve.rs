@@ -26,6 +26,7 @@ impl BondingCurve {
   const ONE_TOKEN: Decimal = dec!(1_000_000);
   const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
 
+  /// Finds the current price of the curve
   fn calc_price(&self) -> Result<u64> {
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let b = dec!(17.5970429);
