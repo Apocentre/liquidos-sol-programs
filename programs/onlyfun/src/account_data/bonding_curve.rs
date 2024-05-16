@@ -78,7 +78,6 @@ mod tests {
     };
 
     let received = curve.calculate_purchase_return(89800000000).unwrap();
-    println!("received >>>>>>>>>>>>>> {:?}", received);
-    panic!()
+    assert_eq!(received, 793004689489822)
   }
 }
