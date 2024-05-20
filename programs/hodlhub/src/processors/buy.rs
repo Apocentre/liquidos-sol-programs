@@ -144,7 +144,7 @@ fn move_liquidity(
 }
 
 
-fn burn_lp(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> _ {
+fn burn_lp(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
   todo!("burn lp the buyer (pool creator) received")
 }
 
