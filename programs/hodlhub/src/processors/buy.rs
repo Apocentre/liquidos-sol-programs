@@ -44,7 +44,7 @@ fn accept_sol(ctx: &Context<Buy>, amount: u64) -> Result<()> {
 }
 
 // create a raydium pool with the current liquidity
-fn move_liquidity(ctx: &Context<Buy>) -> Result<()> {
+fn move_liquidity(_ctx: &Context<Buy>) -> Result<()> {
   todo!()
 }
 
