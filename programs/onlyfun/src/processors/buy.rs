@@ -43,6 +43,10 @@ fn accept_sol(ctx: &Context<Buy>, amount: u64) -> Result<()> {
   Ok(())
 }
 
+// create a raydium pool with the current liquidity
+fn move_liquidity(ctx: &Context<Buy>) -> Result<()> {
+  todo!()
+}
 
 pub fn exec(
   ctx: Context<Buy>,
@@ -50,18 +54,21 @@ pub fn exec(
   min_amount_out: u64,
 ) -> Result<()> {
   let curve = &mut ctx.accounts.bonding_curve;
-  let spendable_amount = u64::min(curve.max_accepted_amount(), amount);
+  let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
 
-  if amount > spendable_amount {
-    todo!("send amount - spendable_amount back to the user")  
-  }
-
-  // Slippgae check
+  // Slippage check
   let token_amount = curve.calculate_purchase_return(spendable_amount)?;
   require!(token_amount > min_amount_out, ErrorCode::SlippageViolation);
 
-  mint_tokens(&ctx, token_amount)?;
-  accept_sol(&ctx, spendable_amount)?;
+  {
+    let curve = &ctx.accounts.bonding_curve;
+    mint_tokens(&ctx, token_amount)?;
+    accept_sol(&ctx, spendable_amount)?;
+
+    if curve.is_complete() {
+      move_liquidity(&ctx)?;
+    }
+  }
 
   Ok(())
 }

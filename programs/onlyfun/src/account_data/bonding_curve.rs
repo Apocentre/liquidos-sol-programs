@@ -139,8 +139,13 @@ impl BondingCurve {
 
   /// Returns the max amount one can send to the curve. It depends on the sol target
   /// and the current amount of tokens in the pool
-  pub fn max_accepted_amount(&self) -> u64 {
-    self.sol_target - self.reserve_token_balance
+  pub fn max_accepted_amount(&self) -> Result<u64> {
+    let amount = self.sol_target.safe_sub(self.reserve_token_balance)?;
+    Ok(amount)
+  }
+
+  pub fn is_complete(&self) -> bool {
+    self.reserve_token_balance == self.sol_target
   }
 }
 
