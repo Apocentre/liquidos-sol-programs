@@ -144,6 +144,17 @@ fn move_liquidity(
 }
 
 
+/// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
+/// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
+fn fund_creator_account(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
+  // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
+  // 2. convert SOL from the curve into WSOL and send to buyer
+  todo!()
+}
+
+
+/// Burns the LP created in the move_liquidity. These LP tokens are sent to the buyer
+/// whose purchase triggered the liquidity move. We need to burn this liquidity
 fn burn_lp(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
   todo!("burn lp the buyer (pool creator) received")
 }
@@ -177,7 +188,7 @@ pub fn exec(
     accept_sol(&ctx, spendable_amount)?;
 
     if curve.is_complete() {
-      // TODO: find the correct amount of WSOL and Tokens to be added
+      fund_creator_account(&ctx, signer_seeds)?;
       move_liquidity(&ctx, signer_seeds)?;
       burn_lp(&ctx, signer_seeds)?;
     }
