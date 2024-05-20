@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
-use anchor_spl::{associated_token::AssociatedToken, token::{Mint, Token}};
+use anchor_spl::{
+  token_interface::{TokenInterface, Mint},
+  associated_token::AssociatedToken,
+};
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
 #[derive(Accounts)]
@@ -14,8 +17,9 @@ pub struct CreateToken<'info> {
     payer = token_creator,
     mint::decimals = 9,
     mint::authority = token_authority,
+    mint::token_program = token_2022,
   )]
-  pub token: Account<'info, Mint>,
+  pub token: InterfaceAccount<'info, Mint>,
 
   /// CHECK: The PDA is the authority of the newly created token. This account can mint and burn tokens
   #[account(
@@ -42,6 +46,6 @@ pub struct CreateToken<'info> {
   pub token_creator: Signer<'info>,
 
   associated_token_program: Program<'info, AssociatedToken>,
-  pub token_program: Program<'info, Token>,
+  pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
 }
