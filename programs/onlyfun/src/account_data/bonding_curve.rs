@@ -11,10 +11,10 @@ pub const MAX_OPERATORS: usize = 5;
 #[account]
 #[derive(Debug)]
 pub struct BondingCurve {
-  /// Target of SOL each pool should receive
-  pub sol_target: u64,
   /// The creator of the token this bonding curve is associated with
   pub token_creator: Pubkey,
+  /// Target of SOL each pool should receive
+  pub sol_target: u64,
   /// Total supply of the token in the lowest denomination i.e. decimals included
   pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
@@ -42,6 +42,7 @@ impl BondingCurve {
   ) -> Self {
     Self {
       token_creator,
+      sol_target,
       total_supply: 0,
       reserve_token_balance: 0,
       price: 0,
@@ -134,6 +135,12 @@ impl BondingCurve {
   fn normalize_sol_amount(amount: u64) -> Result<Decimal> {
     let value = Decimal::safe_from_u64(amount)?.safe_div(Self::LAMPORT_IN_SOL)?;
     Ok(value)
+  }
+
+  /// Returns the max amount one can send to the curve. It depends on the sol target
+  /// and the current amount of tokens in the pool
+  pub fn max_accepted_amount(&self) -> u64 {
+    self.sol_target - self.reserve_token_balance
   }
 }
 
