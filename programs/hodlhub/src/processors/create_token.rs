@@ -75,7 +75,7 @@ pub fn exec(
   let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
   let curve = &mut ctx.accounts.bonding_curve;
-  **curve = BondingCurve::new(
+  ***curve = BondingCurve::new(
     token_creator,
     state.current_sol_target,
     ctx.bumps.bonding_curve,

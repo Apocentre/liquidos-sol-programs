@@ -19,7 +19,7 @@ pub struct CreateToken<'info> {
     mint::authority = token_authority,
     mint::token_program = token_2022,
   )]
-  pub token: InterfaceAccount<'info, Mint>,
+  pub token: Box<InterfaceAccount<'info, Mint>>,
 
   /// CHECK: The PDA is the authority of the newly created token. This account can mint and burn tokens
   #[account(
@@ -49,7 +49,7 @@ pub struct CreateToken<'info> {
     seeds = [b"bonding_curve", state.key().as_ref(), token.key().as_ref()],
     bump,
   )]
-  pub bonding_curve: Account<'info, BondingCurve>,
+  pub bonding_curve: Box<Account<'info, BondingCurve>>,
 
   /// The user that is creating the token
   #[account(mut)]
@@ -58,4 +58,5 @@ pub struct CreateToken<'info> {
   associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
+  pub rent: Sysvar<'info, Rent>,
 }

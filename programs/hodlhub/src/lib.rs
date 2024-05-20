@@ -3,6 +3,7 @@ pub mod instructions;
 pub mod processors;
 pub mod program_error;
 pub mod math;
+pub mod raydium;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{

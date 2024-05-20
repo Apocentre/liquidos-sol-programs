@@ -1,9 +1,11 @@
+use std::str::FromStr;
+
 use anchor_lang::prelude::*;
 use anchor_spl::{
   token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
-use crate::account_data::{bonding_curve::BondingCurve, state::State};
+use crate::{account_data::{bonding_curve::BondingCurve, state::State}, raydium::constants::{AUTH_SEED, POOL_SEED}};
 
 #[derive(Accounts)]
 pub struct Buy<'info> {
@@ -24,7 +26,6 @@ pub struct Buy<'info> {
     bump = bonding_curve.token_authority_bump,
   )]
   pub token_authority: AccountInfo<'info>,
-
 
   #[account(mut)]
   pub token: Box<InterfaceAccount<'info, Mint>>,
@@ -50,7 +51,52 @@ pub struct Buy<'info> {
   #[account(mut)]
   pub buyer: Signer<'info>,
 
+  // ---------------- Raydium CP swap accounts ----------------
+  
+  /// CHECK: Which config the pool that will created belongs to. Checks will take place in CP swap program
+  pub amm_config: AccountInfo<'info>,
+
+  /// CHECK: pool vault and lp mint authority
+  #[account(
+    seeds = [
+      AUTH_SEED.as_bytes(),
+    ],
+    bump,
+  )]
+  pub authority: UncheckedAccount<'info>,
+
+  /// CHECK: Initialize an account to store the pool state
+  #[account(
+    seeds = [
+        POOL_SEED.as_bytes(),
+        amm_config.key().as_ref(),
+        // The order is important as for raydium token_0 mint, the key must smaller then token_1 mint.
+        if token.key() < wsol_token.key() {token.key().clone()} else {wsol_token.key()}.as_ref(),
+        if token.key() < wsol_token.key() {wsol_token.key()} else {token.key()}.as_ref(),
+    ],
+    bump,
+  )]
+  pub pool_state: AccountInfo<'info>,
+
+  #[account(
+    address = Pubkey::from_str("So11111111111111111111111111111111111111112").unwrap(),
+  )]
+  pub wsol_token: Box<InterfaceAccount<'info, Mint>>,
+
+  /// pool lp mint
+  // #[account(
+  //   seeds = [
+  //     raydium_cp_swap::states::pool::POOL_LP_MINT_SEED.as_bytes(),
+  //     pool_state.key().as_ref(),
+  //   ],
+  //   bump,
+  //   mint::authority = authority,
+  //   mint::token_program = token_2022,
+  // )]
+  // pub lp_mint: Box<AccountInfo<'info>>,
+
   associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
+  pub rent: Sysvar<'info, Rent>,
 }
