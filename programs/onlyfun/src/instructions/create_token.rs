@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  token_interface::{TokenInterface, Mint},
+  token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
@@ -30,6 +30,16 @@ pub struct CreateToken<'info> {
     bump,
   )]
   pub token_authority: AccountInfo<'info>,
+
+  /// The ATA of the  token that is owned by the buyer. Create one if no already exists
+  #[account(
+    init_if_needed,
+    payer = token_creator,
+    associated_token::mint = token,
+    associated_token::authority = token_authority,
+    associated_token::token_program = token_2022,
+  )]
+  pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
