@@ -21,6 +21,8 @@ pub struct BondingCurve {
   pub price: u64,
   /// The PDA bump of this account
   pub bump: u8,
+  /// The token authority PDA bump
+  pub token_authority_bump: u8,
 }
 
 impl BondingCurve {
@@ -30,13 +32,14 @@ impl BondingCurve {
   const ONE_TOKEN: Decimal = dec!(1_000_000);
   const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
 
-  pub fn new(token_creator: Pubkey, bump: u8) -> Self {
+  pub fn new(token_creator: Pubkey, bump: u8, token_authority_bump: u8) -> Self {
     Self {
       token_creator,
       total_supply: 0,
       reserve_token_balance: 0,
       price: 0,
       bump,
+      token_authority_bump,
     }
   }
 
@@ -136,7 +139,7 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1, 2);
     let received = curve.calculate_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -145,7 +148,7 @@ mod tests {
 
   #[test]
   fn calculate_sale_return_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1, 2);
 
     curve.calculate_purchase_return(89800000000).unwrap();
     let received = curve.calculate_sale_return(793004689489822).unwrap();
@@ -156,7 +159,7 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1, 2);
     
     for _ in 0..89 {
       let received = curve.calculate_purchase_return(1_000_000_000).unwrap();

@@ -74,7 +74,11 @@ pub fn exec(
 ) -> Result<()> {
   let token_creator = ctx.accounts.token_creator.key();
   let curve = &mut ctx.accounts.bonding_curve;
-  **curve = BondingCurve::new(token_creator, ctx.bumps.bonding_curve);
+  **curve = BondingCurve::new(
+    token_creator,
+    ctx.bumps.bonding_curve,
+    ctx.bumps.token_authority,
+  );
 
   create_metadata(&ctx, name, symbol, uri)?;
 
