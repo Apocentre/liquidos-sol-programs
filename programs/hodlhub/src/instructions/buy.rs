@@ -67,7 +67,7 @@ pub struct Buy<'info> {
 
   /// CHECK: pool vault and lp mint authority. Checks will take place in CP swap program
   #[account()]
-  pub authority: UncheckedAccount<'info>,
+  pub raydium_authority: AccountInfo<'info>,
 
   /// CHECK: Initialize an account to store the pool state. Checks will take place in CP swap program
   #[account()]
@@ -101,7 +101,7 @@ pub struct Buy<'info> {
   /// CHECK: an account to store oracle observations. Checks will take place in CP swap program
   pub observation_state: AccountInfo<'info>,
 
-  associated_token_program: Program<'info, AssociatedToken>,
+  pub associated_token_program: Program<'info, AssociatedToken>,
   /// Program to create mint account and mint tokens
   pub token_program: Program<'info, Token>,
   pub token_2022: Interface<'info, TokenInterface>,
