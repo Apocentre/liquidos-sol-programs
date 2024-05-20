@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instruction::transfer}};
 use anchor_spl::token_2022::{MintTo, mint_to};
 use crate::{
   instructions::buy::Buy, program_error::ErrorCode,
@@ -28,6 +28,21 @@ fn mint_tokens(ctx: &Context<Buy>, amount: u64) -> Result<()> {
   Ok(())
 }
 
+fn accept_sol(ctx: &Context<Buy>, amount: u64) -> Result<()> {
+  let buyer = &ctx.accounts.buyer;
+  let bonding_curve = &ctx.accounts.bonding_curve;
+
+  invoke(
+    &transfer(&buyer.key(), &bonding_curve.key(), amount),
+    &[
+      buyer.to_account_info(),
+      bonding_curve.to_account_info(),
+    ],
+  )?;
+
+  Ok(())
+}
+
 
 pub fn exec(
   ctx: Context<Buy>,
@@ -46,6 +61,7 @@ pub fn exec(
   require!(token_amount > min_amount_out, ErrorCode::SlippageViolation);
 
   mint_tokens(&ctx, token_amount)?;
+  accept_sol(&ctx, spendable_amount)?;
 
   Ok(())
 }
