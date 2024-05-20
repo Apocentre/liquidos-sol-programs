@@ -11,12 +11,16 @@ pub const MAX_OPERATORS: usize = 5;
 #[account]
 #[derive(Debug)]
 pub struct BondingCurve {
+  /// The creator of the token this bonding curve is associated with
+  pub token_creator: Pubkey,
   /// Total supply of the token in the lowest denomination i.e. decimals included
   pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
   /// The current price of the curve in lamports
   pub price: u64,
+  /// The PDA bump of this account
+  pub bump: u8,
 }
 
 impl BondingCurve {
@@ -25,6 +29,16 @@ impl BondingCurve {
 
   const ONE_TOKEN: Decimal = dec!(1_000_000);
   const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
+
+  pub fn new(token_creator: Pubkey, bump: u8) -> Self {
+    Self {
+      token_creator,
+      total_supply: 0,
+      reserve_token_balance: 0,
+      price: 0,
+      bump,
+    }
+  }
 
   /// Finds the current price of the curve
   fn calc_price(&self) -> Result<u64> {
@@ -115,16 +129,14 @@ impl BondingCurve {
 
 #[cfg(test)]
 mod tests {
+    use anchor_lang::solana_program::pubkey::Pubkey;
+    use anchor_spl::token_2022::spl_token_2022::solana_zk_token_sdk::curve25519::scalar::Zeroable;
+
     use super::BondingCurve;
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve {
-      total_supply: 0,
-      reserve_token_balance: 0,
-      price: 0,
-    };
-
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1);
     let received = curve.calculate_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -133,11 +145,7 @@ mod tests {
 
   #[test]
   fn calculate_sale_return_amount() {
-    let mut curve = BondingCurve {
-      total_supply: 0,
-      reserve_token_balance: 0,
-      price: 0,
-    };
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1);
 
     curve.calculate_purchase_return(89800000000).unwrap();
     let received = curve.calculate_sale_return(793004689489822).unwrap();
@@ -148,12 +156,8 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve {
-      total_supply: 0,
-      reserve_token_balance: 0,
-      price: 0,
-    };
-
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 1);
+    
     for _ in 0..89 {
       let received = curve.calculate_purchase_return(1_000_000_000).unwrap();
       println!("Sent 1 SOL and Received {:?} Tokens. {:?}", received, curve);

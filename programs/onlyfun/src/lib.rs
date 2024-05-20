@@ -5,7 +5,9 @@ pub mod program_error;
 pub mod math;
 
 use anchor_lang::prelude::*;
-use crate::instructions::initialize::*;
+use crate::instructions::{
+  initialize::*, create_token::*,
+};
 
 declare_id!("2d6f7qg9SnGaLSN1EejmD3da72bJppqmKnB6C21zFNHj");
 
@@ -30,5 +32,18 @@ pub mod hodlhub {
       operators,
       current_sol_target,
     )
+  }
+
+  /// CreateToken
+  ///
+  /// Creates a new token
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `operators` - The list of all operators that can run admin related tasks
+  /// * `current_sol_target` - Current target of SOL each pool should receive before it goes to the 
+  pub fn create_token(ctx: Context<CreateToken>,) -> Result<()> {
+    processors::create_token::exec(ctx,)
   }
 }
