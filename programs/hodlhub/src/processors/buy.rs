@@ -7,7 +7,7 @@ use anchor_lang::{
 use anchor_spl::token_2022::{MintTo, mint_to};
 use ::borsh::BorshSerialize;
 use crate::{
-  account_data::bonding_curve::BondingCurve, instructions::buy::Buy, program_error::ErrorCode, raydium
+  instructions::buy::Buy, program_error::ErrorCode, raydium
 };
 
 fn mint_tokens(ctx: &Context<Buy>, amount: u64, signer_seeds: &[&[&[u8]]]) -> Result<()> {
@@ -143,6 +143,12 @@ fn move_liquidity(
   Ok(())
 }
 
+
+fn burn_lp(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> _ {
+  todo!("burn lp the buyer (pool creator) received")
+}
+
+
 pub fn exec(
   ctx: Context<Buy>,
   amount: u64,
@@ -173,6 +179,7 @@ pub fn exec(
     if curve.is_complete() {
       // TODO: find the correct amount of WSOL and Tokens to be added
       move_liquidity(&ctx, signer_seeds)?;
+      burn_lp(&ctx, signer_seeds)?;
     }
   }
 
