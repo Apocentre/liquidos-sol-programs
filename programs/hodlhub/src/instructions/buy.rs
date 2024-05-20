@@ -108,3 +108,4 @@ pub struct Buy<'info> {
   pub system_program: Program<'info, System>,
   pub rent: Sysvar<'info, Rent>,
 }
+
