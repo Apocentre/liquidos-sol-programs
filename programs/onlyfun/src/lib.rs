@@ -6,7 +6,7 @@ pub mod math;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{
-  initialize::*, create_token::*,
+  initialize::*, create_token::*, buy::*,
 };
 
 declare_id!("2d6f7qg9SnGaLSN1EejmD3da72bJppqmKnB6C21zFNHj");
@@ -51,5 +51,22 @@ pub mod hodlhub {
     uri: String,
   ) -> Result<()> {
     processors::create_token::exec(ctx, name, symbol, uri)
+  }
+
+  /// Buy
+  ///
+  /// Buy tokens
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `amount` - Amount of SOL buyer sells
+  /// * `min_amount_out` - Min amount of tokens expected to receive (slippage protection)
+  pub fn buy(
+    ctx: Context<Buy>,
+    amount: u64,
+    min_amount_out: u64,
+  ) -> Result<()> {
+    processors::buy::exec(ctx, amount, min_amount_out)
   }
 }

@@ -18,10 +18,10 @@ pub struct Buy<'info> {
   )]
   pub bonding_curve: Account<'info, BondingCurve>,
 
-  /// CHECK: The PDA is the authority of the newly created token. This account can mint and burn tokens
+  /// CHECK: The PDA is the authority of the token. This account can mint and burn tokens
   #[account(
     seeds = [b"token_authority", state.key().as_ref(), token.key().as_ref()],
-    bump = curve.token_authority_bump,
+    bump = bonding_curve.token_authority_bump,
   )]
   pub token_authority: AccountInfo<'info>,
 
@@ -39,7 +39,7 @@ pub struct Buy<'info> {
   )]
   pub buyer_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
-  /// The ATA of the  token that is owned by the buyer. Create one if no already exists
+  /// The ATA that will hold the liquidity of the curve (token side)
   #[account(
     associated_token::mint = token,
     associated_token::authority = token_authority,

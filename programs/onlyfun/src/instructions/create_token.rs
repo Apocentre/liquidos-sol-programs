@@ -31,7 +31,7 @@ pub struct CreateToken<'info> {
   )]
   pub token_authority: AccountInfo<'info>,
 
-  /// The ATA of the  token that is owned by the buyer. Create one if no already exists
+  /// The ATA that will hold the liquidity of the curve (token side)
   #[account(
     init_if_needed,
     payer = token_creator,

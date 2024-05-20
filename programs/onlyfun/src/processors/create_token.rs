@@ -72,10 +72,12 @@ pub fn exec(
   symbol: String,
   uri: String,
 ) -> Result<()> {
+  let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
   let curve = &mut ctx.accounts.bonding_curve;
   **curve = BondingCurve::new(
     token_creator,
+    state.current_sol_target,
     ctx.bumps.bonding_curve,
     ctx.bumps.token_authority,
   );
