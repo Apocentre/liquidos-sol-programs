@@ -147,6 +147,17 @@ impl BondingCurve {
   pub fn is_complete(&self) -> bool {
     self.reserve_token_balance == self.sol_target
   }
+
+  /// We need to mint enough tokens so that the current price is preserved when liquidity
+  /// moves to a constant product curve (Raydium).
+  /// The equations is y = x / P
+  pub fn calculate_token_amount_to_mint(&self) -> Result<u64> {
+    let price = Decimal::safe_from_u64(self.price)?;
+    let reserve_token_balance = Decimal::safe_from_u64(self.reserve_token_balance)?;
+    let amount = reserve_token_balance.safe_div(price)?;
+
+    Ok(amount.safe_to_u64()?)
+  }
 }
 
 #[cfg(test)]

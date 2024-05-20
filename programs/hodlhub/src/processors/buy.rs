@@ -7,7 +7,7 @@ use anchor_lang::{
 use anchor_spl::token_2022::{MintTo, mint_to};
 use ::borsh::BorshSerialize;
 use crate::{
-  instructions::buy::Buy, program_error::ErrorCode, raydium,
+  account_data::bonding_curve::BondingCurve, instructions::buy::Buy, program_error::ErrorCode, raydium
 };
 
 fn mint_tokens(ctx: &Context<Buy>, amount: u64, signer_seeds: &[&[&[u8]]]) -> Result<()> {
@@ -43,10 +43,9 @@ fn accept_sol(ctx: &Context<Buy>, amount: u64) -> Result<()> {
 // create a raydium pool with the current liquidity
 fn move_liquidity(
   ctx: &Context<Buy>,
-  init_amount_0: u64,
-  init_amount_1: u64,
   signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
 
@@ -56,12 +55,16 @@ fn move_liquidity(
     token_1,
     creator_token_0,
     creator_token_1,
+    init_amount_0,
+    init_amount_1,
   ) = if token_key.key() < wsol_token_key.key() {
     (
       token_key.to_account_info(),
       wsol_token_key.to_account_info(),
       ctx.accounts.buyer_ata.to_account_info(),
       ctx.accounts.buyer_wsol_ata.to_account_info(),
+      0,
+      curve.reserve_token_balance,
     )
   } else {
     (
@@ -69,6 +72,8 @@ fn move_liquidity(
       token_key.to_account_info(),
       ctx.accounts.buyer_wsol_ata.to_account_info(),
       ctx.accounts.buyer_ata.to_account_info(),
+      curve.reserve_token_balance,
+      0,
     )
   };
 
@@ -167,7 +172,7 @@ pub fn exec(
 
     if curve.is_complete() {
       // TODO: find the correct amount of WSOL and Tokens to be added
-      move_liquidity(&ctx, 1, 1, signer_seeds)?;
+      move_liquidity(&ctx, signer_seeds)?;
     }
   }
 
