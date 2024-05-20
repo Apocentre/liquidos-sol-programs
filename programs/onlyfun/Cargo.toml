@@ -1,13 +1,13 @@
 [package]
-name = "onlyfun"
+name = "hodlhub"
 version = "0.1.0"
-description = "only.fun main program"
+description = "hodlhub main program"
 edition = "2021"
 license = "BUSL-1.1"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "onlyfun"
+name = "hodlhub"
 
 [features]
 default = []

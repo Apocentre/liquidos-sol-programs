@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-onlyfun = "2d6f7qg9SnGaLSN1EejmD3da72bJppqmKnB6C21zFNHj"
+hodlhub = "2d6f7qg9SnGaLSN1EejmD3da72bJppqmKnB6C21zFNHj"
 
 [registry]
 url = "https://api.apr.dev"

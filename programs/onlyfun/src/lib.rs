@@ -10,7 +10,7 @@ use crate::instructions::initialize::*;
 declare_id!("2d6f7qg9SnGaLSN1EejmD3da72bJppqmKnB6C21zFNHj");
 
 #[program]
-pub mod onlyfun {
+pub mod hodlhub {
   use super::*;
 
   /// Initialize
