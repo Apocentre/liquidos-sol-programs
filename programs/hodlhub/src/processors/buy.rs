@@ -143,7 +143,6 @@ fn move_liquidity(
   Ok(())
 }
 
-
 /// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
 /// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
 fn fund_creator_account(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
@@ -158,7 +157,6 @@ fn fund_creator_account(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Resu
 fn burn_lp(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
   todo!("burn lp the buyer (pool creator) received")
 }
-
 
 pub fn exec(
   ctx: Context<Buy>,
