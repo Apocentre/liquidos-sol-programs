@@ -41,9 +41,15 @@ pub mod hodlhub {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `operators` - The list of all operators that can run admin related tasks
-  /// * `current_sol_target` - Current target of SOL each pool should receive before it goes to the 
-  pub fn create_token(ctx: Context<CreateToken>,) -> Result<()> {
-    processors::create_token::exec(ctx,)
+  /// * `name` - The name of the token (used in the metadata account)
+  /// * `symbol` - The symbol of the token (used in the metadata account)
+  /// * `uri` - The uri of the token (used in the metadata account)
+  pub fn create_token(
+    ctx: Context<CreateToken>,
+    name: String,
+    symbol: String,
+    uri: String,
+  ) -> Result<()> {
+    processors::create_token::exec(ctx, name, symbol, uri)
   }
 }
