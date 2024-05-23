@@ -41,13 +41,13 @@ fn mint_tokens(
 
 fn send_sol_to_curve(ctx: &Context<Buy>, amount: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
-  let bonding_curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve;
 
   invoke(
-    &transfer(&buyer.key(), &bonding_curve.key(), amount),
+    &transfer(&buyer.key(), &curve.key(), amount),
     &[
       buyer.to_account_info(),
-      bonding_curve.to_account_info(),
+      curve.to_account_info(),
     ],
   )?;
 
@@ -220,16 +220,17 @@ fn collect_fees(ctx: &Context<Buy>) -> Result<()> {
 /// Collects trade fees on each transaction. Fees collected in SOL
 fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
-  let bonding_curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve;
+  let trade_fees = curve.calc_trade_fees(sol_amount)?;
 
   invoke(
-    &transfer(&buyer.key(), &bonding_curve.key(), sol_amount),
+    &transfer(&buyer.key(), &curve.key(), trade_fees),
     &[
       buyer.to_account_info(),
-      bonding_curve.to_account_info(),
+      curve.to_account_info(),
     ],
   )?;
-  
+
   Ok(())
 }
 
