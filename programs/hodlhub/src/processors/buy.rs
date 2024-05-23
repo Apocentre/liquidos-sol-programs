@@ -225,12 +225,13 @@ fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
   let curve = &ctx.accounts.bonding_curve;
   let trade_fees = curve.calc_trade_fees(sol_amount)?;
+  let treasury = &ctx.accounts.treasury;
 
   invoke(
-    &transfer(&buyer.key(), &curve.key(), trade_fees),
+    &transfer(&buyer.key(), &treasury.key(), trade_fees),
     &[
       buyer.to_account_info(),
-      curve.to_account_info(),
+      treasury.to_account_info(),
     ],
   )?;
 
