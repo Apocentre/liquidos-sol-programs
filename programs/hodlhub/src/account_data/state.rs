@@ -12,8 +12,10 @@ pub struct State {
   pub treasury: Pubkey,
   /// Current target of SOL each pool should receive
   pub sol_target: u64,
-  /// Current protocol fees (BPS)
+  /// Current protocol fees (BPS). This is applied when the pool is created on Raydium
   pub protocol_fee_bps: u64,
+  /// Current trade fees (BPS). This is applied on each trade that takes place
+  pub trade_fee_bps: u64,
   /// Bump of the cpi_authority PDA
   pub cpi_authority_bump: u8,
 }
@@ -28,6 +30,7 @@ impl State {
     treasury: Pubkey,
     sol_target: u64,
     protocol_fee_bps: u64,
+    trade_fee_bps: u64,
     cpi_authority_bump: u8,
   ) -> Self {
     Self {
@@ -35,6 +38,7 @@ impl State {
       treasury,
       sol_target,
       protocol_fee_bps,
+      trade_fee_bps,
       cpi_authority_bump,
     }
   }

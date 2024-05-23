@@ -6,6 +6,7 @@ pub fn exec(
   treasury: Pubkey,
   sol_target: u64,
   protocol_fee_bps: u64,
+  trade_fee_bps: u64,
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
   let state = &mut ctx.accounts.state;
@@ -14,6 +15,7 @@ pub fn exec(
     treasury,
     sol_target,
     protocol_fee_bps,
+    trade_fee_bps,
     ctx.bumps.cpi_authority,
   );
 
