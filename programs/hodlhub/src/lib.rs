@@ -24,7 +24,7 @@ pub mod hodlhub {
   /// * `treasury` - The treasury account that receives fees
   /// * `sol_target` - Current target of SOL each pool should receive before it goes to the 
   /// * `protocol_fee_bps` - Current protocol fees (BPS). This is applied when the pool is created on Raydium
-  /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place
+  /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub fn initialize(
     ctx: Context<Initialize>,
     treasury: Pubkey,

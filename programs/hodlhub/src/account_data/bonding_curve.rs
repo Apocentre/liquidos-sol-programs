@@ -17,7 +17,7 @@ pub struct BondingCurve {
   pub sol_target: u64,
   /// Current protocol fees (BPS). This is applied when the pool is created on Raydium
   pub protocol_fee_bps: u64,
-  /// Current trade fees (BPS). This is applied on each trade that takes place
+  /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub trade_fee_bps: u64,
   /// Total supply of the token in the lowest denomination i.e. decimals included
   pub total_supply: u64,
@@ -155,6 +155,14 @@ impl BondingCurve {
   pub fn calc_protocol_fees(&self) -> Result<u64> {
     let fees = self.reserve_token_balance
     .safe_mul(self.protocol_fee_bps)?
+    .safe_div(10_000)?;
+
+    Ok(fees)
+  }
+
+  pub fn calc_trade_fees(&self, sol_amount: u64) -> Result<u64> {
+    let fees = sol_amount
+    .safe_mul(self.trade_fee_bps)?
     .safe_div(10_000)?;
 
     Ok(fees)

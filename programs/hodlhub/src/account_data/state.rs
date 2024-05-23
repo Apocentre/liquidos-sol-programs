@@ -14,7 +14,7 @@ pub struct State {
   pub sol_target: u64,
   /// Current protocol fees (BPS). This is applied when the pool is created on Raydium
   pub protocol_fee_bps: u64,
-  /// Current trade fees (BPS). This is applied on each trade that takes place
+  /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub trade_fee_bps: u64,
   /// Bump of the cpi_authority PDA
   pub cpi_authority_bump: u8,

@@ -217,6 +217,19 @@ fn collect_fees(ctx: &Context<Buy>) -> Result<()> {
   Ok(())
 }
 
+/// Collects trade fees on each transaction. Fees collected in SOL
+fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
+
+  transfer_from_pda(
+    &mut ctx.accounts.bonding_curve.to_account_info(),
+    &mut ctx.accounts.treasury.to_account_info(),
+    curve.calc_trade_fees(sol_amount)?,
+  )?;
+
+  Ok(())
+}
+
 pub fn exec(
   mut ctx: Context<Buy>,
   amount: u64,
@@ -241,6 +254,7 @@ pub fn exec(
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
   let curve = &ctx.accounts.bonding_curve;
+  collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount)?;
 
