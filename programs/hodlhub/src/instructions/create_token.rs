@@ -15,7 +15,7 @@ pub struct CreateToken<'info> {
   #[account(
     init,
     payer = token_creator,
-    mint::decimals = 9,
+    mint::decimals = 6,
     mint::authority = bonding_curve,
     mint::token_program = token_2022,
   )]
@@ -24,7 +24,7 @@ pub struct CreateToken<'info> {
 
   /// The ATA that will hold the liquidity of the curve (token side)
   #[account(
-    init_if_needed,
+    init,
     payer = token_creator,
     associated_token::mint = token,
     associated_token::authority = bonding_curve,
