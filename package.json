@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    "deploy:mainnet": "solana program deploy --url https://api.mainnet-beta.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/hodlhub.json target/deploy/hodlhub.so",
+    "deploy:devnet": "solana program deploy --url https://api.devnet.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/hodlhub.json target/deploy/hodlhub.so"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.0"
