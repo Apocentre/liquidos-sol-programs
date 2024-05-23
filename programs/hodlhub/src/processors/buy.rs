@@ -4,7 +4,7 @@ use anchor_lang::{
     instruction::Instruction, program::{invoke, invoke_signed}, system_instruction::transfer
   }
 };
-use anchor_spl::{token::{sync_native, SyncNative}, token_2022::{mint_to, MintTo}};
+use anchor_spl::{token::{burn, sync_native, Burn, SyncNative}, token_2022::{mint_to, MintTo}};
 use ::borsh::BorshSerialize;
 use crate::{
   instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium
@@ -177,12 +177,25 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
 
 /// Burns the LP created in the move_liquidity. These LP tokens are sent to the buyer
 /// whose purchase triggered the liquidity move. We need to burn this liquidity
-fn burn_lp(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
-  todo!("burn lp the buyer (pool creator) received")
+fn burn_lp(ctx: &mut Context<Buy>) -> Result<()> {
+  let creator_lp_token = &mut ctx.accounts.creator_lp_token;
+  let cpi_accounts = Burn {
+    mint: ctx.accounts.lp_mint.to_account_info(),
+    from: creator_lp_token.to_account_info(),
+    authority: ctx.accounts.buyer.to_account_info(),
+  };
+  let cpi_program = ctx.accounts.token_program.to_account_info();
+  let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+  
+  // reload the ata and check the new balance
+  creator_lp_token.reload()?;
+  let lp_balance = creator_lp_token.amount;
+  
+  burn(cpi_ctx, lp_balance)
 }
 
 pub fn exec(
-  ctx: Context<Buy>,
+  mut ctx: Context<Buy>,
   amount: u64,
   min_amount_out: u64,
 ) -> Result<()> {
@@ -211,7 +224,7 @@ pub fn exec(
     if curve.is_complete() {
       fund_creator_account(&ctx, signer_seeds)?;
       move_liquidity(&ctx, signer_seeds)?;
-      burn_lp(&ctx, signer_seeds)?;
+      burn_lp(&mut ctx)?;
     }
   }
 
