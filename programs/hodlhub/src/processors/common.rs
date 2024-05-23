@@ -18,15 +18,8 @@ pub fn transfer_from_pda(
   to: &mut AccountInfo,
   amount: u64,
 ) -> Result<()> {
-  **from_pda.try_borrow_mut_lamports()? = from_pda
-    .lamports()
-    .checked_sub(amount)
-    .ok_or(ProgramError::InvalidArgument)?;
-
-  **to.try_borrow_mut_lamports()? = to
-    .lamports()
-    .checked_add(amount)
-    .ok_or(ProgramError::InvalidArgument)?;
+  from_pda.sub_lamports(amount)?;
+  to.add_lamports(amount)?;
 
   Ok(())
 }
