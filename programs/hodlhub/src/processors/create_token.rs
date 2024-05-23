@@ -11,6 +11,16 @@ use crate::{
   instructions::create_token::CreateToken,
 };
 
+#[event]
+pub struct TokenCreatedEvent {
+  address: Pubkey,
+  creator: Pubkey,
+  name: String,
+  symbol: String,
+  uri: String,
+  curve: Pubkey,
+}
+
 fn create_metadata(
   ctx: &Context<CreateToken>,
   name: String,
@@ -73,7 +83,9 @@ pub fn exec(
   uri: String,
 ) -> Result<()> {
   let state = &ctx.accounts.state;
+  // let token = ctx.accounts.token.key();
   let token_creator = ctx.accounts.token_creator.key();
+  let curve_key = ctx.accounts.bonding_curve.key();
   let curve = &mut ctx.accounts.bonding_curve;
   ***curve = BondingCurve::new(
     token_creator,
@@ -81,7 +93,16 @@ pub fn exec(
     ctx.bumps.bonding_curve,
   );
 
-  create_metadata(&ctx, name, symbol, uri)?;
+  create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
+
+  emit!(TokenCreatedEvent {
+    address: ctx.accounts.token.key(),
+    creator: token_creator,
+    name,
+    symbol,
+    uri,
+    curve: curve_key,
+  });
 
   Ok(())
 }

@@ -32,11 +32,7 @@ impl BondingCurve {
   const ONE_TOKEN: Decimal = dec!(1_000_000);
   const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
 
-  pub fn new(
-    token_creator: Pubkey,
-    sol_target: u64,
-    bump: u8,
-  ) -> Self {
+  pub fn new(token_creator: Pubkey, sol_target: u64, bump: u8) -> Self {
     Self {
       token_creator,
       sol_target,
