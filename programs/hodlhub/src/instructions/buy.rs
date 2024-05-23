@@ -4,7 +4,7 @@ use anchor_spl::{
   token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
-use crate::account_data::{bonding_curve::BondingCurve, state::State};
+use crate::{account_data::{bonding_curve::BondingCurve, state::State}, raydium};
 
 #[derive(Accounts)]
 pub struct Buy<'info> {
@@ -47,14 +47,15 @@ pub struct Buy<'info> {
   // ---------------- Raydium CP swap accounts ----------------
   
   /// CHECK: Which config the pool that will created belongs to. Checks will take place in CP swap program
+  #[account(
+    address = raydium::amm_config(),
+  )]
   pub amm_config: AccountInfo<'info>,
 
   /// CHECK: pool vault and lp mint authority. Checks will take place in CP swap program
-  #[account()]
   pub raydium_authority: AccountInfo<'info>,
 
   /// CHECK: Initialize an account to store the pool state. Checks will take place in CP swap program
-  #[account()]
   pub pool_state: AccountInfo<'info>,
 
   #[account(
@@ -63,15 +64,12 @@ pub struct Buy<'info> {
   pub wsol_token: InterfaceAccount<'info, Mint>,
 
   /// CHECK: pool lp mint. Checks will take place in CP swap program
-  #[account()]
   pub lp_mint: AccountInfo<'info>,
 
   /// creator lp token account
   #[account(
-    init,
     associated_token::mint = lp_mint,
     associated_token::authority = buyer,
-    payer = buyer,
     token::token_program = token_program,
   )]
   pub creator_lp_token: Box<InterfaceAccount<'info, TokenAccount>>,

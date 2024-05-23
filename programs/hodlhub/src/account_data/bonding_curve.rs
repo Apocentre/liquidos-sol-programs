@@ -95,15 +95,15 @@ impl BondingCurve {
 
   /// Given an amount of tokens, calucates the amount of reserve tokens to be sent back.
   /// This function is used when user sells the tokens and receives back SOL
-  pub fn calculate_sale_return(&mut self, tokens_sold: u64) -> Result<u64> {
+  pub fn calculate_sale_return(&mut self, token_amount: u64) -> Result<u64> {
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let b = dec!(17.5970429);
     let c = dec!(299215564.8);
     let total_supply = Self::normalize_token_amount(self.total_supply)?;
-    let tokens_sold_normalized = Self::normalize_token_amount(tokens_sold)?;
+    let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
 
     let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(total_supply.safe_sub(tokens_sold_normalized)?)?.safe_sub(b)?.safe_to_f64()?
+      a.safe_mul(total_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
     ))?;
 
     let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
@@ -116,7 +116,7 @@ impl BondingCurve {
     .safe_to_u64()?;
 
     // update state
-    self.total_supply = self.total_supply.safe_sub(tokens_sold)?;
+    self.total_supply = self.total_supply.safe_sub(token_amount)?;
     self.reserve_token_balance = self.reserve_token_balance.safe_sub(reserve_tokens_returned)?;
     self.price = self.calc_price()?;
 
@@ -165,7 +165,7 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1, 2);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1);
     let received = curve.calculate_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -176,7 +176,7 @@ mod tests {
 
   #[test]
   fn calculate_sale_return_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1, 2);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1);
 
     curve.calculate_purchase_return(89800000000).unwrap();
     let received = curve.calculate_sale_return(793004689489822).unwrap();
@@ -187,7 +187,7 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1, 2);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1);
     
     for _ in 0..89 {
       let received = curve.calculate_purchase_return(1_000_000_000).unwrap();

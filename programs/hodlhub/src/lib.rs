@@ -7,7 +7,7 @@ pub mod raydium;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{
-  initialize::*, create_token::*, buy::*,
+  initialize::*, create_token::*, buy::*, sell::*,
 };
 
 declare_id!("2d6f7qg9SnGaLSN1EejmD3da72bJppqmKnB6C21zFNHj");
@@ -69,5 +69,22 @@ pub mod hodlhub {
     min_amount_out: u64,
   ) -> Result<()> {
     processors::buy::exec(ctx, amount, min_amount_out)
+  }
+
+  /// Sell
+  ///
+  /// Sell tokens
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `token_amount` - Amount of tokens seller sells
+  /// * `min_sol_amount_out` - Min amount of SOL expected to receive (slippage protection)
+  pub fn sell(
+    ctx: Context<Sell>,
+    token_amount: u64,
+    min_sol_amount_out: u64,
+  ) -> Result<()> {
+    processors::sell::exec(ctx, token_amount, min_sol_amount_out)
   }
 }
