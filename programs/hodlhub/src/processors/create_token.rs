@@ -13,8 +13,8 @@ use crate::{
 
 #[event]
 pub struct TokenCreatedEvent {
-  address: Pubkey,
   creator: Pubkey,
+  address: Pubkey,
   name: String,
   symbol: String,
   uri: String,
@@ -96,8 +96,8 @@ pub fn exec(
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 
   emit!(TokenCreatedEvent {
-    address: ctx.accounts.token.key(),
     creator: token_creator,
+    address: ctx.accounts.token.key(),
     name,
     symbol,
     uri,

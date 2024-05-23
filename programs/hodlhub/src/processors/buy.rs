@@ -10,6 +10,15 @@ use crate::{
   instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium
 };
 
+#[event]
+pub struct BuyEvent {
+  buyer: Pubkey,
+  token: Pubkey,
+  sol_amount: u64,
+  token_amount: u64,
+  is_complete: bool,
+}
+
 fn mint_tokens(
   ctx: &Context<Buy>,
   amount: u64,
@@ -206,27 +215,38 @@ pub fn exec(
   let token_amount = curve.calculate_purchase_return(spendable_amount)?;
   require!(token_amount > min_amount_out, ErrorCode::SlippageViolation);
 
-  {
-    let token = &ctx.accounts.token.key();
-    let state_key = &ctx.accounts.state.key();
-    let seeds: &[&[u8]] = &[
-      b"bonding_curve",
-      state_key.as_ref(),
-      token.as_ref(),
-      &[ctx.accounts.bonding_curve.bump],
-    ];
-    let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+  let token = &ctx.accounts.token.key();
+  let state_key = &ctx.accounts.state.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token.as_ref(),
+    &[ctx.accounts.bonding_curve.bump],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-    let curve = &ctx.accounts.bonding_curve;
-    mint_tokens(&ctx, token_amount, signer_seeds)?;
-    send_sol_to_curve(&ctx, spendable_amount)?;
+  let curve = &ctx.accounts.bonding_curve;
+  mint_tokens(&ctx, token_amount, signer_seeds)?;
+  send_sol_to_curve(&ctx, spendable_amount)?;
 
-    if curve.is_complete() {
-      fund_creator_account(&ctx, signer_seeds)?;
-      move_liquidity(&ctx, signer_seeds)?;
-      burn_lp(&mut ctx)?;
-    }
+  if curve.is_complete() {
+    fund_creator_account(&ctx, signer_seeds)?;
+    move_liquidity(&ctx, signer_seeds)?;
+    burn_lp(&mut ctx)?;
   }
+
+  {
+    let curve = &ctx.accounts.bonding_curve;
+
+    emit!(BuyEvent {
+      buyer: ctx.accounts.buyer.key(),
+      token: ctx.accounts.token.key(),
+      sol_amount: spendable_amount,
+      token_amount,
+      is_complete: curve.is_complete(),
+    });
+  }
+
 
   Ok(())
 }
