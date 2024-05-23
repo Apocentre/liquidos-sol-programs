@@ -4,6 +4,7 @@ use anchor_lang::{
     instruction::Instruction, program::{invoke, invoke_signed}, system_instruction::transfer
   },
 };
+use anchor_safe_math::SafeMath;
 use anchor_spl::{token::{burn, sync_native, Burn, SyncNative}, token_2022::{mint_to, MintTo}};
 use ::borsh::BorshSerialize;
 use crate::{
@@ -63,6 +64,7 @@ fn move_liquidity(
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
+  let reserve_token_liquidity = curve.reserve_token_balance.safe_sub(curve.calc_protocol_fees()?)?;
 
   // Raydium expect token_0 to be smaller that token_1
   let (
@@ -79,7 +81,7 @@ fn move_liquidity(
       ctx.accounts.buyer_ata.to_account_info(),
       ctx.accounts.buyer_wsol_ata.to_account_info(),
       token_liquidity,
-      curve.reserve_token_balance,
+      reserve_token_liquidity,
     )
   } else {
     (
@@ -87,7 +89,7 @@ fn move_liquidity(
       token_key.to_account_info(),
       ctx.accounts.buyer_wsol_ata.to_account_info(),
       ctx.accounts.buyer_ata.to_account_info(),
-      curve.reserve_token_balance,
+      reserve_token_liquidity,
       token_liquidity,
     )
   };
@@ -116,6 +118,7 @@ fn move_liquidity(
   ];
 
   let mut data: Vec<u8> = Vec::new();
+
   raydium::InitializeIx {
     init_amount_0,
     init_amount_1,
@@ -243,7 +246,7 @@ pub fn exec(
   let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
 
   // Slippage check
-  let token_amount = curve.calculate_purchase_return(spendable_amount)?;
+  let token_amount = curve.process_purchase_return(spendable_amount)?;
   require!(token_amount > min_amount_out, ErrorCode::SlippageViolation);
   let price = curve.price;
 

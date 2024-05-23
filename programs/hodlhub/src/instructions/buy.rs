@@ -67,6 +67,7 @@ pub struct Buy<'info> {
   pub raydium_authority: AccountInfo<'info>,
 
   /// CHECK: Initialize an account to store the pool state. Checks will take place in CP swap program
+  #[account(mut)]
   pub pool_state: AccountInfo<'info>,
 
   #[account(
@@ -75,10 +76,12 @@ pub struct Buy<'info> {
   pub wsol_token: InterfaceAccount<'info, Mint>,
 
   /// CHECK: pool lp mint. Checks will take place in CP swap program
+  #[account(mut)]
   pub lp_mint: AccountInfo<'info>,
 
   /// creator lp token account
   #[account(
+    mut,
     associated_token::mint = lp_mint,
     associated_token::authority = buyer,
     token::token_program = token_program,
@@ -86,12 +89,16 @@ pub struct Buy<'info> {
   pub creator_lp_token: Box<InterfaceAccount<'info, TokenAccount>>,
 
   /// CHECK: Token_0 vault for the pool. Checks will take place in CP swap program
+  #[account(mut)]
   pub token_0_vault: UncheckedAccount<'info>,
   /// CHECK: Token_0 vault for the pool. Checks will take place in CP swap program
+  #[account(mut)]
   pub token_1_vault: UncheckedAccount<'info>,
   /// CHECK: create pool fee account. Checks will take place in CP swap program
+  #[account(mut)]
   pub create_pool_fee: AccountInfo<'info>,
   /// CHECK: an account to store oracle observations. Checks will take place in CP swap program
+  #[account(mut)]
   pub observation_state: AccountInfo<'info>,
 
   pub associated_token_program: Program<'info, AssociatedToken>,

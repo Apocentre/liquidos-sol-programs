@@ -54,7 +54,7 @@ pub fn exec(
   min_sol_amount_out: u64,
 ) -> Result<()> {
   let curve = &mut ctx.accounts.bonding_curve;
-  let sol_amount = curve.calculate_sale_return(token_amount)?;
+  let sol_amount = curve.process_sale_return(token_amount)?;
   let price = curve.price;
   require!(sol_amount > min_sol_amount_out, ErrorCode::SlippageViolation);
 

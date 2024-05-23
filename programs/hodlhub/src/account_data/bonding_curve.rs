@@ -71,7 +71,7 @@ impl BondingCurve {
 
   /// Calculates the number of tokens to mint based on the given amount of reserve tokens.
   /// This function is used when user buys the token with SOL
-  pub fn calculate_purchase_return(&mut self, reserve_tokens_received: u64) -> Result<u64> {
+  pub fn process_purchase_return(&mut self, reserve_tokens_received: u64) -> Result<u64> {
     // divide by 10e9 to convert lamports to SOL
     let reserve_tokens_received_sol = Self::normalize_sol_amount(reserve_tokens_received)?;
 
@@ -103,7 +103,7 @@ impl BondingCurve {
 
   /// Given an amount of tokens, calucates the amount of reserve tokens to be sent back.
   /// This function is used when user sells the tokens and receives back SOL
-  pub fn calculate_sale_return(&mut self, token_amount: u64) -> Result<u64> {
+  pub fn process_sale_return(&mut self, token_amount: u64) -> Result<u64> {
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let b = dec!(17.5970429);
     let c = dec!(299215564.8);
@@ -193,7 +193,7 @@ mod tests {
   #[test]
   fn returns_correct_purchase_amount() {
     let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
-    let received = curve.calculate_purchase_return(89800000000).unwrap();
+    let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
     assert_eq!(curve.reserve_token_balance, 89800000000);
@@ -202,11 +202,11 @@ mod tests {
   }
 
   #[test]
-  fn calculate_sale_return_amount() {
+  fn process_sale_return_amount() {
     let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
 
-    curve.calculate_purchase_return(89800000000).unwrap();
-    let received = curve.calculate_sale_return(793004689489822).unwrap();
+    curve.process_purchase_return(89800000000).unwrap();
+    let received = curve.process_sale_return(793004689489822).unwrap();
     assert_eq!(received, 89800000000);
     assert_eq!(curve.total_supply, 0);
     assert_eq!(curve.reserve_token_balance, 0);
@@ -217,7 +217,7 @@ mod tests {
     let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
     
     for _ in 0..89 {
-      let received = curve.calculate_purchase_return(1_000_000_000).unwrap();
+      let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("Sent 1 SOL and Received {:?} Tokens. {:?}", received, curve);
     }
     // panic!()
