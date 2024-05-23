@@ -11,6 +11,14 @@ pub fn id() -> Pubkey {
   return Pubkey::from_str("CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C").unwrap();
 }
 
+pub fn amm_config() -> Pubkey {
+  #[cfg(not(feature = "devnet"))]
+  return Pubkey::from_str("D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2").unwrap();
+
+  #[cfg(feature = "devnet")]
+  return Pubkey::from_str("9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6").unwrap();
+}
+
 #[derive(BorshSerialize)]
 pub struct InitializeIx {
   pub init_amount_0: u64,

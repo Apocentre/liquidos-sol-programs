@@ -2,7 +2,7 @@ use anchor_lang::{
   prelude::*,
   solana_program::{
     instruction::Instruction, program::{invoke, invoke_signed}, system_instruction::transfer
-  }
+  },
 };
 use anchor_spl::{token::{burn, sync_native, Burn, SyncNative}, token_2022::{mint_to, MintTo}};
 use ::borsh::BorshSerialize;
