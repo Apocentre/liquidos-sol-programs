@@ -4,10 +4,10 @@ use anchor_lang::{
     instruction::Instruction, program::{invoke, invoke_signed}, system_instruction::transfer
   }
 };
-use anchor_spl::token_2022::{MintTo, mint_to};
+use anchor_spl::{token::{sync_native, SyncNative}, token_2022::{mint_to, MintTo}};
 use ::borsh::BorshSerialize;
 use crate::{
-  instructions::buy::Buy, program_error::ErrorCode, raydium
+  instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium
 };
 
 fn mint_tokens(
@@ -29,7 +29,7 @@ fn mint_tokens(
   Ok(())
 }
 
-fn accept_sol(ctx: &Context<Buy>, amount: u64) -> Result<()> {
+fn send_sol_to_curve(ctx: &Context<Buy>, amount: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
   let bonding_curve = &ctx.accounts.bonding_curve;
 
@@ -158,6 +158,20 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   mint_tokens(&ctx, token_liquidity, signer_seeds)?;
 
   // 2. convert SOL from the curve into WSOL and send to buyer
+  let mut buyer_wsol_ata = ctx.accounts.buyer_wsol_ata.to_account_info();
+  transfer_from_pda(
+    &mut ctx.accounts.bonding_curve.to_account_info(),
+    &mut buyer_wsol_ata,
+    curve.sol_target,
+  )?;
+
+  let cpi_accounts = SyncNative {
+    account: buyer_wsol_ata,
+  };
+  let cpi_program = ctx.accounts.token_program.to_account_info();
+  let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+  sync_native(cpi_ctx)?;
+
   todo!()
 }
 
@@ -192,7 +206,7 @@ pub fn exec(
 
     let curve = &ctx.accounts.bonding_curve;
     mint_tokens(&ctx, token_amount, signer_seeds)?;
-    accept_sol(&ctx, spendable_amount)?;
+    send_sol_to_curve(&ctx, spendable_amount)?;
 
     if curve.is_complete() {
       fund_creator_account(&ctx, signer_seeds)?;
