@@ -23,13 +23,6 @@ pub struct Buy<'info> {
   )]
   pub bonding_curve: Account<'info, BondingCurve>,
 
-  /// CHECK: The PDA is the authority of the token. This account can mint and burn tokens
-  #[account(
-    seeds = [b"token_authority", state.key().as_ref(), token.key().as_ref()],
-    bump = bonding_curve.token_authority_bump,
-  )]
-  pub token_authority: AccountInfo<'info>,
-
   #[account(mut)]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 
@@ -51,14 +44,6 @@ pub struct Buy<'info> {
     associated_token::authority = buyer,
   )]
   pub buyer_wsol_ata: Box<InterfaceAccount<'info, TokenAccount>>,
-
-  /// The ATA that will hold the liquidity of the curve (token side)
-  #[account(
-    associated_token::mint = token,
-    associated_token::authority = token_authority,
-    associated_token::token_program = token_2022,
-  )]
-  pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   // ---------------- Raydium CP swap accounts ----------------
   

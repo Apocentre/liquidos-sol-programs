@@ -20,13 +20,13 @@ fn create_metadata(
   let token = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();
   let seeds: &[&[u8]] = &[
-    b"token_authority",
+    b"bonding_curve",
     state_key.as_ref(),
     token.as_ref(),
-    &[ctx.bumps.token_authority],
+    &[ctx.bumps.bonding_curve],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-  let token_authority = &ctx.accounts.token_authority.key();
+  let curve = &ctx.accounts.bonding_curve.key();
 
   // Initialize the metadata pointer first
   let cpi_metadata_pointer_init_accounts = MetadataPointerInitialize {
@@ -36,29 +36,29 @@ fn create_metadata(
 
   let cpi_program = ctx.accounts.token_2022.to_account_info();
   let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_metadata_pointer_init_accounts, signer_seeds);
-  metadata_pointer_initialize(cpi_ctx, Some(token_authority.clone()), Some(token.clone()))?;
+  metadata_pointer_initialize(cpi_ctx, Some(curve.clone()), Some(token.clone()))?;
 
   // Initialize the metadata account
   let init_metadata_ix = initialize_metadata(
     &token_2022::ID,
     &ctx.accounts.token.key(),
-    token_authority,
+    curve,
     token,
-    token_authority,
+    curve,
     name,
     symbol,
     uri,
   );
 
   let token_acc_info = ctx.accounts.token.to_account_info();
-  let token_authority_acc_info = ctx.accounts.token_authority.to_account_info();
+  let curve_acc_info = ctx.accounts.bonding_curve.to_account_info();
   invoke_signed(
     &init_metadata_ix,
     &[
       token_acc_info.clone(),
-      token_authority_acc_info.clone(),
+      curve_acc_info.clone(),
       token_acc_info,
-      token_authority_acc_info,
+      curve_acc_info,
     ],
     signer_seeds,
   )?;
@@ -79,7 +79,6 @@ pub fn exec(
     token_creator,
     state.current_sol_target,
     ctx.bumps.bonding_curve,
-    ctx.bumps.token_authority,
   );
 
   create_metadata(&ctx, name, symbol, uri)?;

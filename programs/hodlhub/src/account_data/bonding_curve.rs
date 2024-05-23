@@ -23,8 +23,6 @@ pub struct BondingCurve {
   pub price: u64,
   /// The PDA bump of this account
   pub bump: u8,
-  /// The token authority PDA bump
-  pub token_authority_bump: u8,
 }
 
 impl BondingCurve {
@@ -38,7 +36,6 @@ impl BondingCurve {
     token_creator: Pubkey,
     sol_target: u64,
     bump: u8,
-    token_authority_bump: u8,
   ) -> Self {
     Self {
       token_creator,
@@ -47,7 +44,6 @@ impl BondingCurve {
       reserve_token_balance: 0,
       price: 0,
       bump,
-      token_authority_bump,
     }
   }
 

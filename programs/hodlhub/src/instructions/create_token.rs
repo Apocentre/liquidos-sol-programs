@@ -16,27 +16,18 @@ pub struct CreateToken<'info> {
     init,
     payer = token_creator,
     mint::decimals = 9,
-    mint::authority = token_authority,
+    mint::authority = bonding_curve,
     mint::token_program = token_2022,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 
-  /// CHECK: The PDA is the authority of the newly created token. This account can mint and burn tokens
-  #[account(
-    init,
-    payer = token_creator,
-    space = 0,
-    seeds = [b"token_authority", state.key().as_ref(), token.key().as_ref()],
-    bump,
-  )]
-  pub token_authority: AccountInfo<'info>,
 
   /// The ATA that will hold the liquidity of the curve (token side)
   #[account(
     init_if_needed,
     payer = token_creator,
     associated_token::mint = token,
-    associated_token::authority = token_authority,
+    associated_token::authority = bonding_curve,
     associated_token::token_program = token_2022,
   )]
   pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,

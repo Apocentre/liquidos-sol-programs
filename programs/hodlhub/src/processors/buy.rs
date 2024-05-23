@@ -18,7 +18,7 @@ fn mint_tokens(
   let cpi_accounts = MintTo {
     mint: ctx.accounts.token.to_account_info(),
     to: ctx.accounts.buyer_ata.to_account_info(),
-    authority: ctx.accounts.token_authority.to_account_info(),
+    authority: ctx.accounts.bonding_curve.to_account_info(),
   };
 
   let cpi_program = ctx.accounts.token_2022.to_account_info();
@@ -210,10 +210,10 @@ pub fn exec(
     let token = &ctx.accounts.token.key();
     let state_key = &ctx.accounts.state.key();
     let seeds: &[&[u8]] = &[
-      b"token_authority",
+      b"bonding_curve",
       state_key.as_ref(),
       token.as_ref(),
-      &[ctx.accounts.bonding_curve.token_authority_bump],
+      &[ctx.accounts.bonding_curve.bump],
     ];
     let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
