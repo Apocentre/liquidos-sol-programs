@@ -168,6 +168,13 @@ impl BondingCurve {
     Ok(fees)
   }
 
+  /// Find the net amount of reserve token that can be used as liquidity in the Raydium pool
+  pub fn net_reserve_token_liquidity(&self) -> Result<u64> {
+    let net = self.reserve_token_balance.safe_sub(self.calc_protocol_fees()?)?;
+
+    Ok(net)
+  }
+
   /// We need to mint enough tokens so that the current price is preserved when liquidity
   /// moves to a constant product curve (Raydium). Note that the token calculation does account
   /// for the fees that are deducted from the `reserve_token_balance`.

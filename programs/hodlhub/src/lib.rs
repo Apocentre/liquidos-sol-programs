@@ -69,8 +69,8 @@ pub mod hodlhub {
   /// * `ctx` - The Anchor context holding the accounts
   /// * `amount` - Amount of SOL buyer sells
   /// * `min_amount_out` - Min amount of tokens expected to receive (slippage protection)
-  pub fn buy(
-    ctx: Context<Buy>,
+  pub fn buy<'info>(
+    ctx: Context<'_, '_, 'info, '_, Buy<'info>>,
     amount: u64,
     min_amount_out: u64,
   ) -> Result<()> {

@@ -4,8 +4,10 @@ use anchor_lang::{
     instruction::Instruction, program::{invoke, invoke_signed}, system_instruction::transfer
   },
 };
-use anchor_safe_math::SafeMath;
-use anchor_spl::{token::{burn, sync_native, Burn, SyncNative}, token_2022::{mint_to, MintTo}};
+use anchor_spl::{
+  token::{burn, sync_native, Burn, SyncNative}, token_2022::{mint_to, MintTo},
+  token_interface::TokenAccount,
+};
 use ::borsh::BorshSerialize;
 use crate::{
   instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium
@@ -64,7 +66,7 @@ fn move_liquidity(
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
-  let reserve_token_liquidity = curve.reserve_token_balance.safe_sub(curve.calc_protocol_fees()?)?;
+  let reserve_token_liquidity = curve.net_reserve_token_liquidity()?;
 
   // Raydium expect token_0 to be smaller that token_1
   let (
@@ -175,7 +177,7 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   transfer_from_pda(
     &mut ctx.accounts.bonding_curve.to_account_info(),
     &mut buyer_wsol_ata,
-    curve.sol_target,
+    curve.net_reserve_token_liquidity()?,
   )?;
 
   let cpi_accounts = SyncNative {
@@ -188,10 +190,21 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   todo!()
 }
 
+/// Loads the create_lp_token which is passed as unchecked AccountInfo the program. This is because
+/// this is created in the Raydium program so when this program is called the account doesn't exists
+/// and thus we can't just use an InterfaceAccount<'info, TokenAccount>.
+/// When this function is called we know for sure that the account is created so we just need to load it.
+fn get_creator_lp_token(creator_lp_token: &AccountInfo<'_>) -> Result<TokenAccount> {
+  let mut data: &[u8] = &creator_lp_token.try_borrow_data()?;
+  let account = TokenAccount::try_deserialize(&mut data)?;
+
+  Ok(account)
+}
+
 /// Burns the LP created in the move_liquidity. These LP tokens are sent to the buyer
 /// whose purchase triggered the liquidity move. We need to burn this liquidity
-fn burn_lp(ctx: &mut Context<Buy>) -> Result<()> {
-  let creator_lp_token = &mut ctx.accounts.creator_lp_token;
+fn burn_lp(ctx: &Context<Buy>) -> Result<()> {
+  let creator_lp_token = &ctx.accounts.creator_lp_token;
   let cpi_accounts = Burn {
     mint: ctx.accounts.lp_mint.to_account_info(),
     from: creator_lp_token.to_account_info(),
@@ -201,7 +214,7 @@ fn burn_lp(ctx: &mut Context<Buy>) -> Result<()> {
   let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
   
   // reload the ata and check the new balance
-  creator_lp_token.reload()?;
+  let creator_lp_token = get_creator_lp_token(&ctx.accounts.creator_lp_token)?;
   let lp_balance = creator_lp_token.amount;
   
   burn(cpi_ctx, lp_balance)
@@ -239,7 +252,7 @@ fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
 }
 
 pub fn exec(
-  mut ctx: Context<Buy>,
+  ctx: Context<Buy>,
   amount: u64,
   min_amount_out: u64,
 ) -> Result<()> {
@@ -248,7 +261,7 @@ pub fn exec(
 
   // Slippage check
   let token_amount = curve.process_purchase_return(spendable_amount)?;
-  require!(token_amount > min_amount_out, ErrorCode::SlippageViolation);
+  require!(token_amount >= min_amount_out, ErrorCode::SlippageViolation);
   let price = curve.price;
 
   let token = &ctx.accounts.token.key();
@@ -270,15 +283,16 @@ pub fn exec(
     collect_fees(&ctx)?;
     fund_creator_account(&ctx, signer_seeds)?;
     move_liquidity(&ctx, signer_seeds)?;
-    burn_lp(&mut ctx)?;
+    burn_lp(&ctx)?;
   }
 
   {
     let curve = &ctx.accounts.bonding_curve;
+    let buyer = ctx.accounts.buyer.key();
 
     emit!(BuyEvent {
-      buyer: ctx.accounts.buyer.key(),
-      token: ctx.accounts.token.key(),
+      buyer,
+      token: *token,
       sol_amount: spendable_amount,
       token_amount,
       is_complete: curve.is_complete(),

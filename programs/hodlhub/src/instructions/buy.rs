@@ -79,14 +79,9 @@ pub struct Buy<'info> {
   #[account(mut)]
   pub lp_mint: AccountInfo<'info>,
 
-  /// creator lp token account
-  #[account(
-    mut,
-    associated_token::mint = lp_mint,
-    associated_token::authority = buyer,
-    token::token_program = token_program,
-  )]
-  pub creator_lp_token: Box<InterfaceAccount<'info, TokenAccount>>,
+  /// CHECK: creator lp token account
+  #[account(mut)]
+  pub creator_lp_token: AccountInfo<'info>,
 
   /// CHECK: Token_0 vault for the pool. Checks will take place in CP swap program
   #[account(mut)]

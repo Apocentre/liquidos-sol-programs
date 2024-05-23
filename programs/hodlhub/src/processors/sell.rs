@@ -56,7 +56,7 @@ pub fn exec(
   let curve = &mut ctx.accounts.bonding_curve;
   let sol_amount = curve.process_sale_return(token_amount)?;
   let price = curve.price;
-  require!(sol_amount > min_sol_amount_out, ErrorCode::SlippageViolation);
+  require!(sol_amount >= min_sol_amount_out, ErrorCode::SlippageViolation);
 
   let fees = curve.calc_trade_fees(sol_amount)?;
   collect_trade_fees(&ctx, fees)?;
