@@ -27,6 +27,7 @@ pub struct Buy<'info> {
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
+    mut,
     seeds = [b"bonding_curve", state.key().as_ref(), token.key().as_ref()],
     bump = bonding_curve.bump,
   )]

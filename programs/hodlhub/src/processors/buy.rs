@@ -219,14 +219,17 @@ fn collect_fees(ctx: &Context<Buy>) -> Result<()> {
 
 /// Collects trade fees on each transaction. Fees collected in SOL
 fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve;
+  let buyer = &ctx.accounts.buyer;
+  let bonding_curve = &ctx.accounts.bonding_curve;
 
-  transfer_from_pda(
-    &mut ctx.accounts.bonding_curve.to_account_info(),
-    &mut ctx.accounts.treasury.to_account_info(),
-    curve.calc_trade_fees(sol_amount)?,
+  invoke(
+    &transfer(&buyer.key(), &bonding_curve.key(), sol_amount),
+    &[
+      buyer.to_account_info(),
+      bonding_curve.to_account_info(),
+    ],
   )?;
-
+  
   Ok(())
 }
 
