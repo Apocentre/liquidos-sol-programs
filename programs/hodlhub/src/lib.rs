@@ -22,16 +22,19 @@ pub mod hodlhub {
   ///
   /// * `ctx` - The Anchor context holding the accounts
   /// * `operators` - The list of all operators that can run admin related tasks
-  /// * `current_sol_target` - Current target of SOL each pool should receive before it goes to the 
+  /// * `sol_target` - Current target of SOL each pool should receive before it goes to the 
+  /// * `protocol_fee_bps` - te protocol fees (BPS)
   pub fn initialize(
     ctx: Context<Initialize>,
     operators: Vec<Pubkey>,
-    current_sol_target: u64,
+    sol_target: u64,
+    protocol_fee_bps: u16,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
       operators,
-      current_sol_target,
+      sol_target,
+      protocol_fee_bps,
     )
   }
 

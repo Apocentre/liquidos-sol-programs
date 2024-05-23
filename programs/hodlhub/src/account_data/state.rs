@@ -11,7 +11,9 @@ pub struct State {
   /// The list of all operators that can run admin related tasks
   pub operators: Vec<Pubkey>,
   /// Current target of SOL each pool should receive
-  pub current_sol_target: u64,
+  pub sol_target: u64,
+  /// Current protocol fess (BPS)
+  pub protocol_fee_bps: u16,
   /// Bump of the cpi_authority PDA
   pub cpi_authority_bump: u8,
 }
@@ -24,13 +26,15 @@ impl State {
   pub fn new(
     owner: Pubkey,
     operators: Vec<Pubkey>,
-    current_sol_target: u64,
+    sol_target: u64,
+    protocol_fee_bps: u16,
     cpi_authority_bump: u8,
   ) -> Self {
     Self {
       owner,
       operators,
-      current_sol_target,
+      sol_target,
+      protocol_fee_bps,
       cpi_authority_bump,
     }
   }
