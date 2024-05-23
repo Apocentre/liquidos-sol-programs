@@ -10,7 +10,11 @@ use crate::{
   instructions::buy::Buy, program_error::ErrorCode, raydium
 };
 
-fn mint_tokens(ctx: &Context<Buy>, amount: u64, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+fn mint_tokens(
+  ctx: &Context<Buy>,
+  amount: u64,
+  signer_seeds: &[&[&[u8]]]
+) -> Result<()> {
   let cpi_accounts = MintTo {
     mint: ctx.accounts.token.to_account_info(),
     to: ctx.accounts.buyer_ata.to_account_info(),
@@ -48,6 +52,7 @@ fn move_liquidity(
   let curve = &ctx.accounts.bonding_curve;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
+  let token_liquidity = curve.calculate_token_amount_to_mint()?;
 
   // Raydium expect token_0 to be smaller that token_1
   let (
@@ -63,7 +68,7 @@ fn move_liquidity(
       wsol_token_key.to_account_info(),
       ctx.accounts.buyer_ata.to_account_info(),
       ctx.accounts.buyer_wsol_ata.to_account_info(),
-      0,
+      token_liquidity,
       curve.reserve_token_balance,
     )
   } else {
@@ -73,7 +78,7 @@ fn move_liquidity(
       ctx.accounts.buyer_wsol_ata.to_account_info(),
       ctx.accounts.buyer_ata.to_account_info(),
       curve.reserve_token_balance,
-      0,
+      token_liquidity,
     )
   };
 
@@ -145,12 +150,16 @@ fn move_liquidity(
 
 /// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
 /// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
-fn fund_creator_account(_ctx: &Context<Buy>, _signer_seeds: &[&[&[u8]]]) -> Result<()> {
+fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
+
   // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
+  let token_liquidity = curve.calculate_token_amount_to_mint()?;
+  mint_tokens(&ctx, token_liquidity, signer_seeds)?;
+
   // 2. convert SOL from the curve into WSOL and send to buyer
   todo!()
 }
-
 
 /// Burns the LP created in the move_liquidity. These LP tokens are sent to the buyer
 /// whose purchase triggered the liquidity move. We need to burn this liquidity
