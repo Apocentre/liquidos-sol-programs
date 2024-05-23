@@ -17,6 +17,7 @@ pub struct BuyEvent {
   sol_amount: u64,
   token_amount: u64,
   is_complete: bool,
+  price: u64,
 }
 
 fn mint_tokens(
@@ -214,6 +215,7 @@ pub fn exec(
   // Slippage check
   let token_amount = curve.calculate_purchase_return(spendable_amount)?;
   require!(token_amount > min_amount_out, ErrorCode::SlippageViolation);
+  let price = curve.price;
 
   let token = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();
@@ -244,6 +246,7 @@ pub fn exec(
       sol_amount: spendable_amount,
       token_amount,
       is_complete: curve.is_complete(),
+      price,
     });
   }
 

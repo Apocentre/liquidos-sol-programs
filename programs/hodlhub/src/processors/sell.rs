@@ -11,6 +11,7 @@ pub struct SellEvent {
   token: Pubkey,
   token_amount: u64,
   sol_amount: u64,
+  price: u64,
 }
 
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {
@@ -43,6 +44,7 @@ pub fn exec(
 ) -> Result<()> {
   let curve = &mut ctx.accounts.bonding_curve;
   let sol_amount = curve.calculate_sale_return(token_amount)?;
+  let price = curve.price;
   require!(sol_amount > min_sol_amount_out, ErrorCode::SlippageViolation);
 
   send_sol_to_seller(&ctx, sol_amount)?;
@@ -53,6 +55,7 @@ pub fn exec(
     token: ctx.accounts.token.key(),
     sol_amount,
     token_amount,
+    price,
   });
 
   Ok(())

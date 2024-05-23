@@ -83,7 +83,6 @@ pub fn exec(
   uri: String,
 ) -> Result<()> {
   let state = &ctx.accounts.state;
-  // let token = ctx.accounts.token.key();
   let token_creator = ctx.accounts.token_creator.key();
   let curve_key = ctx.accounts.bonding_curve.key();
   let curve = &mut ctx.accounts.bonding_curve;
