@@ -5,6 +5,14 @@ use crate::{
   program_error::ErrorCode, instructions::sell::Sell,
 };
 
+#[event]
+pub struct SellEvent {
+  seller: Pubkey,
+  token: Pubkey,
+  token_amount: u64,
+  sol_amount: u64,
+}
+
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {
   transfer_from_pda(
     &mut ctx.accounts.bonding_curve.to_account_info(),
@@ -39,5 +47,13 @@ pub fn exec(
 
   send_sol_to_seller(&ctx, sol_amount)?;
   burn_tokens(&ctx, token_amount)?;
+
+  emit!(SellEvent {
+    seller: ctx.accounts.seller.key(),
+    token: ctx.accounts.token.key(),
+    sol_amount,
+    token_amount,
+  });
+
   Ok(())
 }
