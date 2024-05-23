@@ -89,6 +89,7 @@ pub fn exec(
   ***curve = BondingCurve::new(
     token_creator,
     state.sol_target,
+    state.protocol_fee_bps,
     ctx.bumps.bonding_curve,
   );
 

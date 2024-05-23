@@ -12,8 +12,8 @@ pub struct State {
   pub operators: Vec<Pubkey>,
   /// Current target of SOL each pool should receive
   pub sol_target: u64,
-  /// Current protocol fess (BPS)
-  pub protocol_fee_bps: u16,
+  /// Current protocol fees (BPS)
+  pub protocol_fee_bps: u64,
   /// Bump of the cpi_authority PDA
   pub cpi_authority_bump: u8,
 }
@@ -27,7 +27,7 @@ impl State {
     owner: Pubkey,
     operators: Vec<Pubkey>,
     sol_target: u64,
-    protocol_fee_bps: u16,
+    protocol_fee_bps: u64,
     cpi_authority_bump: u8,
   ) -> Self {
     Self {

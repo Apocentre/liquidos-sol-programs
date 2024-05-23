@@ -28,7 +28,7 @@ pub mod hodlhub {
     ctx: Context<Initialize>,
     operators: Vec<Pubkey>,
     sol_target: u64,
-    protocol_fee_bps: u16,
+    protocol_fee_bps: u64,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,

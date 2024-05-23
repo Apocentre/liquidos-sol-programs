@@ -15,6 +15,8 @@ pub struct BondingCurve {
   pub token_creator: Pubkey,
   /// Target of SOL each pool should receive
   pub sol_target: u64,
+  /// Current protocol fees (BPS)
+  pub protocol_fee_bps: u64,
   /// Total supply of the token in the lowest denomination i.e. decimals included
   pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
@@ -32,10 +34,16 @@ impl BondingCurve {
   const ONE_TOKEN: Decimal = dec!(1_000_000);
   const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
 
-  pub fn new(token_creator: Pubkey, sol_target: u64, bump: u8) -> Self {
+  pub fn new(
+    token_creator: Pubkey,
+    sol_target: u64,
+    protocol_fee_bps: u64,
+    bump: u8,
+  ) -> Self {
     Self {
       token_creator,
       sol_target,
+      protocol_fee_bps,
       total_supply: 0,
       reserve_token_balance: 0,
       price: 0,
@@ -161,7 +169,7 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 1);
     let received = curve.calculate_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -172,7 +180,7 @@ mod tests {
 
   #[test]
   fn calculate_sale_return_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 1);
 
     curve.calculate_purchase_return(89800000000).unwrap();
     let received = curve.calculate_sale_return(793004689489822).unwrap();
@@ -183,7 +191,7 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 1);
     
     for _ in 0..89 {
       let received = curve.calculate_purchase_return(1_000_000_000).unwrap();
