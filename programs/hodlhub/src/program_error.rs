@@ -6,4 +6,7 @@ pub enum ErrorCode {
   OnlyOwner,
   #[msg("Slippage violation")]
   SlippageViolation,
+  #[msg("Wrong rreasury")]
+  WrongTreasury,
+
 }

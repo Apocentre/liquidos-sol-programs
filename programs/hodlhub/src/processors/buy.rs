@@ -62,7 +62,7 @@ fn move_liquidity(
   let curve = &ctx.accounts.bonding_curve;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
-  let token_liquidity = curve.calculate_token_amount_to_mint()?;
+  let token_liquidity = curve.calc_token_amount_to_mint()?;
 
   // Raydium expect token_0 to be smaller that token_1
   let (
@@ -164,7 +164,7 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   let curve = &ctx.accounts.bonding_curve;
 
   // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
-  let token_liquidity = curve.calculate_token_amount_to_mint()?;
+  let token_liquidity = curve.calc_token_amount_to_mint()?;
   mint_tokens(&ctx, token_liquidity, signer_seeds)?;
 
   // 2. convert SOL from the curve into WSOL and send to buyer
@@ -204,6 +204,19 @@ fn burn_lp(ctx: &mut Context<Buy>) -> Result<()> {
   burn(cpi_ctx, lp_balance)
 }
 
+/// Collects fees from the SOL accumulated in the pool
+fn collect_fees(ctx: &Context<Buy>) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
+
+  transfer_from_pda(
+    &mut ctx.accounts.bonding_curve.to_account_info(),
+    &mut ctx.accounts.treasury.to_account_info(),
+    curve.calc_protocol_fees()?,
+  )?;
+
+  Ok(())
+}
+
 pub fn exec(
   mut ctx: Context<Buy>,
   amount: u64,
@@ -232,6 +245,7 @@ pub fn exec(
   send_sol_to_curve(&ctx, spendable_amount)?;
 
   if curve.is_complete() {
+    collect_fees(&ctx)?;
     fund_creator_account(&ctx, signer_seeds)?;
     move_liquidity(&ctx, signer_seeds)?;
     burn_lp(&mut ctx)?;

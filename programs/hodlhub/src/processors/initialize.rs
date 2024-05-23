@@ -3,7 +3,7 @@ use crate::{account_data::state::State, instructions::initialize::Initialize};
 
 pub fn exec(
   ctx: Context<Initialize>,
-  operators: Vec<Pubkey>,
+  treasury: Pubkey,
   sol_target: u64,
   protocol_fee_bps: u64,
 ) -> Result<()> {
@@ -11,10 +11,10 @@ pub fn exec(
   let state = &mut ctx.accounts.state;
   **state = State::new(
     owner,
-    operators,
+    treasury,
     sol_target,
     protocol_fee_bps,
-    ctx.bumps.cpi_authority
+    ctx.bumps.cpi_authority,
   );
 
   Ok(())

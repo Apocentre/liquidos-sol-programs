@@ -148,12 +148,23 @@ impl BondingCurve {
     self.reserve_token_balance == self.sol_target
   }
 
+  pub fn calc_protocol_fees(&self) -> Result<u64> {
+    let fees = self.reserve_token_balance
+    .safe_mul(self.protocol_fee_bps)?
+    .safe_div(10_000)?;
+
+    Ok(fees)
+  }
+
   /// We need to mint enough tokens so that the current price is preserved when liquidity
-  /// moves to a constant product curve (Raydium).
+  /// moves to a constant product curve (Raydium). Note that the token calculation does account
+  /// for the fees that are deducted from the `reserve_token_balance`.
+  /// 
   /// The equations is y = x / P
-  pub fn calculate_token_amount_to_mint(&self) -> Result<u64> {
+  pub fn calc_token_amount_to_mint(&self) -> Result<u64> {
     let price = Decimal::safe_from_u64(self.price)?;
-    let reserve_token_balance = Decimal::safe_from_u64(self.reserve_token_balance)?;
+    let net_amount = self.reserve_token_balance.safe_sub(self.calc_protocol_fees()?)?;
+    let reserve_token_balance = Decimal::safe_from_u64(net_amount)?;
     let amount = reserve_token_balance.safe_div(price)?.safe_mul(Self::ONE_TOKEN)?;
 
     Ok(amount.safe_to_u64()?)

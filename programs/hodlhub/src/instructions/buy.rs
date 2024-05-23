@@ -4,7 +4,10 @@ use anchor_spl::{
   token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
-use crate::{account_data::{bonding_curve::BondingCurve, state::State}, raydium};
+use crate::{
+  account_data::{bonding_curve::BondingCurve, state::State}, raydium,
+  program_error::ErrorCode,
+};
 
 #[derive(Accounts)]
 pub struct Buy<'info> {
@@ -13,7 +16,14 @@ pub struct Buy<'info> {
 
   /// The state account of each instance of this program
   #[account()]
-  pub state: Account<'info, State>,
+  pub state: Box<Account<'info, State>>,
+
+  /// CHECK: The treasury account that collects the fees
+  #[account(
+    mut,
+    constraint = treasury.key() == state.treasury @ ErrorCode::WrongTreasury,
+  )]
+  pub treasury: AccountInfo<'info>,
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(

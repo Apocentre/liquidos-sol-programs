@@ -8,8 +8,8 @@ pub const MAX_OPERATORS: usize = 5;
 pub struct State {
   /// The owner that can handle various admin related teasks
   pub owner: Pubkey,
-  /// The list of all operators that can run admin related tasks
-  pub operators: Vec<Pubkey>,
+  /// The treasury account that receives fees
+  pub treasury: Pubkey,
   /// Current target of SOL each pool should receive
   pub sol_target: u64,
   /// Current protocol fees (BPS)
@@ -25,14 +25,14 @@ impl State {
 
   pub fn new(
     owner: Pubkey,
-    operators: Vec<Pubkey>,
+    treasury: Pubkey,
     sol_target: u64,
     protocol_fee_bps: u64,
     cpi_authority_bump: u8,
   ) -> Self {
     Self {
       owner,
-      operators,
+      treasury,
       sol_target,
       protocol_fee_bps,
       cpi_authority_bump,
