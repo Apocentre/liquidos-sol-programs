@@ -15,8 +15,8 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Hodlhub;
-  const tokenName = "TOKEN_3";
-  const tokenSymbol= "SYMBOL_3";
+  const tokenName = "TOKEN_4";
+  const tokenSymbol= "SYMBOL_4";
   const amount = new BN(web3.toBase("7", 8)); // 0.1 SOL
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
@@ -28,7 +28,7 @@ const main = async () => {
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
 
 
-  const ix = await program.methods
+  const buy_ix = await program.methods
   .buy(amount, minAmountOut)
   .accounts({
     buyer: buyer.publicKey,
@@ -46,10 +46,55 @@ const main = async () => {
   })
   .instruction();
 
+  const ammConfig = constants.raydiumAmmConfigDevnet;
+  const raydiumProgram = constants.raydiumProgramDevnet;
+  const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
+  const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
+  const [creatorToken0, creatorToken1] = token.toBuffer() < wsol.toBuffer() ? [buyerAta, buyerWsolAta] : [buyerWsolAta, buyerAta];
+  const lpMint = accounts.raydiumLpMint(poolState, raydiumProgram)[0];
+  const creatorLpToken = await web3.getAssociatedTokenAddress(lpMint, buyer.publicKey);
+  const [token0Vault, token1Vault] = token.toBuffer() < wsol.toBuffer()
+  ? [accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0]] 
+  : [accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0]];
+
+  const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
+
+  const moveLiquidityIx = await program.methods
+  .moveLiquidity()
+  .accounts({
+    buyer: buyer.publicKey,
+    state,
+    bondingCurve,
+    token,
+    buyerAta,
+    buyerWsolAta,
+    ammConfig,
+    raydiumAuthority: accounts.raydiumAuthority(raydiumProgram)[0],
+    poolState,
+    wsolToken: wsol,
+    token0Mint: token0,
+    token1Mint: token1,
+    lpMint,
+    creatorToken0,
+    creatorToken1,
+    creatorLpToken,
+    token0Vault,
+    token1Vault,
+    createPoolFee,
+    observationState: accounts.raydiumObservationState(poolState, raydiumProgram)[0],
+    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    tokenProgram: spl.TOKEN_PROGRAM_ID,
+    token2022: spl.TOKEN_2022_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+    rent: SYSVAR_RENT_PUBKEY,
+  })
+  .instruction();
+
+
   const cbIx = web3.getComputationBudgetIx(300_000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, ix],
+    [cbIx, buy_ix, moveLiquidityIx],
     buyer.publicKey,
     [buyer],
     [],

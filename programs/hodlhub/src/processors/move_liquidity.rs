@@ -11,7 +11,6 @@ use anchor_spl::{
 use ::borsh::BorshSerialize;
 use crate::{
   instructions::move_liquidity::MoveLiquidity, raydium,
-  program_error::ErrorCode,
 };
 
 // create a raydium pool with the current liquidity
