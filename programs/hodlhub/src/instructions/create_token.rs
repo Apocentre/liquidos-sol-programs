@@ -1,7 +1,7 @@
 use anchor_lang::{prelude::*, solana_program::program_pack::Pack};
 use anchor_spl::{
   associated_token::AssociatedToken, token_2022::spl_token_2022,
-  token_interface::{Mint, TokenAccount, TokenInterface}
+  token_interface::{TokenAccount, TokenInterface}
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
@@ -11,22 +11,23 @@ pub struct CreateToken<'info> {
   #[account()]
   pub state: Box<Account<'info, State>>,
 
-  /// The Mint account of the newly created token
+  /// CHECK: The Mint account of the newly created token. This will be manually initialized in the processor
+  /// We do that in the processor because the order in which metadata pointer account is created is vital. It must
+  /// be created before the Mint account is initialized.
   #[account(
     init,
     payer = token_creator,
     space = spl_token_2022::state::Mint::LEN,
-    mint::token_program = token_2022,
   )]
-  pub token: Box<InterfaceAccount<'info, Mint>>,
+  pub token: AccountInfo<'info>,
 
-  /// The ATA that will hold the liquidity of the curve (token side)
+  /// The ATA that will hold the liquidity of the curve (token side).
+  /// Since we're initializing token mint account manually, we need to do so here as well because
+  /// creating an ata requires that mint token is initialized.
   #[account(
     init,
     payer = token_creator,
-    associated_token::mint = token,
-    associated_token::authority = bonding_curve,
-    associated_token::token_program = token_2022,
+    space = spl_token_2022::state::Account::LEN,
   )]
   pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
@@ -44,7 +45,7 @@ pub struct CreateToken<'info> {
   #[account(mut)]
   pub token_creator: Signer<'info>,
 
-  associated_token_program: Program<'info, AssociatedToken>,
+  pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
 }

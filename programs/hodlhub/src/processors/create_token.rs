@@ -1,6 +1,7 @@
 use anchor_lang::{prelude::*, solana_program::program::invoke_signed};
 use anchor_spl::{
   token_2022::{self, InitializeMint2, initialize_mint2},
+  associated_token::{create, Create},
   token_2022_extensions::{
     metadata_pointer::{metadata_pointer_initialize, MetadataPointerInitialize},
     spl_token_metadata_interface::instruction::initialize as initialize_metadata,
@@ -85,6 +86,33 @@ fn create_metadata(
   Ok(())
 }
 
+fn create_curve_ata(ctx: &Context<CreateToken>) -> Result<()> {
+  let token_key = &ctx.accounts.token.key();
+  let state_key = &ctx.accounts.state.key();
+  
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token_key.as_ref(),
+    &[ctx.bumps.bonding_curve],
+    ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+    
+  let cpi_program = &ctx.accounts.associated_token_program;
+  let cpi_accounts = Create {
+    payer: ctx.accounts.token_creator.to_account_info(),
+    associated_token: ctx.accounts.curve_ata.to_account_info(),
+    authority: ctx.accounts.bonding_curve.to_account_info(),
+    mint: ctx.accounts.token.to_account_info(),
+    system_program: ctx.accounts.system_program.to_account_info(),
+    token_program: ctx.accounts.token_2022.to_account_info(),
+  };
+  let cpi_ctx = CpiContext::new_with_signer(cpi_program.to_account_info(), cpi_accounts, signer_seeds);
+  create(cpi_ctx)?;
+  
+  Ok(())
+}
+
 pub fn exec(
   ctx: Context<CreateToken>,
   name: String,
@@ -104,6 +132,7 @@ pub fn exec(
   );
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
+  create_curve_ata(&ctx)?;
 
   emit!(TokenCreatedEvent {
     creator: token_creator,
