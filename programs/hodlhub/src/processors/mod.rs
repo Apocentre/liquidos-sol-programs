@@ -3,3 +3,4 @@ pub mod create_token;
 pub mod buy;
 pub mod common;
 pub mod sell;
+pub mod move_liquidity;
