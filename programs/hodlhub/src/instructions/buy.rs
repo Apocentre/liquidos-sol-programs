@@ -1,6 +1,7 @@
+use std::str::FromStr;
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  token_interface::{TokenInterface, Mint, TokenAccount},
+  token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
 use crate::{
@@ -32,6 +33,21 @@ pub struct Buy<'info> {
   )]
   pub bonding_curve: Box<Account<'info, BondingCurve>>,
 
+  /// The ATA of the WSOL token that is owned by the buyer. Create one if no already exists
+  #[account(
+    init_if_needed,
+    payer = buyer,
+    associated_token::mint = wsol_token,
+    associated_token::authority = buyer,
+  )]
+  pub buyer_wsol_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+
+  /// CHECK: the wsol token account
+  #[account(
+    constraint = wsol_token.key() == Pubkey::from_str("So11111111111111111111111111111111111111112").unwrap(),
+  )]
+  pub wsol_token: AccountInfo<'info>,
+  
   #[account(
     mut,
     constraint = token.key() == bonding_curve.token @ ErrorCode::InvalidCurveToken,
@@ -48,6 +64,7 @@ pub struct Buy<'info> {
   )]
   pub buyer_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
+  pub token_program: Program<'info, Token>,
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,

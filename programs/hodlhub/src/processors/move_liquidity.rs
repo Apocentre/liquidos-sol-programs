@@ -5,34 +5,14 @@ use anchor_lang::{
   },
 };
 use anchor_spl::{
-  token_2022::{mint_to, MintTo},
   token::{burn, sync_native, Burn, SyncNative},
   token_interface::TokenAccount,
 };
 use ::borsh::BorshSerialize;
 use crate::{
-  instructions::move_liquidity::MoveLiquidity, processors::common::transfer_from_pda, raydium,
+  instructions::move_liquidity::MoveLiquidity, raydium,
   program_error::ErrorCode,
 };
-
-fn mint_tokens(
-  ctx: &Context<MoveLiquidity>,
-  amount: u64,
-  signer_seeds: &[&[&[u8]]]
-) -> Result<()> {
-  let cpi_accounts = MintTo {
-    mint: ctx.accounts.token.to_account_info(),
-    to: ctx.accounts.buyer_ata.to_account_info(),
-    authority: ctx.accounts.bonding_curve.to_account_info(),
-  };
-
-  let cpi_program = ctx.accounts.token_2022.to_account_info();
-  let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
-
-  mint_to(cpi_ctx, amount)?;
-
-  Ok(())
-}
 
 // create a raydium pool with the current liquidity
 fn move_liquidity(
@@ -146,31 +126,18 @@ fn move_liquidity(
   Ok(())
 }
 
-/// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
-/// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
-fn fund_creator_account(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve;
-
-  // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
-  let token_liquidity = curve.calc_token_amount_to_mint()?;
-  mint_tokens(&ctx, token_liquidity, signer_seeds)?;
-
-  // 2. convert SOL from the curve into WSOL and send to buyer
-  let mut buyer_wsol_ata = ctx.accounts.buyer_wsol_ata.to_account_info();
-  transfer_from_pda(
-    &mut ctx.accounts.bonding_curve.to_account_info(),
-    &mut buyer_wsol_ata,
-    curve.net_reserve_token_liquidity()?,
-  )?;
-
+/// sync_native the SOL that was sent in the last Buy transaction. We can't manipulate directly the account
+/// through `transfer_from_pda` which directly manipulates accounts and then have a CPI 
+/// For move info here https://stackoverflow.com/a/77591006/512783
+fn sync_buyer_wsol_ata(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let cpi_accounts = SyncNative {
-    account: buyer_wsol_ata,
+    account: ctx.accounts.buyer_wsol_ata.to_account_info(),
   };
   let cpi_program = ctx.accounts.token_program.to_account_info();
   let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
   sync_native(cpi_ctx)?;
 
-  todo!()
+  Ok(())
 }
 
 /// Loads the create_lp_token which is passed as unchecked AccountInfo the program. This is because
@@ -218,7 +185,7 @@ pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-  fund_creator_account(&ctx, signer_seeds)?;
+  sync_buyer_wsol_ata(&ctx, signer_seeds)?;
   move_liquidity(&ctx, signer_seeds)?;
   burn_lp(&ctx)?;
 

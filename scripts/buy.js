@@ -23,22 +23,9 @@ const main = async () => {
   const state = new PublicKey(config.state);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
-  
-  const wsol = constants.wsol;
-  const ammConfig = constants.raydiumAmmConfigDevnet;
-  const raydiumProgram = constants.raydiumProgramDevnet;
-  const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
-  const poolState = accounts.raydiumPoolState(token0, token1, ammConfig, raydiumProgram)[0];
-  const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const [creatorToken0, creatorToken1] = token.toBuffer() < wsol.toBuffer() ? [buyerAta, buyerWsolAta] : [buyerWsolAta, buyerAta];
-  const lpMint = accounts.raydiumLpMint(poolState, raydiumProgram)[0];
-  const creatorLpToken = await web3.getAssociatedTokenAddress(lpMint, buyer.publicKey);
-  const [token0Vault, token1Vault] = token.toBuffer() < wsol.toBuffer()
-  ? [accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0]] 
-  : [accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0]];
+  const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
 
-  const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
+  const wsol = constants.wsol;
 
   const ix = await program.methods
   .buy(amount, minAmountOut)
@@ -49,7 +36,10 @@ const main = async () => {
     bondingCurve,
     token,
     buyerAta,
+    buyerWsolAta,
+    wsolToken: wsol,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
   })

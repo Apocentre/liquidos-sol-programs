@@ -43,8 +43,7 @@ pub struct MoveLiquidity<'info> {
 
   /// The ATA of the WSOL token that is owned by the buyer. Create one if no already exists
   #[account(
-    init_if_needed,
-    payer = buyer,
+    mut,
     associated_token::mint = wsol_token,
     associated_token::authority = buyer,
   )]
@@ -93,7 +92,6 @@ pub struct MoveLiquidity<'info> {
   pub observation_state: AccountInfo<'info>,
 
   pub associated_token_program: Program<'info, AssociatedToken>,
-  /// Program to create mint account and mint tokens
   pub token_program: Program<'info, Token>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,

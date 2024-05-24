@@ -89,6 +89,26 @@ fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
   Ok(())
 }
 
+/// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
+/// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
+fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
+
+  // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
+  let token_liquidity = curve.calc_token_amount_to_mint()?;
+  mint_tokens(&ctx, token_liquidity, signer_seeds)?;
+
+  // 2. convert SOL from the curve into WSOL and send to buyer
+  let mut buyer_wsol_ata = ctx.accounts.buyer_wsol_ata.to_account_info();
+  transfer_from_pda(
+    &mut ctx.accounts.bonding_curve.to_account_info(),
+    &mut buyer_wsol_ata,
+    curve.net_reserve_token_liquidity()?,
+  )?;
+
+  Ok(())
+}
+
 pub fn exec<'info>(
   ctx: Context<'_, '_, '_, 'info, Buy<'info>>,
   amount: u64,
@@ -119,6 +139,7 @@ pub fn exec<'info>(
   collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
+  fund_creator_account(&ctx, signer_seeds)?;
 
   let is_complete = curve.is_complete();
   if is_complete {
