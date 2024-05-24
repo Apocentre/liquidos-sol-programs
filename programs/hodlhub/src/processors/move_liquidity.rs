@@ -205,7 +205,7 @@ fn burn_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
 
 
 pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
-  let curve = &mut ctx.accounts.bonding_curve.load_mut()?;
+  let curve = ctx.accounts.bonding_curve.load()?;
   require!(curve.closed == 1, ErrorCode::CurveNotComplete);
 
   let token = &ctx.accounts.token.key();
@@ -219,6 +219,7 @@ pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
 
+  drop(curve);
   fund_creator_account(&ctx, signer_seeds)?;
   move_liquidity(&ctx, signer_seeds)?;
   burn_lp(&ctx)?;
