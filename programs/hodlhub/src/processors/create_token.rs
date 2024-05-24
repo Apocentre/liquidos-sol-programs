@@ -1,7 +1,5 @@
-use anchor_lang::{prelude::*, solana_program::program::invoke_signed};
-use anchor_spl::{
-  token_2022, token_2022_extensions::spl_token_metadata_interface::instruction::initialize as initialize_metadata,
-};
+use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
 use crate::{
   account_data::bonding_curve::BondingCurve,
   instructions::create_token::CreateToken,
@@ -23,41 +21,15 @@ fn create_metadata(
   symbol: String,
   uri: String,
 ) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve.key();
-  let token_key = &ctx.accounts.token.key();
-  let state_key = &ctx.accounts.state.key();
-  let seeds: &[&[u8]] = &[
-    b"bonding_curve",
-    state_key.as_ref(),
-    token_key.as_ref(),
-    &[ctx.bumps.bonding_curve],
-  ];
-  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-  
-  // Initialize the metadata account
-  let init_metadata_ix = initialize_metadata(
-    &token_2022::ID,
-    &token_key,
-    curve,
-    &token_key,
-    curve,
-    name,
-    symbol,
-    uri,
-  );
-
-  let token_acc_info = ctx.accounts.token.to_account_info();
-  let curve_acc_info = ctx.accounts.bonding_curve.to_account_info();
-  invoke_signed(
-    &init_metadata_ix,
-    &[
-      token_acc_info.clone(),
-      curve_acc_info.clone(),
-      token_acc_info,
-      curve_acc_info,
-    ],
-    signer_seeds,
-  )?;
+  let cpi_accounts = TokenMetadataInitialize {
+    token_program_id: ctx.accounts.token_2022.to_account_info(),
+    mint: ctx.accounts.token.to_account_info(),
+    metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
+    mint_authority: ctx.accounts.bonding_curve.to_account_info(),
+    update_authority: ctx.accounts.bonding_curve.to_account_info(),
+};
+  let cpi_ctx = CpiContext::new(ctx.accounts.token_2022.to_account_info(), cpi_accounts);
+  token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
 
   Ok(())
 }

@@ -20,7 +20,6 @@ pub struct CreateToken<'info> {
     mint::decimals = 6,
     mint::authority = bonding_curve,
     mint::token_program = token_2022,
-    // mint::extensions = MINT_EXTENSIONS.to_vec(),
     extensions::metadata_pointer::authority = bonding_curve.key(),
     extensions::metadata_pointer::metadata_address = token.key(),
   )]
