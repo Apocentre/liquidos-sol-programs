@@ -7,24 +7,23 @@ import config from "./config.json" assert { type: "json" };
 import tokenCreatorKey from "../wallets/test/tokenCreator.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
-const {BN} = anchor.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 
 const main = async () => {
   const state = new PublicKey(config.state);
-  const token = Keypair.generate();
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Hodlhub;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
-  const bondingCurve = accounts.bondingCurve(state, token.publicKey, program.programId)[0];
+  const token = accounts.curveToken(state, "TOKEN_NAME", "$TOKEN_SYMBOL", program.programId)[0];
+  const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
 
   console.log({
     state,
     token: token.publicKey,
     tokenCreator: tokenCreator.publicKey,
-    curveAta: await web3.getAssociatedTokenAddress(token.publicKey, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
+    curveAta: await web3.getAssociatedTokenAddress(token, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
     bondingCurve,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
@@ -39,9 +38,9 @@ const main = async () => {
   )
   .accounts({
     state,
-    token: token.publicKey,
+    token,
     tokenCreator: tokenCreator.publicKey,
-    curveAta: await web3.getAssociatedTokenAddress(token.publicKey, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
+    curveAta: await web3.getAssociatedTokenAddress(token, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
     bondingCurve,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
@@ -53,7 +52,7 @@ const main = async () => {
     provider,
     [ix],
     tokenCreator.publicKey,
-    [token, tokenCreator]
+    [tokenCreator]
   );
 
   console.log("State: ", state.publicKey.toBase58());

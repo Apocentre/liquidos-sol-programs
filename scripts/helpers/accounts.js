@@ -9,3 +9,8 @@ export const bondingCurve = (state, token, programId) => PublicKey.findProgramAd
   [utf8.encode("bonding_curve"), state.toBuffer(), token.toBuffer()],
   programId
 )
+
+export const curveToken = (state, tokenName, tokenSymbol, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("hodlhub_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
+  programId
+)
