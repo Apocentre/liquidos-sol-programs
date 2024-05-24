@@ -16,7 +16,6 @@ pub fn exec(
     sol_target,
     protocol_fee_bps,
     trade_fee_bps,
-    ctx.bumps.cpi_authority,
   );
 
   Ok(())

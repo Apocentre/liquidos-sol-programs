@@ -16,8 +16,6 @@ pub struct State {
   pub protocol_fee_bps: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub trade_fee_bps: u64,
-  /// Bump of the cpi_authority PDA
-  pub cpi_authority_bump: u8,
 }
 
 impl State {
@@ -31,7 +29,6 @@ impl State {
     sol_target: u64,
     protocol_fee_bps: u64,
     trade_fee_bps: u64,
-    cpi_authority_bump: u8,
   ) -> Self {
     Self {
       owner,
@@ -39,7 +36,6 @@ impl State {
       sol_target,
       protocol_fee_bps,
       trade_fee_bps,
-      cpi_authority_bump,
     }
   }
 }
