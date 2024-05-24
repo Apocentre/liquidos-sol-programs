@@ -27,17 +27,9 @@ fn create_metadata(
   name: String,
   symbol: String,
   uri: String,
+  signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
   let token = &ctx.accounts.token;
-  let token_key = &ctx.accounts.token.key();
-  let state_key = &ctx.accounts.state.key();
-  let seeds: &[&[u8]] = &[
-    b"bonding_curve",
-    state_key.as_ref(),
-    token_key.as_ref(),
-    &[ctx.bumps.bonding_curve],
-  ];
-  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
   let curve = &ctx.accounts.bonding_curve.key();
 
   // Initialize the metadata pointer first
@@ -53,7 +45,7 @@ fn create_metadata(
   metadata_pointer_initialize(
     cpi_ctx,
     Some(token_creator.key()),
-    Some(token_key.clone())
+    Some(token.key())
   )?;
 
   // Initialize the mint account
@@ -67,9 +59,9 @@ fn create_metadata(
   // Initialize the metadata account
   let init_metadata_ix = initialize_metadata(
     &token_2022::ID,
-    &ctx.accounts.token.key(),
+    &token.key(),
     curve,
-    &token_key,
+    &token.key(),
     curve,
     name,
     symbol,
@@ -92,18 +84,7 @@ fn create_metadata(
   Ok(())
 }
 
-fn create_curve_ata(ctx: &Context<CreateToken>) -> Result<()> {
-  let token_key = &ctx.accounts.token.key();
-  let state_key = &ctx.accounts.state.key();
-  
-  let seeds: &[&[u8]] = &[
-    b"bonding_curve",
-    state_key.as_ref(),
-    token_key.as_ref(),
-    &[ctx.bumps.bonding_curve],
-    ];
-  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-    
+fn create_curve_ata(ctx: &Context<CreateToken>, signer_seeds: &[&[&[u8]]],) -> Result<()> {
   let cpi_program = &ctx.accounts.associated_token_program;
   let cpi_accounts = Create {
     payer: ctx.accounts.token_creator.to_account_info(),
@@ -137,8 +118,18 @@ pub fn exec(
     ctx.bumps.bonding_curve,
   );
 
-  create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
-  create_curve_ata(&ctx)?;
+  let token_key = &ctx.accounts.token.key();
+  let state_key = &ctx.accounts.state.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token_key.as_ref(),
+    &[ctx.bumps.bonding_curve],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+    
+  create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone(), signer_seeds)?;
+  create_curve_ata(&ctx, signer_seeds)?;
 
   emit!(TokenCreatedEvent {
     creator: token_creator,

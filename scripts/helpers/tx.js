@@ -38,7 +38,7 @@ export const signAndSend = async(provider, tx, signers) => {
   tx.sign(signers);
   
   // Step 2 - Send our v0 transaction to the cluster
-  const txid = await provider.connection.sendTransaction(tx, {maxRetries: 5, skipPreflight: false});
+  const txid = await provider.connection.sendTransaction(tx, {maxRetries: 5, skipPreflight: true});
 
   // Step 3 - Confirm Transaction
   const confirmation = await provider.connection.confirmTransaction({

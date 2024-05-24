@@ -20,6 +20,17 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey)
   const bondingCurve = accounts.bondingCurve(state, token.publicKey, program.programId)[0];
 
+  console.log({
+    state,
+    token: token.publicKey,
+    tokenCreator: tokenCreator.publicKey,
+    curveAta: await web3.getAssociatedTokenAddress(token.publicKey, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
+    bondingCurve,
+    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    token2022: spl.TOKEN_2022_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+  })
+
   const ix = await program.methods
   .createToken(
     "TOKEN_NAME",
@@ -42,7 +53,7 @@ const main = async () => {
     provider,
     [ix],
     tokenCreator.publicKey,
-    [tokenCreator, token]
+    [token, tokenCreator]
   );
 
   console.log("State: ", state.publicKey.toBase58());
