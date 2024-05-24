@@ -53,7 +53,7 @@ pub fn exec(
   token_amount: u64,
   min_sol_amount_out: u64,
 ) -> Result<()> {
-  let curve = &mut ctx.accounts.bonding_curve.load_mut()?;
+  let curve = &mut ctx.accounts.bonding_curve;
   require!(curve.closed == 0, ErrorCode::CurveClosed);
   let sol_amount = curve.process_sale_return(token_amount)?;
   require!(sol_amount >= min_sol_amount_out, ErrorCode::SlippageViolation);

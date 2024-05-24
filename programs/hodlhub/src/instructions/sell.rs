@@ -28,13 +28,13 @@ pub struct Sell<'info> {
   #[account(
     mut,
     seeds = [b"bonding_curve", state.key().as_ref(), token.key().as_ref()],
-    bump = bonding_curve.load()?.bump,
+    bump = bonding_curve.bump,
   )]
-  pub bonding_curve: AccountLoader<'info, BondingCurve>,
+  pub bonding_curve: Box<Account<'info, BondingCurve>>,
 
   #[account(
     mut,
-    constraint = token.key() == bonding_curve.load()?.token @ ErrorCode::InvalidCurveToken,
+    constraint = token.key() == bonding_curve.token @ ErrorCode::InvalidCurveToken,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 

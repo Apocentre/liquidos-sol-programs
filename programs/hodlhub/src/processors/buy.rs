@@ -60,7 +60,7 @@ fn send_sol_to_curve<'info>(
 
 /// Collects fees from the SOL accumulated in the pool
 fn collect_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Result<()> {
-  let curve = ctx.accounts.bonding_curve.load()?;
+  let curve = &ctx.accounts.bonding_curve;
 
   transfer_from_pda(
     &mut curve_acc_info,
@@ -74,10 +74,9 @@ fn collect_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Resu
 /// Collects trade fees on each transaction. Fees collected in SOL
 fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
-  let curve = ctx.accounts.bonding_curve.load()?;
+  let curve = &ctx.accounts.bonding_curve;
   let trade_fees = curve.calc_trade_fees(sol_amount)?;
   let treasury = &ctx.accounts.treasury;
-  drop(curve);
 
   invoke(
     &transfer(&buyer.key(), &treasury.key(), trade_fees),
@@ -97,7 +96,7 @@ pub fn exec<'info>(
 ) -> Result<()> {
   let curve_key = ctx.accounts.bonding_curve.key();
   let curve_acc_info = ctx.accounts.bonding_curve.to_account_info();
-  let mut curve = ctx.accounts.bonding_curve.load_mut()?;
+  let curve = &mut ctx.accounts.bonding_curve;
   require!(curve.closed == 0, ErrorCode::CurveClosed);
   let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
 
@@ -116,19 +115,17 @@ pub fn exec<'info>(
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-  drop(curve);
+  let curve = &ctx.accounts.bonding_curve;
   collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
 
-  let curve = ctx.accounts.bonding_curve.load()?;
   let is_complete = curve.is_complete();
   if is_complete {
-    drop(curve);
     collect_fees(&ctx, curve_acc_info)?;
     
     // mark the curve as closed
-    let mut curve = ctx.accounts.bonding_curve.load_mut()?;
+    let curve = &mut ctx.accounts.bonding_curve;
     curve.close_curve();
   }
 

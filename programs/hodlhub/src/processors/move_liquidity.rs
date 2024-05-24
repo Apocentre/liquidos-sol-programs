@@ -39,7 +39,7 @@ fn move_liquidity(
   ctx: &Context<MoveLiquidity>,
   signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve.load_mut()?;
+  let curve = &ctx.accounts.bonding_curve;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
@@ -149,7 +149,7 @@ fn move_liquidity(
 /// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
 /// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
 fn fund_creator_account(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve.load()?;
+  let curve = &ctx.accounts.bonding_curve;
 
   // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
   let token_liquidity = curve.calc_token_amount_to_mint()?;
@@ -205,7 +205,7 @@ fn burn_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
 
 
 pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
-  let curve = ctx.accounts.bonding_curve.load()?;
+  let curve = &ctx.accounts.bonding_curve;
   require!(curve.closed == 1, ErrorCode::CurveNotComplete);
 
   let token = &ctx.accounts.token.key();
@@ -218,8 +218,6 @@ pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-
-  drop(curve);
   fund_creator_account(&ctx, signer_seeds)?;
   move_liquidity(&ctx, signer_seeds)?;
   burn_lp(&ctx)?;
