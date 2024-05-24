@@ -8,6 +8,7 @@ use crate::account_data::{bonding_curve::BondingCurve, state::State};
 pub const MINT_EXTENSIONS: [ExtensionType; 1] = [ExtensionType::MetadataPointer];
 
 #[derive(Accounts)]
+#[instruction(name: String, symbol: String)]
 pub struct CreateToken<'info> {
   /// The state account of each instance of this program
   #[account()]
@@ -22,6 +23,8 @@ pub struct CreateToken<'info> {
     mint::token_program = token_2022,
     extensions::metadata_pointer::authority = bonding_curve.key(),
     extensions::metadata_pointer::metadata_address = token.key(),
+    seeds = [b"hodlhub_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
+    bump,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 

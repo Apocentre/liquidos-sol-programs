@@ -13,6 +13,8 @@ pub const MAX_OPERATORS: usize = 5;
 pub struct BondingCurve {
   /// The creator of the token this bonding curve is associated with
   pub token_creator: Pubkey,
+  /// The mint account of the token associated with this curve
+  pub token: Pubkey,
   /// Target of SOL each pool should receive
   pub sol_target: u64,
   /// Current protocol fees (BPS). This is applied when the pool is created on Raydium
@@ -40,6 +42,7 @@ impl BondingCurve {
 
   pub fn new(
     token_creator: Pubkey,
+    token: Pubkey,
     sol_target: u64,
     protocol_fee_bps: u64,
     trade_fee_bps: u64,
@@ -47,6 +50,7 @@ impl BondingCurve {
   ) -> Self {
     Self {
       token_creator,
+      token,
       sol_target,
       protocol_fee_bps,
       trade_fee_bps,
@@ -206,7 +210,7 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
     let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -215,7 +219,7 @@ mod tests {
 
   #[test]
   fn process_sale_return_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
 
     let tokens_received = curve.process_purchase_return(89800000000).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
@@ -226,7 +230,7 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
     
     for _ in 0..89 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();

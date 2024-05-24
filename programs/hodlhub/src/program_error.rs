@@ -10,4 +10,6 @@ pub enum ErrorCode {
   WrongTreasury,
   #[msg("Curve closed")]
   CurveClosed,
+  #[msg("Invalid curve token")]
+  InvalidCurveToken,
 }

@@ -32,7 +32,10 @@ pub struct Sell<'info> {
   )]
   pub bonding_curve: Account<'info, BondingCurve>,
 
-  #[account(mut)]
+  #[account(
+    mut,
+    constraint = token.key() == bonding_curve.token @ ErrorCode::InvalidCurveToken,
+  )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 
   /// The ATA of the  token that is owned by the seller. Create one if no already exists
