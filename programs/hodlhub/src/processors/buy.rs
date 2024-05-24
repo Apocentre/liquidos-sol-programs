@@ -286,6 +286,7 @@ pub fn exec(
     burn_lp(&ctx)?;
     
     // mark the curve as closed
+    let curve = &mut ctx.accounts.bonding_curve.load_mut()?;
     curve.close_curve();
   }
 

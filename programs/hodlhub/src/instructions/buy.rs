@@ -73,10 +73,11 @@ pub struct Buy<'info> {
   #[account(mut)]
   pub pool_state: AccountInfo<'info>,
 
+  /// CHECK: the wsol token account
   #[account(
     constraint = wsol_token.key() == Pubkey::from_str("So11111111111111111111111111111111111111112").unwrap(),
   )]
-  pub wsol_token: Box<InterfaceAccount<'info, Mint>>,
+  pub wsol_token: AccountInfo<'info>,
 
   /// CHECK: pool lp mint. Checks will take place in CP swap program
   #[account(mut)]
