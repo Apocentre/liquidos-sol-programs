@@ -34,8 +34,7 @@ pub struct MoveLiquidity<'info> {
 
   /// The ATA of the  token that is owned by the buyer. Create one if no already exists
   #[account(
-    init_if_needed,
-    payer = buyer,
+    mut,
     associated_token::mint = token,
     associated_token::authority = buyer,
     associated_token::token_program = token_2022,
