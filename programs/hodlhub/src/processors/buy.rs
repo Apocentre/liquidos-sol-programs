@@ -275,7 +275,6 @@ pub fn exec(
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-  let curve = &ctx.accounts.bonding_curve.load()?;
   collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount)?;
@@ -287,12 +286,10 @@ pub fn exec(
     burn_lp(&ctx)?;
     
     // mark the curve as closed
-    let curve = &mut ctx.accounts.bonding_curve.load_mut()?;
     curve.close_curve();
   }
 
   {
-    let curve = &ctx.accounts.bonding_curve.load()?;
     let buyer = ctx.accounts.buyer.key();
 
     emit!(BuyEvent {
