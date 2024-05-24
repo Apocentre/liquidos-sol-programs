@@ -8,7 +8,7 @@ use crate::math::decimal_error::DecimalErrorHandler;
 
 pub const MAX_OPERATORS: usize = 5;
 
-#[account]
+#[account(zero_copy)]
 #[derive(Debug)]
 pub struct BondingCurve {
   /// The creator of the token this bonding curve is associated with
@@ -30,7 +30,10 @@ pub struct BondingCurve {
   /// The PDA bump of this account
   pub bump: u8,
   /// Is this pool closed? Closed means sol target reached
-  pub closed: bool,
+  pub closed: u8,
+
+  // https://github.com/coral-xyz/anchor/issues/2759#issuecomment-1874845771
+  _padding: [u8; 6]
 }
 
 impl BondingCurve {
@@ -58,7 +61,8 @@ impl BondingCurve {
       reserve_token_balance: 0,
       price: 0,
       bump,
-      closed: false,
+      closed: 0,
+      _padding: [0; 6],
     }
   }
 
@@ -160,7 +164,7 @@ impl BondingCurve {
   }
 
   pub fn close_curve(&mut self) {
-    self.closed = true;
+    self.closed = 1;
   }
 
   pub fn calc_protocol_fees(&self) -> Result<u64> {

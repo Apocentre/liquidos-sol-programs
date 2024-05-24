@@ -62,7 +62,7 @@ fn move_liquidity(
   ctx: &Context<Buy>,
   signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve.load_mut()?;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
@@ -166,7 +166,7 @@ fn move_liquidity(
 /// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
 /// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
 fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve.load()?;
 
   // 1. mint curve.calculate_token_amount_to_mint() tokens to the buyer_ata
   let token_liquidity = curve.calc_token_amount_to_mint()?;
@@ -222,7 +222,7 @@ fn burn_lp(ctx: &Context<Buy>) -> Result<()> {
 
 /// Collects fees from the SOL accumulated in the pool
 fn collect_fees(ctx: &Context<Buy>) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve.load()?;
 
   transfer_from_pda(
     &mut ctx.accounts.bonding_curve.to_account_info(),
@@ -236,7 +236,7 @@ fn collect_fees(ctx: &Context<Buy>) -> Result<()> {
 /// Collects trade fees on each transaction. Fees collected in SOL
 fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
-  let curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve.load()?;
   let trade_fees = curve.calc_trade_fees(sol_amount)?;
   let treasury = &ctx.accounts.treasury;
 
@@ -256,8 +256,8 @@ pub fn exec(
   amount: u64,
   min_amount_out: u64,
 ) -> Result<()> {
-  let curve = &mut ctx.accounts.bonding_curve;
-  require!(!curve.closed, ErrorCode::CurveClosed);
+  let curve = &mut ctx.accounts.bonding_curve.load_mut()?;
+  require!(curve.closed == 1, ErrorCode::CurveClosed);
   let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
 
   // Slippage check
@@ -271,11 +271,11 @@ pub fn exec(
     b"bonding_curve",
     state_key.as_ref(),
     token.as_ref(),
-    &[ctx.accounts.bonding_curve.bump],
+    &[curve.bump],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-  let curve = &ctx.accounts.bonding_curve;
+  let curve = &ctx.accounts.bonding_curve.load()?;
   collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount)?;
@@ -287,12 +287,12 @@ pub fn exec(
     burn_lp(&ctx)?;
     
     // mark the curve as closed
-    let curve = &mut ctx.accounts.bonding_curve;
+    let curve = &mut ctx.accounts.bonding_curve.load_mut()?;
     curve.close_curve();
   }
 
   {
-    let curve = &ctx.accounts.bonding_curve;
+    let curve = &ctx.accounts.bonding_curve.load()?;
     let buyer = ctx.accounts.buyer.key();
 
     emit!(BuyEvent {

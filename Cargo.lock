@@ -1147,6 +1147,7 @@ dependencies = [
  "anchor-safe-math",
  "anchor-spl",
  "borsh 1.5.0",
+ "bytemuck",
  "rust_decimal",
  "rust_decimal_macros",
 ]

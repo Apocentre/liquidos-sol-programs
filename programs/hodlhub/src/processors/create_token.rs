@@ -78,8 +78,12 @@ pub fn exec(
   let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
   let curve_key = ctx.accounts.bonding_curve.key();
-  let curve = &mut ctx.accounts.bonding_curve;
-  ***curve = BondingCurve::new(
+  // We need to call load_init only once so anchor adds the discriminator.
+  // This function is guaranteed to be called only once for each new raffle account, due to the init
+  // contraint set in the context, so we're safe.
+  let curve = &mut ctx.accounts.bonding_curve.load_init()?;
+
+  **curve = BondingCurve::new(
     token_creator,
     ctx.accounts.token.key(),
     state.sol_target,

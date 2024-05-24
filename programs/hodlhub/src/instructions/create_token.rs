@@ -46,7 +46,7 @@ pub struct CreateToken<'info> {
     seeds = [b"bonding_curve", state.key().as_ref(), token.key().as_ref()],
     bump,
   )]
-  pub bonding_curve: Box<Account<'info, BondingCurve>>,
+  pub bonding_curve: AccountLoader<'info, BondingCurve>,
 
   /// The user that is creating the token
   #[account(mut)]
