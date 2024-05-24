@@ -14,3 +14,28 @@ export const curveToken = (state, tokenName, tokenSymbol, programId) => PublicKe
   [utf8.encode("hodlhub_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
   programId
 )
+
+export const raydiumAuthority = (programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("vault_and_lp_mint_auth_seed")],
+  programId
+)
+
+export const raydiumPoolState = (token0, token1, ammConfig, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("pool"), ammConfig.toBuffer(), token0.toBuffer(), token1.toBuffer()],
+  programId
+)
+
+export const raydiumLpMint = (poolState, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("pool_lp_mint"), poolState.toBuffer()],
+  programId
+)
+
+export const raydiumTokenVault = (poolState, token, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("pool_vault"), poolState.toBuffer(), token.toBuffer()],
+  programId
+)
+
+export const raydiumObservationState = (poolState, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("observation"), poolState.toBuffer()],
+  programId
+)

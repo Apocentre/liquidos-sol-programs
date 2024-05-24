@@ -9,7 +9,6 @@ import tokenCreatorKey from "../wallets/test/tokenCreator.json" assert { type: "
 const Web3 = Web3Pkg.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
-
 const main = async () => {
   const tokenName = "TOKEN_1";
   const tokenSymbol= "SYMBOL_1";
