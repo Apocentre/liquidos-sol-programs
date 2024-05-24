@@ -1,7 +1,8 @@
+use std::mem::size_of;
 use anchor_lang::{prelude::*, solana_program::program_pack::Pack};
 use anchor_spl::{
-  associated_token::AssociatedToken, token_2022::spl_token_2022,
-  token_interface::TokenInterface,
+  associated_token::AssociatedToken, token_2022::spl_token_2022::{self, extension::metadata_pointer::MetadataPointer},
+  token_interface::{spl_token_metadata_interface::state::TokenMetadata, TokenInterface},
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
@@ -14,10 +15,14 @@ pub struct CreateToken<'info> {
   /// CHECK: The Mint account of the newly created token. This will be manually initialized in the processor
   /// We do that in the processor because the order in which metadata pointer account is created is vital. It must
   /// be created before the Mint account is initialized.
+  /// In the space we include the addiitonal space needed for the MetadataPointer data.
   #[account(
     init,
     payer = token_creator,
-    space = spl_token_2022::state::Mint::LEN,
+    space = spl_token_2022::state::Mint::LEN
+      + size_of::<MetadataPointer>()
+      + size_of::<TokenMetadata>(),
+    owner = token_2022.key(),
   )]
   pub token: AccountInfo<'info>,
 

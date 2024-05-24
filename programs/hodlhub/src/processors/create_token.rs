@@ -48,7 +48,13 @@ fn create_metadata(
 
   let cpi_program = ctx.accounts.token_2022.to_account_info();
   let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_metadata_pointer_init_accounts, signer_seeds);
-  metadata_pointer_initialize(cpi_ctx, Some(curve.clone()), None)?;
+  let token_creator = &ctx.accounts.token_creator;
+
+  metadata_pointer_initialize(
+    cpi_ctx,
+    Some(token_creator.key()),
+    Some(token_key.clone())
+  )?;
 
   // Initialize the mint account
   let init_mint_accounts = InitializeMint2 {
