@@ -230,12 +230,12 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 1);
     
     for _ in 0..89 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("Sent 1 SOL and Received {:?} Tokens. {:?}", received, curve);
     }
-    // panic!()
+    panic!()
   }
 }

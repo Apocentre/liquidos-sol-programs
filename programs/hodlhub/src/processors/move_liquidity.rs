@@ -167,7 +167,7 @@ fn fund_creator_account(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]])
     account: buyer_wsol_ata,
   };
   let cpi_program = ctx.accounts.token_program.to_account_info();
-  let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+  let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
   sync_native(cpi_ctx)?;
 
   todo!()
