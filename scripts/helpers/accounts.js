@@ -20,7 +20,7 @@ export const raydiumAuthority = (programId) => PublicKey.findProgramAddressSync(
   programId
 )
 
-export const raydiumPoolState = (token0, token1, ammConfig, programId) => PublicKey.findProgramAddressSync(
+export const raydiumPoolState = (ammConfig, token0, token1, programId) => PublicKey.findProgramAddressSync(
   [utf8.encode("pool"), ammConfig.toBuffer(), token0.toBuffer(), token1.toBuffer()],
   programId
 )

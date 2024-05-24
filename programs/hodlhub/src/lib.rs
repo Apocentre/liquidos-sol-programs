@@ -7,7 +7,7 @@ pub mod raydium;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{
-  initialize::*, create_token::*, buy::*, sell::*,
+  initialize::*, create_token::*, buy::*, sell::*, move_liquidity::*,
 };
 
 declare_id!("8PK23JsqKuLQTdtQyo3LnqjqJjkR3YJ1hZmC8RH1jtAN");
@@ -70,12 +70,24 @@ pub mod hodlhub {
   /// * `amount` - Amount of SOL buyer sells
   /// * `min_amount_out` - Min amount of tokens expected to receive (slippage protection)
   pub fn buy<'info>(
-    ctx: Context<'_, '_, 'info, '_, Buy<'info>>,
+    ctx: Context<'_, '_, '_, 'info, Buy<'info>>,
     amount: u64,
     min_amount_out: u64,
   ) -> Result<()> {
     processors::buy::exec(ctx, amount, min_amount_out)
   }
+
+  /// MoveLiquidity
+  ///
+  /// Moves the liquidity to Raydium
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn move_liquidity(ctx: Context<MoveLiquidity>,) -> Result<()> {
+    processors::move_liquidity::exec(ctx)
+  }
+
 
   /// Sell
   ///
