@@ -1,10 +1,11 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  associated_token::AssociatedToken, token_interface::TokenInterface,
+  associated_token::AssociatedToken, token_2022::spl_token_2022::extension::ExtensionType,
+  token_interface::{Mint, TokenInterface, TokenAccount},
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
-const MAX_TOKEN_SIZE: usize = 234;
+pub const MINT_EXTENSIONS: [ExtensionType; 1] = [ExtensionType::MetadataPointer];
 
 #[derive(Accounts)]
 pub struct CreateToken<'info> {
@@ -12,23 +13,28 @@ pub struct CreateToken<'info> {
   #[account()]
   pub state: Box<Account<'info, State>>,
 
-  /// CHECK: The Mint account of the newly created token. This will be manually initialized in the processor
-  /// We do that in the processor because the order in which metadata pointer account is created is vital. It must
-  /// be created before the Mint account is initialized.
-  /// In the space we include the addiitonal space needed for the MetadataPointer data.
+  /// The Mint account of the newly created token.
   #[account(
     init,
     payer = token_creator,
-    space = MAX_TOKEN_SIZE,
-    owner = token_2022.key(),
+    mint::decimals = 6,
+    mint::authority = bonding_curve,
+    mint::token_program = token_2022,
+    // mint::extensions = MINT_EXTENSIONS.to_vec(),
+    extensions::metadata_pointer::authority = bonding_curve.key(),
+    extensions::metadata_pointer::metadata_address = token.key(),
   )]
-  pub token: AccountInfo<'info>,
+  pub token: Box<InterfaceAccount<'info, Mint>>,
 
-  /// CHECK: The ATA that will hold the liquidity of the curve (token side).
-  /// Since we're initializing token mint account manually, we need to do so here as well because
-  /// creating an ata requires that mint token is initialized.
-  #[account(mut)]
-  pub curve_ata: AccountInfo<'info>,
+  /// The ATA that will hold the liquidity of the curve (token side).
+  #[account(
+    init,
+    payer = token_creator,
+    associated_token::mint = token,
+    associated_token::authority = bonding_curve,
+    associated_token::token_program = token_2022,
+  )]
+  pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(

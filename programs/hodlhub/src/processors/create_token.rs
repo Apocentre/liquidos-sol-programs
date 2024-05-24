@@ -1,11 +1,6 @@
 use anchor_lang::{prelude::*, solana_program::program::invoke_signed};
 use anchor_spl::{
-  token_2022::{self, InitializeMint2, initialize_mint2},
-  associated_token::{create, Create},
-  token_2022_extensions::{
-    metadata_pointer::{metadata_pointer_initialize, MetadataPointerInitialize},
-    spl_token_metadata_interface::instruction::initialize as initialize_metadata,
-  }
+  token_2022, token_2022_extensions::spl_token_metadata_interface::instruction::initialize as initialize_metadata,
 };
 use crate::{
   account_data::bonding_curve::BondingCurve,
@@ -28,9 +23,7 @@ fn create_metadata(
   symbol: String,
   uri: String,
 ) -> Result<()> {
-  let token = &ctx.accounts.token;
   let curve = &ctx.accounts.bonding_curve.key();
-
   let token_key = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();
   let seeds: &[&[u8]] = &[
@@ -40,32 +33,7 @@ fn create_metadata(
     &[ctx.bumps.bonding_curve],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-    
-
-  // Initialize the metadata pointer first
-  let cpi_metadata_pointer_init_accounts = MetadataPointerInitialize {
-    token_program_id: ctx.accounts.token_2022.to_account_info(),
-    mint: ctx.accounts.token.to_account_info(),
-  };
-
-  let cpi_program = ctx.accounts.token_2022.to_account_info();
-  let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_metadata_pointer_init_accounts, signer_seeds);
-  let token_creator = &ctx.accounts.token_creator;
-
-  metadata_pointer_initialize(
-    cpi_ctx,
-    Some(token_creator.key()),
-    Some(token_key.clone())
-  )?;
-
-  // Initialize the mint account
-  let init_mint_accounts = InitializeMint2 {
-    mint: token.to_account_info(),
-  };
-  let cpi_program = ctx.accounts.token_2022.to_account_info();
-  let cpi_ctx = CpiContext::new_with_signer(cpi_program, init_mint_accounts, signer_seeds);
-  initialize_mint2(cpi_ctx, 6, curve, None)?;
-
+  
   // Initialize the metadata account
   let init_metadata_ix = initialize_metadata(
     &token_2022::ID,
@@ -94,22 +62,6 @@ fn create_metadata(
   Ok(())
 }
 
-fn create_curve_ata(ctx: &Context<CreateToken>) -> Result<()> {
-  let cpi_program = &ctx.accounts.associated_token_program;
-  let cpi_accounts = Create {
-    payer: ctx.accounts.token_creator.to_account_info(),
-    associated_token: ctx.accounts.curve_ata.to_account_info(),
-    authority: ctx.accounts.bonding_curve.to_account_info(),
-    mint: ctx.accounts.token.to_account_info(),
-    system_program: ctx.accounts.system_program.to_account_info(),
-    token_program: ctx.accounts.token_2022.to_account_info(),
-  };
-  let cpi_ctx = CpiContext::new(cpi_program.to_account_info(), cpi_accounts);
-  create(cpi_ctx)?;
-  
-  Ok(())
-}
-
 pub fn exec(
   ctx: Context<CreateToken>,
   name: String,
@@ -129,7 +81,6 @@ pub fn exec(
   );
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
-  create_curve_ata(&ctx)?;
 
   emit!(TokenCreatedEvent {
     creator: token_creator,
