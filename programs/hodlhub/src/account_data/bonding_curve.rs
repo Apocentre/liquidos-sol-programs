@@ -27,6 +27,8 @@ pub struct BondingCurve {
   pub price: u64,
   /// The PDA bump of this account
   pub bump: u8,
+  /// Is this pool closed? Closed means sol target reached
+  pub closed: bool,
 }
 
 impl BondingCurve {
@@ -52,6 +54,7 @@ impl BondingCurve {
       reserve_token_balance: 0,
       price: 0,
       bump,
+      closed: false,
     }
   }
 
@@ -150,6 +153,10 @@ impl BondingCurve {
 
   pub fn is_complete(&self) -> bool {
     self.reserve_token_balance == self.sol_target
+  }
+
+  pub fn close_curve(&mut self) {
+    self.closed = true;
   }
 
   pub fn calc_protocol_fees(&self) -> Result<u64> {

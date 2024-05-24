@@ -257,6 +257,7 @@ pub fn exec(
   min_amount_out: u64,
 ) -> Result<()> {
   let curve = &mut ctx.accounts.bonding_curve;
+  require!(!curve.closed, ErrorCode::CurveClosed);
   let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
 
   // Slippage check
@@ -284,6 +285,10 @@ pub fn exec(
     fund_creator_account(&ctx, signer_seeds)?;
     move_liquidity(&ctx, signer_seeds)?;
     burn_lp(&ctx)?;
+    
+    // mark the curve as closed
+    let curve = &mut ctx.accounts.bonding_curve;
+    curve.close_curve();
   }
 
   {

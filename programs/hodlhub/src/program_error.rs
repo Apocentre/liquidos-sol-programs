@@ -8,5 +8,6 @@ pub enum ErrorCode {
   SlippageViolation,
   #[msg("Wrong rreasury")]
   WrongTreasury,
-
+  #[msg("Curve closed")]
+  CurveClosed,
 }
