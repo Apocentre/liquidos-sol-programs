@@ -14,4 +14,10 @@ pub enum ErrorCode {
   CurveNotComplete,
   #[msg("Invalid curve token")]
   InvalidCurveToken,
+  #[msg("Wrong program id")]
+  WrongProgramId,
+  #[msg("Wrong instruction data")]
+  WrongIxData,
+  #[msg("Expected MoveLiquidity ix")]
+  ExpectedMoveLiquidityIx,
 }

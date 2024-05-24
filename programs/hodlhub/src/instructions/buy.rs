@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::sysvar};
 use anchor_spl::{
   token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
@@ -68,5 +68,8 @@ pub struct Buy<'info> {
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
+  /// CHECK: custom constrain to check the correctness of the account address
+  #[account(address = sysvar::instructions::id())]
+  pub ix_sysvar: UncheckedAccount<'info>,
 }
 
