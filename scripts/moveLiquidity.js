@@ -14,8 +14,8 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Hodlhub;
-  const tokenName = "TOKEN_1";
-  const tokenSymbol= "SYMBOL_1";
+  const tokenName = "TOKEN_2";
+  const tokenSymbol= "SYMBOL_2";
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];

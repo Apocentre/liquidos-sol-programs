@@ -15,8 +15,8 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Hodlhub;
-  const tokenName = "TOKEN_1";
-  const tokenSymbol= "SYMBOL_1";
+  const tokenName = "TOKEN_2";
+  const tokenSymbol= "SYMBOL_2";
   const amount = new BN(web3.toBase("5", 8)); // 0.1 SOL
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))

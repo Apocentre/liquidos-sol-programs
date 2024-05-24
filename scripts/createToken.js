@@ -10,8 +10,8 @@ const Web3 = Web3Pkg.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
-  const tokenName = "TOKEN_1";
-  const tokenSymbol= "SYMBOL_1";
+  const tokenName = "TOKEN_2";
+  const tokenSymbol= "SYMBOL_2";
   const state = new PublicKey(config.state);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Hodlhub;
