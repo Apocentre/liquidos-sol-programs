@@ -8,7 +8,6 @@ export const createAddressLUT = async (provider) => {
   const [lookupTableIx, lookupTable] = AddressLookupTableProgram.createLookupTable({
     authority: ownerWallet.publicKey,
     payer: ownerWallet.publicKey,
-    // TODO: added -1 becuase on test validator it was failing with "not a recent slot"
     recentSlot: await provider.connection.getSlot() - 1,
   });
 
@@ -38,7 +37,7 @@ export const signAndSend = async(provider, tx, signers) => {
   tx.sign(signers);
   
   // Step 2 - Send our v0 transaction to the cluster
-  const txid = await provider.connection.sendTransaction(tx, {maxRetries: 5, skipPreflight: true});
+  const txid = await provider.connection.sendTransaction(tx, {maxRetries: 5, skipPreflight: false});
 
   // Step 3 - Confirm Transaction
   const confirmation = await provider.connection.confirmTransaction({
