@@ -11,29 +11,20 @@ const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 
 const main = async () => {
+  const tokenName = "TOKEN_1";
+  const tokenSymbol= "SYMBOL_1";
   const state = new PublicKey(config.state);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Hodlhub;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
-  const token = accounts.curveToken(state, "TOKEN_NAME", "$TOKEN_SYMBOL", program.programId)[0];
+  const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
-
-  console.log({
-    state,
-    token: token.publicKey,
-    tokenCreator: tokenCreator.publicKey,
-    curveAta: await web3.getAssociatedTokenAddress(token, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
-    bondingCurve,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  })
 
   const ix = await program.methods
   .createToken(
-    "TOKEN_NAME",
-    "$TOKEN_SYMBOL",
+    tokenName,
+    tokenSymbol,
     "TOKEN_URI"
   )
   .accounts({
