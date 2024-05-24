@@ -1,10 +1,10 @@
 use anchor_lang::{prelude::*, solana_program::program::invoke_signed};
 use anchor_spl::{
-  token_2022,
+  token_2022::{self, InitializeMint2, initialize_mint2},
   token_2022_extensions::{
-    metadata_pointer::{MetadataPointerInitialize, metadata_pointer_initialize},
+    metadata_pointer::{metadata_pointer_initialize, MetadataPointerInitialize},
     spl_token_metadata_interface::instruction::initialize as initialize_metadata,
-  },
+  }
 };
 use crate::{
   account_data::bonding_curve::BondingCurve,
@@ -27,12 +27,13 @@ fn create_metadata(
   symbol: String,
   uri: String,
 ) -> Result<()> {
-  let token = &ctx.accounts.token.key();
+  let token = &ctx.accounts.token;
+  let token_key = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();
   let seeds: &[&[u8]] = &[
     b"bonding_curve",
     state_key.as_ref(),
-    token.as_ref(),
+    token_key.as_ref(),
     &[ctx.bumps.bonding_curve],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
@@ -46,14 +47,22 @@ fn create_metadata(
 
   let cpi_program = ctx.accounts.token_2022.to_account_info();
   let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_metadata_pointer_init_accounts, signer_seeds);
-  metadata_pointer_initialize(cpi_ctx, Some(curve.clone()), Some(token.clone()))?;
+  metadata_pointer_initialize(cpi_ctx, Some(curve.clone()), None)?;
+
+  // Initialize the mint account
+  let init_mint_accounts = InitializeMint2 {
+    mint: token.to_account_info(),
+  };
+  let cpi_program = ctx.accounts.token_2022.to_account_info();
+  let cpi_ctx = CpiContext::new_with_signer(cpi_program, init_mint_accounts, signer_seeds);
+  initialize_mint2(cpi_ctx, 6, curve, None)?;
 
   // Initialize the metadata account
   let init_metadata_ix = initialize_metadata(
     &token_2022::ID,
     &ctx.accounts.token.key(),
     curve,
-    token,
+    &token_key,
     curve,
     name,
     symbol,

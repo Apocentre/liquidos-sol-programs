@@ -1,7 +1,7 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::program_pack::Pack};
 use anchor_spl::{
-  token_interface::{TokenInterface, Mint, TokenAccount},
-  associated_token::AssociatedToken,
+  associated_token::AssociatedToken, token_2022::spl_token_2022,
+  token_interface::{Mint, TokenAccount, TokenInterface}
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
@@ -15,12 +15,9 @@ pub struct CreateToken<'info> {
   #[account(
     init,
     payer = token_creator,
-    mint::decimals = 6,
-    mint::authority = bonding_curve,
-    mint::token_program = token_2022,
+    space = spl_token_2022::state::Mint::LEN,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
-
 
   /// The ATA that will hold the liquidity of the curve (token side)
   #[account(
