@@ -7,7 +7,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-hodlhub = "8PK23JsqKuLQTdtQyo3LnqjqJjkR3YJ1hZmC8RH1jtAN"
+hodlhub = "FCvmY44pk9RK2VKBYskPT29NyXE6ifdNSJZjvLFYxfQp"
 
 [registry]
 url = "https://api.apr.dev"

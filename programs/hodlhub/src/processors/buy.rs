@@ -139,10 +139,10 @@ pub fn exec<'info>(
   collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
-  fund_creator_account(&ctx, signer_seeds)?;
 
   let is_complete = curve.is_complete();
   if is_complete {
+    fund_creator_account(&ctx, signer_seeds)?;
     collect_fees(&ctx, curve_acc_info)?;
     
     // mark the curve as closed

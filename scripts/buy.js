@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "./helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx, createAddressLUT, addAddressesToAddressLUT} from "./helpers/tx.js";
+import {createAndSendV0Tx} from "./helpers/tx.js";
 import * as constants from "./helpers/constants.js";
 import config from "./config.json" assert { type: "json" };
 import buyerKey from "../wallets/test/buyer1.json" assert { type: "json" };
@@ -15,17 +15,18 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Hodlhub;
-  const tokenName = "TOKEN_2";
-  const tokenSymbol= "SYMBOL_2";
-  const amount = new BN(web3.toBase("5", 8)); // 0.1 SOL
+  const tokenName = "TOKEN_3";
+  const tokenSymbol= "SYMBOL_3";
+  const amount = new BN(web3.toBase("7", 8)); // 0.1 SOL
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
+  const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
+  const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
 
-  const wsol = constants.wsol;
 
   const ix = await program.methods
   .buy(amount, minAmountOut)
@@ -45,9 +46,10 @@ const main = async () => {
   })
   .instruction();
 
+  const cbIx = web3.getComputationBudgetIx(300_000);
   await createAndSendV0Tx(
     provider,
-    [ix],
+    [cbIx, ix],
     buyer.publicKey,
     [buyer],
     [],
