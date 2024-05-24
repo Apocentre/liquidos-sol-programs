@@ -121,11 +121,14 @@ pub fn exec<'info>(
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
 
-  let mut curve = ctx.accounts.bonding_curve.load_mut()?;
-  if curve.is_complete() {
+  let curve = ctx.accounts.bonding_curve.load()?;
+  let is_complete = curve.is_complete();
+  if is_complete {
+    drop(curve);
     collect_fees(&ctx, curve_acc_info)?;
     
     // mark the curve as closed
+    let mut curve = ctx.accounts.bonding_curve.load_mut()?;
     curve.close_curve();
   }
 
@@ -137,7 +140,7 @@ pub fn exec<'info>(
       token: *token,
       sol_amount: spendable_amount,
       token_amount,
-      is_complete: curve.is_complete(),
+      is_complete,
       price,
     });
   }

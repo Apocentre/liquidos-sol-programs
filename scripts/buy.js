@@ -17,7 +17,7 @@ const main = async () => {
   const program = anchor.workspace.Hodlhub;
   const tokenName = "TOKEN_1";
   const tokenSymbol= "SYMBOL_1";
-  const amount = new BN(web3.toBase("1", 8)); // 0.1 SOL
+  const amount = new BN(web3.toBase("5", 8)); // 0.1 SOL
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);

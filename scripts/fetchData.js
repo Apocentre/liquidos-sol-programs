@@ -22,6 +22,7 @@ const main = async () => {
 
   console.log("state: ", stateData)
   console.log("bondingCurve: ", {
+    solTarget: bondingCurveData.solTarget.toString(),
     totalSupply: bondingCurveData.totalSupply.toString(),
     reserveTokenBalance: bondingCurveData.reserveTokenBalance.toString(),
     price: bondingCurveData.price.toString(),
