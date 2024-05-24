@@ -40,18 +40,56 @@ const main = async () => {
 
   const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
 
+  // create LUT
+  const addressLUT = await createAddressLUT(provider);
+  const addresses = [
+    ammConfig,
+    accounts.raydiumAuthority(raydiumProgram)[0],
+    poolState,
+    wsol,
+    token0,
+    token1,
+    lpMint,
+    creatorToken0,
+    creatorToken1,
+    creatorLpToken,
+    token0Vault,
+    token1Vault,
+    createPoolFee,
+    accounts.raydiumObservationState(poolState, raydiumProgram)[0],
+  ];
+
+  await addAddressesToAddressLUT(provider, addressLUT, addresses);
+  const lookupTable = (await provider.connection.getAddressLookupTable(addressLUT)).value;
+
   const ix = await program.methods
-  .buy(amount, minAmountOut)
+  .moveLiquidity()
   .accounts({
     buyer: buyer.publicKey,
     state,
-    treasury: new PublicKey(config.treasury),
     bondingCurve,
     token,
     buyerAta,
+    buyerWsolAta,
+    ammConfig,
+    raydiumAuthority: accounts.raydiumAuthority(raydiumProgram)[0],
+    poolState,
+    wsolToken: wsol,
+    token0Mint: token0,
+    token1Mint: token1,
+    lpMint,
+    creatorToken0,
+    creatorToken1,
+    creatorLpToken,
+    token0Vault,
+    token1Vault,
+    createPoolFee,
+    observationState: accounts.raydiumObservationState(poolState, raydiumProgram)[0],
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    rent: SYSVAR_RENT_PUBKEY,
   })
   .instruction();
 
