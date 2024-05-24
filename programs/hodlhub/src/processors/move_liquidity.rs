@@ -173,21 +173,24 @@ fn burn_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
 
 pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
-  require!(curve.closed == 1, ErrorCode::CurveNotComplete);
+  
+  // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.
+  // We want to act upon only if the curce is completed
+  if curve.closed == 1 {
+    let token = &ctx.accounts.token.key();
+    let state_key = &ctx.accounts.state.key();
+    let seeds: &[&[u8]] = &[
+      b"bonding_curve",
+      state_key.as_ref(),
+      token.as_ref(),
+      &[curve.bump],
+    ];
+    let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-  let token = &ctx.accounts.token.key();
-  let state_key = &ctx.accounts.state.key();
-  let seeds: &[&[u8]] = &[
-    b"bonding_curve",
-    state_key.as_ref(),
-    token.as_ref(),
-    &[curve.bump],
-  ];
-  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-
-  sync_buyer_wsol_ata(&ctx, signer_seeds)?;
-  move_liquidity(&ctx, signer_seeds)?;
-  burn_lp(&ctx)?;
+    sync_buyer_wsol_ata(&ctx, signer_seeds)?;
+    move_liquidity(&ctx, signer_seeds)?;
+    burn_lp(&ctx)?;
+  }
 
   Ok(())
 }
