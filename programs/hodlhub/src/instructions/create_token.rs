@@ -16,6 +16,7 @@ pub struct CreateToken<'info> {
     init,
     payer = token_creator,
     space = spl_token_2022::state::Mint::LEN,
+    mint::token_program = token_2022,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 
