@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "./helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx, createAddressLUT, addAddressesToAddressLUT} from "./helpers/tx.js";
+import {createAndSendV0Tx} from "./helpers/tx.js";
 import * as constants from "./helpers/constants.js";
 import config from "./config.json" assert { type: "json" };
 import buyerKey from "../wallets/test/buyer1.json" assert { type: "json" };
@@ -36,56 +36,6 @@ const main = async () => {
   : [accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0]];
 
   const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
-
-  // create LUT
-  const addressLUT = await createAddressLUT(provider);
-  const addresses = [
-    ammConfig,
-    accounts.raydiumAuthority(raydiumProgram)[0],
-    poolState,
-    wsol,
-    token0,
-    token1,
-    lpMint,
-    creatorToken0,
-    creatorToken1,
-    creatorLpToken,
-    token0Vault,
-    token1Vault,
-    createPoolFee,
-    accounts.raydiumObservationState(poolState, raydiumProgram)[0],
-  ];
-
-  await addAddressesToAddressLUT(provider, addressLUT, addresses);
-  const lookupTable = (await provider.connection.getAddressLookupTable(addressLUT)).value;
-
-  console.log({
-    buyer: buyer.publicKey,
-    state,
-    bondingCurve,
-    token,
-    buyerAta,
-    buyerWsolAta,
-    ammConfig,
-    raydiumAuthority: accounts.raydiumAuthority(raydiumProgram)[0],
-    poolState,
-    wsolToken: wsol,
-    token0Mint: token0,
-    token1Mint: token1,
-    lpMint,
-    creatorToken0,
-    creatorToken1,
-    creatorLpToken,
-    token0Vault,
-    token1Vault,
-    createPoolFee,
-    observationState: accounts.raydiumObservationState(poolState, raydiumProgram)[0],
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    tokenProgram: spl.TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-    rent: SYSVAR_RENT_PUBKEY,
-  })
 
   const ix = await program.methods
   .moveLiquidity()
@@ -123,7 +73,7 @@ const main = async () => {
     [ix],
     buyer.publicKey,
     [buyer],
-    [lookupTable],
+    [],
   );
 }
 
