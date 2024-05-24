@@ -60,7 +60,7 @@ const main = async () => {
     [ix],
     buyer.publicKey,
     [buyer],
-    [lookupTable],
+    [],
   );
 }
 
