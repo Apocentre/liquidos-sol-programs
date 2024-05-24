@@ -31,7 +31,7 @@ pub struct Buy<'info> {
     seeds = [b"bonding_curve", state.key().as_ref(), token.key().as_ref()],
     bump = bonding_curve.bump,
   )]
-  pub bonding_curve: Account<'info, BondingCurve>,
+  pub bonding_curve: Box<Account<'info, BondingCurve>>,
 
   #[account(
     mut,
@@ -76,7 +76,7 @@ pub struct Buy<'info> {
   #[account(
     constraint = wsol_token.key() == Pubkey::from_str("So11111111111111111111111111111111111111112").unwrap(),
   )]
-  pub wsol_token: InterfaceAccount<'info, Mint>,
+  pub wsol_token: Box<InterfaceAccount<'info, Mint>>,
 
   /// CHECK: pool lp mint. Checks will take place in CP swap program
   #[account(mut)]
