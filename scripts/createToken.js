@@ -55,7 +55,7 @@ const main = async () => {
     [tokenCreator]
   );
 
-  console.log("State: ", state.publicKey.toBase58());
+  console.log("Token: ", token);
 }
 
 main()
