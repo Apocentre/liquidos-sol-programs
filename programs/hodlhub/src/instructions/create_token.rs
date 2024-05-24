@@ -1,10 +1,10 @@
-use std::mem::size_of;
-use anchor_lang::{prelude::*, solana_program::program_pack::Pack};
+use anchor_lang::prelude::*;
 use anchor_spl::{
-  associated_token::AssociatedToken, token_2022::spl_token_2022::{self, extension::metadata_pointer::MetadataPointer},
-  token_interface::{spl_token_metadata_interface::state::TokenMetadata, TokenInterface},
+  associated_token::AssociatedToken, token_interface::TokenInterface,
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
+
+const MAX_TOKEN_SIZE: usize = 234;
 
 #[derive(Accounts)]
 pub struct CreateToken<'info> {
@@ -19,9 +19,7 @@ pub struct CreateToken<'info> {
   #[account(
     init,
     payer = token_creator,
-    space = spl_token_2022::state::Mint::LEN
-      + size_of::<MetadataPointer>()
-      + size_of::<TokenMetadata>(),
+    space = MAX_TOKEN_SIZE,
     owner = token_2022.key(),
   )]
   pub token: AccountInfo<'info>,
