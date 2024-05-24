@@ -21,6 +21,16 @@ fn create_metadata(
   symbol: String,
   uri: String,
 ) -> Result<()> {
+  let token_key = &ctx.accounts.token.key();
+  let state_key = &ctx.accounts.state.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token_key.as_ref(),
+    &[ctx.bumps.bonding_curve],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+
   let cpi_accounts = TokenMetadataInitialize {
     token_program_id: ctx.accounts.token_2022.to_account_info(),
     mint: ctx.accounts.token.to_account_info(),
@@ -28,7 +38,7 @@ fn create_metadata(
     mint_authority: ctx.accounts.bonding_curve.to_account_info(),
     update_authority: ctx.accounts.bonding_curve.to_account_info(),
 };
-  let cpi_ctx = CpiContext::new(ctx.accounts.token_2022.to_account_info(), cpi_accounts);
+  let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.token_2022.to_account_info(), cpi_accounts, signer_seeds);
   token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
 
   Ok(())
