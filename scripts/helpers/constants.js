@@ -1,3 +1,7 @@
+import * as anchor from "@coral-xyz/anchor";
+
+const {PublicKey} = anchor.web3
+
 export const wsol = new PublicKey("So11111111111111111111111111111111111111112"); 
 export const raydiumAmmConfigDevnet = new PublicKey("9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6");
 export const raydiumAmmConfigMainnet = new PublicKey("D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2");

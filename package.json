@@ -6,7 +6,9 @@
     "init:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/initialize.js",
     "init:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/initialize.js",
     "createToken:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/createToken.js",
-    "createToken:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/createToken.js"
+    "createToken:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/createToken.js",
+    "buy:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/buy.js",
+    "buy:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/buy.js"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.0"
