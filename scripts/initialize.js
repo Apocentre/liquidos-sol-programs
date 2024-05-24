@@ -4,17 +4,22 @@ import {provider} from "./helpers/provider.js";
 import {createAndSendV0Tx} from "./helpers/tx.js";
 import config from "./config.json" assert { type: "json" };
 
+const {BN} = anchor.default;
 const {SystemProgram, PublicKey} = anchor.web3
 
 
 const main = async () => {
   const state = accounts.state();
-  const program = anchor.workspace.HodlHub;
+  const program = anchor.workspace.Hodlhub;
   const deployer = provider.wallet.payer;
-  const treasury = new PublicKey(config.treasury);
 
   const ix = await program.methods
-  .initialize()
+  .initialize(
+    new PublicKey(config.treasury),
+    new BN(config.solTarget),
+    new BN(config.protocolFeeBps),
+    new BN(config.tradeFeeBps),
+  )
   .accounts({
     state: state.publicKey,
     owner: deployer.publicKey,
