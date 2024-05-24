@@ -204,16 +204,14 @@ mod tests {
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
     assert_eq!(curve.reserve_token_balance, 89800000000);
-
-    panic!();
   }
 
   #[test]
   fn process_sale_return_amount() {
     let mut curve = BondingCurve::new(Pubkey::zeroed(), 100, 1000, 100, 1);
 
-    curve.process_purchase_return(89800000000).unwrap();
-    let received = curve.process_sale_return(793004689489822).unwrap();
+    let tokens_received = curve.process_purchase_return(89800000000).unwrap();
+    let received = curve.process_sale_return(tokens_received).unwrap();
     assert_eq!(received, 89800000000);
     assert_eq!(curve.total_supply, 0);
     assert_eq!(curve.reserve_token_balance, 0);
