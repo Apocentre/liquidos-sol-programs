@@ -8,8 +8,7 @@ import config from "./config.json" assert { type: "json" };
 import buyerKey from "../wallets/test/buyer1.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
-const {BN} = anchor.default;
-const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
+const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3;
 
 const main = async () => {
   const deployer = provider.wallet.payer;
@@ -17,8 +16,6 @@ const main = async () => {
   const program = anchor.workspace.Hodlhub;
   const tokenName = "TOKEN_1";
   const tokenSymbol= "SYMBOL_1";
-  const amount = new BN(web3.toBase("1", 8)); // 0.1 SOL
-  const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
