@@ -1,7 +1,7 @@
 use anchor_lang::{
   prelude::*,
   solana_program::{
-    instruction::Instruction, program::invoke_signed,
+    instruction::Instruction, program::invoke,
   },
 };
 use anchor_spl::{
@@ -10,14 +10,11 @@ use anchor_spl::{
 };
 use ::borsh::BorshSerialize;
 use crate::{
-  instructions::move_liquidity::MoveLiquidity, raydium,
+  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity, raydium,
 };
 
 // create a raydium pool with the current liquidity
-fn move_liquidity(
-  ctx: &Context<MoveLiquidity>,
-  signer_seeds: &[&[&[u8]]],
-) -> Result<()> {
+fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
@@ -81,6 +78,8 @@ fn move_liquidity(
     AccountMeta::new_readonly(ctx.accounts.rent.key(), false),
   ];
 
+  // add the ix_discriminator so Raydium's Anchor program can identity the instruction
+  let mut ix_discriminator: Vec<u8> = vec![175, 175, 109, 31, 13, 152, 155, 237];
   let mut data: Vec<u8> = Vec::new();
 
   raydium::InitializeIx {
@@ -89,13 +88,14 @@ fn move_liquidity(
     open_time: 0,
   }.serialize(&mut data)?;
 
+  ix_discriminator.extend(&data);
   let ix = Instruction {
     program_id: raydium::id(),
     accounts,
     data,
   };
 
-  invoke_signed(
+  invoke(
     &ix,
     &[
       ctx.accounts.buyer.to_account_info(),
@@ -118,8 +118,7 @@ fn move_liquidity(
       ctx.accounts.associated_token_program.to_account_info(),
       ctx.accounts.system_program.to_account_info(),
       ctx.accounts.rent.to_account_info(),
-    ],
-    signer_seeds,
+    ]
   )?;
   
   Ok(())
@@ -128,7 +127,18 @@ fn move_liquidity(
 /// sync_native the SOL that was sent in the last Buy transaction. We can't manipulate directly the account
 /// through `transfer_from_pda` which directly manipulates accounts and then have a CPI 
 /// For move info here https://stackoverflow.com/a/77591006/512783
-fn sync_buyer_wsol_ata(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+fn sync_buyer_wsol_ata(ctx: &Context<MoveLiquidity>, curve: &BondingCurve) -> Result<()> {
+  let token = &ctx.accounts.token.key();
+  let state_key = &ctx.accounts.state.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token.as_ref(),
+    &[curve.bump],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+
+
   let cpi_accounts = SyncNative {
     account: ctx.accounts.buyer_wsol_ata.to_account_info(),
   };
@@ -176,18 +186,8 @@ pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.
   // We want to act upon only if the curce is completed
   if curve.closed == 1 {
-    let token = &ctx.accounts.token.key();
-    let state_key = &ctx.accounts.state.key();
-    let seeds: &[&[u8]] = &[
-      b"bonding_curve",
-      state_key.as_ref(),
-      token.as_ref(),
-      &[curve.bump],
-    ];
-    let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-
-    sync_buyer_wsol_ata(&ctx, signer_seeds)?;
-    move_liquidity(&ctx, signer_seeds)?;
+    sync_buyer_wsol_ata(&ctx, &curve)?;
+    move_liquidity(&ctx)?;
     burn_lp(&ctx)?;
   }
 

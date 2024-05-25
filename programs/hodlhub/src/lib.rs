@@ -84,10 +84,9 @@ pub mod hodlhub {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  pub fn move_liquidity(ctx: Context<MoveLiquidity>,) -> Result<()> {
+  pub fn move_liquidity(ctx: Context<MoveLiquidity>) -> Result<()> {
     processors::move_liquidity::exec(ctx)
   }
-
 
   /// Sell
   ///
