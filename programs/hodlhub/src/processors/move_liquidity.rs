@@ -79,16 +79,16 @@ fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
   ];
 
   // add the ix_discriminator so Raydium's Anchor program can identity the instruction
-  let mut ix_discriminator: Vec<u8> = vec![175, 175, 109, 31, 13, 152, 155, 237];
-  let mut data: Vec<u8> = Vec::new();
+  let mut data: Vec<u8> = vec![175, 175, 109, 31, 13, 152, 155, 237];
+  let mut ix_data: Vec<u8> = Vec::new();
 
   raydium::InitializeIx {
     init_amount_0,
     init_amount_1,
     open_time: 0,
-  }.serialize(&mut data)?;
+  }.serialize(&mut ix_data)?;
 
-  ix_discriminator.extend(&data);
+  data.extend(&ix_data);
   let ix = Instruction {
     program_id: ctx.accounts.cp_swap_program.key(),
     accounts,

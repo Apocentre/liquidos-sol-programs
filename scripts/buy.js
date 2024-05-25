@@ -92,7 +92,7 @@ const main = async () => {
   .instruction();
 
 
-  const cbIx = web3.getComputationBudgetIx(300_000);
+  const cbIx = web3.getComputationBudgetIx(500_000);
   await createAndSendV0Tx(
     provider,
     [cbIx, buy_ix, moveLiquidityIx],
