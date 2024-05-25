@@ -89,6 +89,9 @@ pub struct MoveLiquidity<'info> {
   #[account(mut)]
   pub observation_state: AccountInfo<'info>,
 
+  /// CHECK: Raydium CP swap program
+  #[account(address = raydium::id())]
+  pub cp_swap_program: AccountInfo<'info>,
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_program: Program<'info, Token>,
   pub token_2022: Interface<'info, TokenInterface>,

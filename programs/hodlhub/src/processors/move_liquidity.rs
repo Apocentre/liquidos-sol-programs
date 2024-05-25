@@ -1,16 +1,10 @@
-use anchor_lang::{
-  prelude::*,
-  solana_program::{
-    instruction::Instruction, program::invoke,
-  },
-};
+use anchor_lang::prelude::*;
 use anchor_spl::{
   token::{burn, sync_native, Burn, SyncNative},
   token_interface::TokenAccount,
 };
-use ::borsh::BorshSerialize;
 use crate::{
-  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity, raydium,
+  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity,
 };
 
 // create a raydium pool with the current liquidity
@@ -55,72 +49,32 @@ fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
     )
   };
 
-  let accounts = vec![
-    AccountMeta::new(ctx.accounts.buyer.key(), true),
-    AccountMeta::new_readonly(ctx.accounts.amm_config.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.raydium_authority.key(), false),
-    AccountMeta::new(ctx.accounts.pool_state.key(), false),
-    AccountMeta::new_readonly(token_0.key(), false),
-    AccountMeta::new_readonly(token_1.key(), false),
-    AccountMeta::new(ctx.accounts.lp_mint.key(), false),
-    AccountMeta::new(creator_token_0.key(), false),
-    AccountMeta::new(creator_token_1.key(), false),
-    AccountMeta::new(ctx.accounts.creator_lp_token.key(), false),
-    AccountMeta::new(ctx.accounts.token_0_vault.key(), false),
-    AccountMeta::new(ctx.accounts.token_1_vault.key(), false),
-    AccountMeta::new(ctx.accounts.create_pool_fee.key(), false),
-    AccountMeta::new(ctx.accounts.observation_state.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.token_program.key(), false),
-    AccountMeta::new_readonly(token_0_program.key(), false),
-    AccountMeta::new_readonly(token_1_program.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.associated_token_program.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.system_program.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.rent.key(), false),
-  ];
-
-  // add the ix_discriminator so Raydium's Anchor program can identity the instruction
-  let mut ix_discriminator: Vec<u8> = vec![175, 175, 109, 31, 13, 152, 155, 237];
-  let mut data: Vec<u8> = Vec::new();
-
-  raydium::InitializeIx {
-    init_amount_0,
-    init_amount_1,
-    open_time: 0,
-  }.serialize(&mut data)?;
-
-  ix_discriminator.extend(&data);
-  let ix = Instruction {
-    program_id: raydium::id(),
-    accounts,
-    data,
+  let cpi_accounts = raydium_cp_swap::cpi::accounts::Initialize {
+    creator: ctx.accounts.buyer.to_account_info(),
+    amm_config: ctx.accounts.amm_config.to_account_info(),
+    authority: ctx.accounts.raydium_authority.to_account_info(),
+    pool_state: ctx.accounts.pool_state.to_account_info(),
+    token_0_mint: token_0.to_account_info(),
+    token_1_mint: token_1.to_account_info(),
+    lp_mint: ctx.accounts.lp_mint.to_account_info(),
+    creator_token_0: creator_token_0.to_account_info(),
+    creator_token_1: creator_token_1.to_account_info(),
+    creator_lp_token: ctx.accounts.creator_lp_token.to_account_info(),
+    token_0_vault: ctx.accounts.token_0_vault.to_account_info(),
+    token_1_vault: ctx.accounts.token_1_vault.to_account_info(),
+    create_pool_fee: ctx.accounts.create_pool_fee.to_account_info(),
+    observation_state: ctx.accounts.observation_state.to_account_info(),
+    token_program: ctx.accounts.token_program.to_account_info(),
+    token_0_program: token_0_program.to_account_info(),
+    token_1_program: token_1_program.to_account_info(),
+    associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
+    system_program: ctx.accounts.system_program.to_account_info(),
+    rent: ctx.accounts.rent.to_account_info(),
   };
 
-  invoke(
-    &ix,
-    &[
-      ctx.accounts.buyer.to_account_info(),
-      ctx.accounts.amm_config.to_account_info(),
-      ctx.accounts.raydium_authority.to_account_info(),
-      ctx.accounts.pool_state.to_account_info(),
-      token_0,
-      token_1,
-      ctx.accounts.lp_mint.to_account_info(),
-      creator_token_0,
-      creator_token_1,
-      ctx.accounts.creator_lp_token.to_account_info(),
-      ctx.accounts.token_0_vault.to_account_info(),
-      ctx.accounts.token_1_vault.to_account_info(),
-      ctx.accounts.create_pool_fee.to_account_info(),
-      ctx.accounts.observation_state.to_account_info(),
-      ctx.accounts.token_program.to_account_info(),
-      token_0_program,
-      token_1_program,
-      ctx.accounts.associated_token_program.to_account_info(),
-      ctx.accounts.system_program.to_account_info(),
-      ctx.accounts.rent.to_account_info(),
-    ]
-  )?;
-  
+  let cpi_context = CpiContext::new(ctx.accounts.cp_swap_program.to_account_info(), cpi_accounts);
+  raydium_cp_swap::cpi::initialize(cpi_context, init_amount_0, init_amount_1, 0)?;
+
   Ok(())
 }
 

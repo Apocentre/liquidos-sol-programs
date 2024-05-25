@@ -82,6 +82,7 @@ const main = async () => {
     token1Vault,
     createPoolFee,
     observationState: accounts.raydiumObservationState(poolState, raydiumProgram)[0],
+    cpSwapProgram: raydiumProgram,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
