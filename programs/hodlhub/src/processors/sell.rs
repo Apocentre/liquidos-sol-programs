@@ -13,6 +13,7 @@ pub struct SellEvent {
   token_amount: u64,
   sol_amount: u64,
   price: u64,
+  total_supply: u64,
 }
 
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {
@@ -59,6 +60,7 @@ pub fn exec(
   require!(sol_amount >= min_sol_amount_out, ErrorCode::SlippageViolation);
 
   let price = curve.price;
+  let total_supply = curve.total_supply;
   let fees = curve.calc_trade_fees(sol_amount)?;
   collect_trade_fees(&ctx, fees)?;
 
@@ -72,6 +74,7 @@ pub fn exec(
     sol_amount,
     token_amount,
     price,
+    total_supply,
   });
 
   Ok(())

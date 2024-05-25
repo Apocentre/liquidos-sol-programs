@@ -17,6 +17,7 @@ pub struct BuyEvent {
   token_amount: u64,
   is_complete: bool,
   price: u64,
+  total_supply: u64,
 }
 
 fn mint_tokens(
@@ -138,7 +139,6 @@ pub fn exec<'info>(
   // Slippage check
   let token_amount = curve.process_purchase_return(spendable_amount)?;
   require!(token_amount >= min_amount_out, ErrorCode::SlippageViolation);
-  let price = curve.price;
 
   let token = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();
@@ -155,7 +155,10 @@ pub fn exec<'info>(
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
 
+  let price = curve.price;
+  let total_supply = curve.total_supply;
   let is_complete = curve.is_complete();
+
   if is_complete {
     fund_creator_account(&ctx, signer_seeds)?;
     collect_fees(&ctx, curve_acc_info)?;
@@ -177,6 +180,7 @@ pub fn exec<'info>(
       token_amount,
       is_complete,
       price,
+      total_supply,
     });
   }
 
