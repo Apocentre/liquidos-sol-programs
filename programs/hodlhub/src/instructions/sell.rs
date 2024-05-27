@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
+  token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
 use crate::{
