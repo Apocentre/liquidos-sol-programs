@@ -91,7 +91,6 @@ const main = async () => {
   })
   .instruction();
 
-
   const cbIx = web3.getComputationBudgetIx(750_000);
   await createAndSendV0Tx(
     provider,

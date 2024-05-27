@@ -32,7 +32,7 @@ fn burn_tokens(ctx: &Context<Sell>, amount: u64) -> Result<()> {
     from: seller_ata.to_account_info(),
     authority: ctx.accounts.seller.to_account_info(),
   };
-  let cpi_program = ctx.accounts.token_program.to_account_info();
+  let cpi_program = ctx.accounts.token_2022.to_account_info();
   let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
   
   burn(cpi_ctx, amount)

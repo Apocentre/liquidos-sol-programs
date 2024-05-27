@@ -236,6 +236,39 @@ mod tests {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("Sent 1 SOL and Received {:?} Tokens. {:?}", received, curve);
     }
-    panic!()
+  }
+
+  #[test]
+  fn simulate_buy_and_sell() {
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 1);
+    let received = curve.process_purchase_return(500000000).unwrap(); // 0.5
+    println!("Buyer 1 Sent 0.5 SOL and Received {:?} Tokens. {:?}", received, curve);
+    let received_2 = curve.process_purchase_return(300000000).unwrap(); // 0.3
+    println!("Buyer 2 Sent 0.3 SOL and Received {:?} Tokens. {:?}", received_2, curve);
+
+    // first buyer sells half of the tokens
+    let sol_received = curve.process_sale_return(received / 2).unwrap();
+    println!("Buyer 1 Sent {} Tokens and Received {:?} SOL. {:?}", received / 2, sol_received, curve);
+    
+    // second buyer sells 3/4 of the tokens
+    let sol_received_2 = curve.process_sale_return((received_2 * 3) / 4).unwrap();
+    println!("Buyer 2 Sent {} Tokens and Received {:?} SOL. {:?}", (received_2 * 3) / 4, sol_received_2, curve);
+    
+    // first buyer buys using the sol received from previous purchase
+    let received_1_2 = curve.process_purchase_return(sol_received).unwrap();
+    println!("Buyer 1 Sent {} SOL and Received {:?} Tokens. {:?}", sol_received, received, curve);
+
+    // second buyer sells the remaining of his tokens
+    let sol_received_2 = curve.process_sale_return(received_2 / 4).unwrap();
+    println!("Buyer 2 Sent {} Tokens and Received {:?} SOL. {:?}", received_2 * 1 / 4, sol_received_2, curve);
+
+    // first buyer sells all his tokens
+    let buyer_1_tokens = received - (received / 2) + received_1_2;
+    let sol_received = curve.process_sale_return(buyer_1_tokens).unwrap();
+    println!("Buyer 1 Sent {} Tokens and Received {:?} SOL. {:?}", buyer_1_tokens, sol_received, curve);
+    
+    assert_eq!(curve.total_supply, 0);
+    // some rounding errors due to divisions made above. The point is that the amount left is tiny
+    assert_eq!(curve.reserve_token_balance, 2);
   }
 }

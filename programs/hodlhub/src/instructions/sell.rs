@@ -48,7 +48,5 @@ pub struct Sell<'info> {
   pub seller_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   pub associated_token_program: Program<'info, AssociatedToken>,
-  /// Program to create mint account and mint tokens
-  pub token_program: Program<'info, Token>,
   pub token_2022: Interface<'info, TokenInterface>,
 }
