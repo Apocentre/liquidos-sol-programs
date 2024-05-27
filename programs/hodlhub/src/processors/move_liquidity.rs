@@ -22,9 +22,9 @@ fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
-  // we don't want buyer pay for the pool creation. It has to funded using the curving pool SOL
-  let reserve_token_liquidity = curve.net_reserve_token_liquidity()?
-  .safe_sub(amm_config.create_pool_fee)?;
+  // we don't want buyer pay for the pool creation. It has to be funded using the curving pool SOL.
+  // In the previous (buy) ix we transfered the create_pool_fee SOL amount to the buyer account.
+  let reserve_token_liquidity = curve.net_reserve_token_liquidity()?.safe_sub(amm_config.create_pool_fee)?;
 
   // Raydium expect token_0 to be smaller that token_1
   let (

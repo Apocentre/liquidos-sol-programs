@@ -6,7 +6,7 @@ use anchor_spl::{
 };
 use crate::{
   account_data::{bonding_curve::BondingCurve, state::State},
-  program_error::ErrorCode,
+  program_error::ErrorCode, raydium,
 };
 
 #[derive(Accounts)]
@@ -53,6 +53,12 @@ pub struct Buy<'info> {
     constraint = token.key() == bonding_curve.token @ ErrorCode::InvalidCurveToken,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
+
+  /// CHECK: Which config the pool that will created belongs to. Checks will take place in CP swap program
+  #[account(
+    address = raydium::amm_config(),
+  )]
+  pub amm_config: AccountInfo<'info>,
 
   /// The ATA of the  token that is owned by the buyer. Create one if no already exists
   #[account(
