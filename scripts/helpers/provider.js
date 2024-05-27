@@ -7,7 +7,7 @@ const getClusterUrl = () => {
     case "devnet":
       return "https://api.devnet.solana.com"
     case "mainnet":
-      return ""
+      return "https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/"
   }
 }
 
