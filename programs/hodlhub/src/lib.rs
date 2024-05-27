@@ -10,7 +10,7 @@ use crate::instructions::{
   initialize::*, create_token::*, buy::*, sell::*, move_liquidity::*,
 };
 
-declare_id!("FCvmY44pk9RK2VKBYskPT29NyXE6ifdNSJZjvLFYxfQp");
+declare_id!("EFSwN5K21AvHznYp7CH8bz1e2qdhFGj3vYxrRZq5M1bZ");
 
 #[program]
 pub mod hodlhub {

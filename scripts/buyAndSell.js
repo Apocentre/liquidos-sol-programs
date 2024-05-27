@@ -125,8 +125,8 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Hodlhub;
-  const tokenName = "TOKEN_HUB_3";
-  const tokenSymbol= "SYMBOL_HUB_3";
+  const tokenName = "TOKEN_HUB_4";
+  const tokenSymbol= "SYMBOL_HUB_4";
   const buyer1 = Keypair.fromSecretKey(Buffer.from(buyerKey1))
   const buyer2 = Keypair.fromSecretKey(Buffer.from(buyerKey2))
   const state = new PublicKey(config.state);
