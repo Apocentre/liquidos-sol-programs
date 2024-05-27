@@ -26,6 +26,7 @@ const main = async () => {
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
+  const ammConfig = constants.raydiumAmmConfigDevnet;
 
 
   const buy_ix = await program.methods
@@ -39,6 +40,7 @@ const main = async () => {
     buyerAta,
     buyerWsolAta,
     wsolToken: wsol,
+    ammConfig,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
@@ -46,7 +48,6 @@ const main = async () => {
   })
   .instruction();
 
-  const ammConfig = constants.raydiumAmmConfigDevnet;
   const raydiumProgram = constants.raydiumProgramDevnet;
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
