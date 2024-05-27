@@ -109,7 +109,6 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   Ok(())
 }
 
-
 /// When buying a token, the buyer will send two ixs: the Buy and the MoveLiquidity.
 /// The later will be ignored in the move_liquidity processor is the curve is not closed.
 /// This is important so we know that once the SOL is sent to the buyer_wsol_ata he atomically

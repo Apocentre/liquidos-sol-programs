@@ -8,8 +8,8 @@ import buyerKey from "../wallets/test/buyer1.json" assert { type: "json" };
 const {PublicKey, Keypair} = anchor.web3;
 
 const getTokenAccount = (state, program) => {
-  const tokenName = "TOKEN_3";
-  const tokenSymbol= "SYMBOL_3";
+  const tokenName = "TOKEN_HUB_3";
+  const tokenSymbol= "SYMBOL_HUB_3";
   return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
 }
 

@@ -62,11 +62,13 @@ pub fn exec(
   let price = curve.price;
   let total_supply = curve.total_supply;
   let fees = curve.calc_trade_fees(sol_amount)?;
-  collect_trade_fees(&ctx, fees)?;
-
   let net_amount = sol_amount.safe_sub(fees)?;
-  send_sol_to_seller(&ctx, net_amount)?;
+
+  // Important! burn_tokens makes a CPI so it must come before the other two functions which
+  // directly manipulate the PDA account. More on this here https://stackoverflow.com/a/77591006/512783
   burn_tokens(&ctx, token_amount)?;
+  collect_trade_fees(&ctx, fees)?;
+  send_sol_to_seller(&ctx, net_amount)?;
 
   emit!(SellEvent {
     seller: ctx.accounts.seller.key(),
