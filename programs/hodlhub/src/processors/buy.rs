@@ -98,7 +98,7 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   let token_liquidity = curve.calc_token_amount_to_mint()?;
   mint_tokens(&ctx, token_liquidity, signer_seeds)?;
 
-  // 2. convert SOL from the curve into WSOL and send to buyer
+  // 2. Send SOL to the buyer's WSOL ATA which will later be synced i.e. converted into WSOL
   let mut buyer_wsol_ata = ctx.accounts.buyer_wsol_ata.to_account_info();
   transfer_from_pda(
     &mut ctx.accounts.bonding_curve.to_account_info(),
@@ -182,7 +182,6 @@ pub fn exec<'info>(
       total_supply,
     });
   }
-
 
   Ok(())
 }

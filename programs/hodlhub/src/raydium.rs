@@ -1,6 +1,5 @@
 use std::str::FromStr;
-use anchor_lang::solana_program::pubkey::Pubkey;
-use borsh::BorshSerialize;
+use anchor_lang::prelude::{borsh::BorshSerialize, *};
 
 pub fn id() -> Pubkey {
   #[cfg(not(feature = "devnet"))]
@@ -23,4 +22,29 @@ pub struct InitializeIx {
   pub init_amount_0: u64,
   pub init_amount_1: u64,
   pub open_time: u64,
+}
+
+/// Holds the current owner of the factory
+#[account]
+pub struct AmmConfig {
+  /// Bump to identify PDA
+  pub bump: u8,
+  /// Status to control if new pool can be create
+  pub disable_create_pool: bool,
+  /// Config index
+  pub index: u16,
+  /// The trade fee, denominated in hundredths of a bip (10^-6)
+  pub trade_fee_rate: u64,
+  /// The protocol fee
+  pub protocol_fee_rate: u64,
+  /// The fund fee, denominated in hundredths of a bip (10^-6)
+  pub fund_fee_rate: u64,
+  /// Fee for create a new pool
+  pub create_pool_fee: u64,
+  /// Address of the protocol fee owner
+  pub protocol_owner: Pubkey,
+  /// Address of the fund fee owner
+  pub fund_owner: Pubkey,
+  /// padding
+  pub padding: [u64; 16],
 }

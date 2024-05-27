@@ -4,22 +4,27 @@ use anchor_lang::{
     instruction::Instruction, program::invoke,
   },
 };
+use anchor_safe_math::SafeMath;
 use anchor_spl::{
   token::{burn, sync_native, Burn, SyncNative},
   token_interface::TokenAccount,
 };
-use ::borsh::BorshSerialize;
 use crate::{
-  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity, raydium,
+  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity,
+  raydium::{self, AmmConfig},
 };
+use super::common::deser;
 
 // create a raydium pool with the current liquidity
 fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
+  let amm_config: AmmConfig = deser(ctx.accounts.amm_config.clone())?;
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
-  let reserve_token_liquidity = curve.net_reserve_token_liquidity()?;
+  // we don't want buyer pay for the pool creation. It has to funded using the curving pool SOL
+  let reserve_token_liquidity = curve.net_reserve_token_liquidity()?
+  .safe_sub(amm_config.create_pool_fee)?;
 
   // Raydium expect token_0 to be smaller that token_1
   let (
@@ -178,7 +183,6 @@ fn burn_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
   
   burn(cpi_ctx, lp_balance)
 }
-
 
 pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
