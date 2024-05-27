@@ -17,11 +17,11 @@ use super::common::deser;
 pub struct BuyEvent {
   buyer: Pubkey,
   token: Pubkey,
-  sol_amount: u64,
-  token_amount: u64,
+  sol_amount: String,
+  token_amount: String,
   is_complete: bool,
-  price: u64,
-  total_supply: u64,
+  price: String,
+  total_supply: String,
 }
 
 fn mint_tokens(
@@ -191,11 +191,11 @@ pub fn exec<'info>(
     emit!(BuyEvent {
       buyer,
       token: *token,
-      sol_amount: spendable_amount,
-      token_amount,
+      sol_amount: spendable_amount.to_string(),
+      token_amount: token_amount.to_string(),
       is_complete,
-      price,
-      total_supply,
+      price: price.to_string(),
+      total_supply: total_supply.to_string(),
     });
   }
 

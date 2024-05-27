@@ -10,10 +10,10 @@ use crate::{
 pub struct SellEvent {
   seller: Pubkey,
   token: Pubkey,
-  token_amount: u64,
-  sol_amount: u64,
-  price: u64,
-  total_supply: u64,
+  token_amount: String,
+  sol_amount: String,
+  price: String,
+  total_supply: String,
 }
 
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {
@@ -73,10 +73,10 @@ pub fn exec(
   emit!(SellEvent {
     seller: ctx.accounts.seller.key(),
     token: ctx.accounts.token.key(),
-    sol_amount,
-    token_amount,
-    price,
-    total_supply,
+    sol_amount: sol_amount.to_string(),
+    token_amount: token_amount.to_string(),
+    price: price.to_string(),
+    total_supply: total_supply.to_string(),
   });
 
   Ok(())

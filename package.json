@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "deploy:mainnet": "solana program deploy --url https://api.mainnet-beta.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/hodlhub.json target/deploy/hodlhub.so",
+    "deploy:mainnet": "solana program deploy --with-compute-unit-price 500000 --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/hodlhub.json target/deploy/hodlhub.so",
     "deploy:devnet": "solana program deploy --url https://api.devnet.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/hodlhub.json target/deploy/hodlhub.so",
     "init:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/initialize.js",
     "init:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/initialize.js",
