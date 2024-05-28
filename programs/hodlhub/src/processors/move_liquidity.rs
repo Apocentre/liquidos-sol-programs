@@ -22,6 +22,7 @@ fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
   let token_key = &ctx.accounts.token;
   let wsol_token_key = &ctx.accounts.wsol_token;
   let token_liquidity = curve.calc_token_amount_to_mint()?;
+  
   // we don't want buyer pay for the pool creation. It has to be funded using the curving pool SOL.
   // In the previous (buy) ix we transfered the create_pool_fee SOL amount to the buyer account.
   let total_amm_cost = amm_config.create_pool_fee.safe_add(raydium::RENT_COST)?;
