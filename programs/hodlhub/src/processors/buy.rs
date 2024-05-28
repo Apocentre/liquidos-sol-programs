@@ -8,7 +8,7 @@ use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
   instruction::MoveLiquidity, instructions::buy::Buy, processors::common::transfer_from_pda,
-  program_error::ErrorCode, raydium::AmmConfig, ID,
+  program_error::ErrorCode, raydium::{self, AmmConfig}, ID,
 };
 
 use super::common::deser;
@@ -106,15 +106,17 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   // from the SOL balance of the pool. So the total liquidity that will be moved (WSOL)
   // will be less this amount.
   let amm_config: AmmConfig = deser(ctx.accounts.amm_config.clone())?;
+  let total_amm_cost = amm_config.create_pool_fee.safe_add(raydium::RENT_COST)?;
+
   transfer_from_pda(
     &mut ctx.accounts.bonding_curve.to_account_info(),
     &mut ctx.accounts.buyer.to_account_info(),
-    amm_config.create_pool_fee,
+    total_amm_cost,
   )?;
 
   // 3. Send SOL to the buyer's WSOL ATA which will later be synced i.e. converted into WSOL
   let mut buyer_wsol_ata = ctx.accounts.buyer_wsol_ata.to_account_info();
-  let total_sol_liquidity = curve.net_reserve_token_liquidity()?.safe_sub(amm_config.create_pool_fee)?;
+  let total_sol_liquidity = curve.net_reserve_token_liquidity()?.safe_sub(total_amm_cost)?;
 
   transfer_from_pda(
     &mut ctx.accounts.bonding_curve.to_account_info(),
