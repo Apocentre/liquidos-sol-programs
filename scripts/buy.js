@@ -5,7 +5,7 @@ import {provider} from "./helpers/provider.js";
 import {createAndSendV0Tx} from "./helpers/tx.js";
 import * as constants from "./helpers/constants.js";
 import config from "./config.json" assert { type: "json" };
-import buyerKey from "../wallets/test/buyer2.json" assert { type: "json" };
+import buyerKey from "../wallets/test/buyer1.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -17,7 +17,7 @@ const main = async () => {
   const program = anchor.workspace.Hodlhub;
   const tokenName = "TOKEN_HUB";
   const tokenSymbol= "SYMBOL_HUB";
-  const amount = new BN(web3.toBase("2", 9));
+  const amount = new BN(web3.toBase("5", 7));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
@@ -26,8 +26,7 @@ const main = async () => {
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
-  const ammConfig = constants.raydiumAmmConfigDevnet;
-
+  const ammConfig = constants.raydiumAmmConfigMainnet;
 
   const buy_ix = await program.methods
   .buy(amount, minAmountOut)
@@ -48,7 +47,7 @@ const main = async () => {
   })
   .instruction();
 
-  const raydiumProgram = constants.raydiumProgramDevnet;
+  const raydiumProgram = constants.raydiumProgramMainnet;
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
   const [creatorToken0, creatorToken1] = token.toBuffer() < wsol.toBuffer() ? [buyerAta, buyerWsolAta] : [buyerWsolAta, buyerAta];
@@ -58,7 +57,7 @@ const main = async () => {
   ? [accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0]] 
   : [accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0]];
 
-  const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
+  const createPoolFee = constants.raydiumCreatorPoolFeedMainnet;
 
   const moveLiquidityIx = await program.methods
   .moveLiquidity()
@@ -93,9 +92,10 @@ const main = async () => {
   .instruction();
 
   const cbIx = web3.getComputationBudgetIx(750_000);
+  const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, buy_ix, moveLiquidityIx],
+    [cbIx, priorityFeeIx, buy_ix, moveLiquidityIx],
     buyer.publicKey,
     [buyer],
     [],

@@ -4,49 +4,49 @@ import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "./helpers/provider.js";
 import {createAndSendV0Tx} from "./helpers/tx.js";
 import config from "./config.json" assert { type: "json" };
-import tokenCreatorKey from "../wallets/deployer.json" assert { type: "json" };
+import sellerKey from "../wallets/deployer.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
+const {BN} = anchor.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
+  const deployer = provider.wallet.payer;
+  const program = anchor.workspace.Hodlhub;
+  const web3 = Web3(deployer.publicKey);
   const tokenName = "TOKEN_HUB";
   const tokenSymbol= "SYMBOL_HUB";
+  const seller = Keypair.fromSecretKey(Buffer.from(sellerKey))
   const state = new PublicKey(config.state);
-  const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
-  const program = anchor.workspace.Hodlhub;
-  const deployer = provider.wallet.payer;
-  const web3 = Web3(deployer.publicKey)
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
+  const amount = new BN(4355043485455);
+  const minAmountOut = new BN(0); // no slippage
+  const sellerAta = await web3.getAssociatedTokenAddress(token, seller.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
 
-  const ix = await program.methods
-  .createToken(
-    tokenName,
-    tokenSymbol,
-    "http://hodlhub.fun"
-  )
+  const sellIx = await program.methods
+  .sell(amount, minAmountOut)
   .accounts({
+    seller: seller.publicKey,
     state,
-    token,
-    tokenCreator: tokenCreator.publicKey,
-    curveAta: await web3.getAssociatedTokenAddress(token, bondingCurve, true, spl.TOKEN_2022_PROGRAM_ID),
+    treasury: new PublicKey(config.treasury),
     bondingCurve,
+    token,
+    sellerAta,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
   })
   .instruction();
 
-  const priorityFeeIx = web3.setComputeUnitPrice(20000);
+  const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [priorityFeeIx, ix],
-    tokenCreator.publicKey,
-    [tokenCreator]
+    [priorityFeeIx, sellIx],
+    seller.publicKey,
+    [seller],
+    [],
   );
-
-  console.log("Token: ", token);
 }
 
 main()

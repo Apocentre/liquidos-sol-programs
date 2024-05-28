@@ -3,8 +3,8 @@
 
 
 "@apocentre/solana-web3@Apocentre/solana-web3":
-  version "0.10.3"
-  resolved "https://codeload.github.com/Apocentre/solana-web3/tar.gz/e50b43fb2cfa9c8bcedcee4c82a23c3da4b77c6e"
+  version "0.10.5"
+  resolved "https://codeload.github.com/Apocentre/solana-web3/tar.gz/7277f284a0d48fecbdc3170aa5f8dd771f81e4b6"
   dependencies:
     "@coral-xyz/anchor" "0.29.0"
     "@metaplex-foundation/mpl-token-metadata" "^3.1.2"

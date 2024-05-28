@@ -9,6 +9,8 @@
     "createToken:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/createToken.js",
     "buy:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/buy.js",
     "buy:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/buy.js",
+    "sell:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/sell.js",
+    "sell:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/sell.js",
     "buyAndSell:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/buyAndSell.js",
     "buyAndSell:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/buyAndSell.js",
     "moveLiquidity:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/moveLiquidity.js",
