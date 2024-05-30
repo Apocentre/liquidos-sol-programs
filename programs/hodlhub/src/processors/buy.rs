@@ -22,6 +22,7 @@ pub struct BuyEvent {
   is_complete: bool,
   price: String,
   total_supply: String,
+  buyer_balance: String,
 }
 
 fn mint_tokens(
@@ -189,6 +190,7 @@ pub fn exec<'info>(
 
   {
     let buyer = ctx.accounts.buyer.key();
+    let buyer_balance = ctx.accounts.buyer_ata.amount;
 
     emit!(BuyEvent {
       buyer,
@@ -198,6 +200,7 @@ pub fn exec<'info>(
       is_complete,
       price: price.to_string(),
       total_supply: total_supply.to_string(),
+      buyer_balance: buyer_balance.to_string(),
     });
   }
 

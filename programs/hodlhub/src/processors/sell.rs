@@ -14,6 +14,7 @@ pub struct SellEvent {
   sol_amount: String,
   price: String,
   total_supply: String,
+  seller_balance: String,
 }
 
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {
@@ -70,6 +71,8 @@ pub fn exec(
   collect_trade_fees(&ctx, fees)?;
   send_sol_to_seller(&ctx, net_amount)?;
 
+  let seller_balance = ctx.accounts.seller_ata.amount;
+  
   emit!(SellEvent {
     seller: ctx.accounts.seller.key(),
     token: ctx.accounts.token.key(),
@@ -77,6 +80,7 @@ pub fn exec(
     token_amount: token_amount.to_string(),
     price: price.to_string(),
     total_supply: total_supply.to_string(),
+    seller_balance: seller_balance.to_string(),
   });
 
   Ok(())
