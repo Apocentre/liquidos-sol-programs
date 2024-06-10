@@ -18,6 +18,8 @@ pub struct State {
   pub trade_fee_bps: u64,
   /// Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub creator_fee: u64,
+  /// The total supply of the newly created tokens in the lowest denomination i.e. decimals included
+  pub total_token_supply: u64,
 }
 
 impl State {
@@ -32,6 +34,7 @@ impl State {
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
+    total_token_supply: u64,
   ) -> Self {
     Self {
       owner,
@@ -40,6 +43,7 @@ impl State {
       protocol_fee,
       trade_fee_bps,
       creator_fee,
+      total_token_supply,
     }
   }
 }

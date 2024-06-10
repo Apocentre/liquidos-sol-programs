@@ -20,8 +20,10 @@ const main = async () => {
   .initialize(
     new PublicKey(config.treasury),
     new BN(config.solTarget),
-    new BN(config.protocolFeeBps),
+    new BN(config.protocolFee),
     new BN(config.tradeFeeBps),
+    new BN(config.creatorFee),
+    new BN(config.totalTokenSupply),
   )
   .accounts({
     state: state.publicKey,

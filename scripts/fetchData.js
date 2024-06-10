@@ -25,8 +25,10 @@ const main = async () => {
     reserveTokenBalance: bondingCurveData.reserveTokenBalance.toString(),
     price: bondingCurveData.price.toString(),
     closed: bondingCurveData.closed,
-    protocolFeeBps: bondingCurveData.protocolFeeBps.toString(),
+    protocolFee: bondingCurveData.protocolFee.toString(),
+    creatorFee: bondingCurveData.creatorFee.toString(),
     tradeFeeBps: bondingCurveData.tradeFeeBps.toString(),
+    totalSupply: bondingCurveData.totalSupply.toString(),
   })
 }
 
