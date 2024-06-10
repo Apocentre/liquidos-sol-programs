@@ -21,8 +21,8 @@ pub struct BondingCurve {
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub trade_fee_bps: u64,
-  /// Total supply of the token in the lowest denomination i.e. decimals included
-  pub total_supply: u64,
+  /// Current circulating supply of the token in the lowest denomination i.e. decimals included
+  pub circulating_supply: u64,
   /// Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub creator_fee: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
@@ -58,7 +58,7 @@ impl BondingCurve {
       protocol_fee,
       trade_fee_bps,
       creator_fee,
-      total_supply: 0,
+      circulating_supply: 0,
       reserve_token_balance: 0,
       price: 0,
       bump,
@@ -70,9 +70,9 @@ impl BondingCurve {
   fn calc_price(&self) -> Result<u64> {
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let b = dec!(17.5970429);
-    let total_supply = Self::normalize_token_amount(self.total_supply)?;
+    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
 
-    let p = std::f64::consts::E.powf(a.safe_mul(total_supply)?.safe_sub(b)?.safe_to_f64()?);
+    let p = std::f64::consts::E.powf(a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?);
     let p = Decimal::safe_from_f64(p)?
     .safe_mul(Self::LAMPORT_IN_SOL)?
     .safe_to_u64()?;
@@ -90,8 +90,8 @@ impl BondingCurve {
     let b = dec!(17.5970429);
     let c = dec!(299215564.8);
     // divide by 10e6 to convert token amount to the highest denomination
-    let total_supply = Self::normalize_token_amount(self.total_supply)?;
-    let d = a.safe_mul(total_supply)?.safe_sub(b)?.safe_to_f64()?;
+    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
+    let d = a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?;
     let e = std::f64::consts::E.powf(d);
     let e = Decimal::safe_from_f64(e)?;
     
@@ -100,12 +100,12 @@ impl BondingCurve {
     .safe_ln()?
     .safe_add(b)?
     .safe_div(a)?
-    .safe_sub(total_supply)?
+    .safe_sub(circulating_supply)?
     .safe_mul(Self::ONE_TOKEN)?
     .safe_to_u64()?;
 
     // update state
-    self.total_supply = self.total_supply.safe_add(k)?;
+    self.circulating_supply = self.circulating_supply.safe_add(k)?;
     self.reserve_token_balance = self.reserve_token_balance.safe_add(reserve_tokens_received)?;
     self.price = self.calc_price()?;
 
@@ -118,15 +118,15 @@ impl BondingCurve {
     let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let b = dec!(17.5970429);
     let c = dec!(299215564.8);
-    let total_supply = Self::normalize_token_amount(self.total_supply)?;
+    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
     let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
 
     let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(total_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
+      a.safe_mul(circulating_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
     ))?;
 
     let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(total_supply)?.safe_sub(b)?.safe_to_f64()?
+      a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?
     ))?;
 
     let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?
@@ -135,7 +135,7 @@ impl BondingCurve {
     .safe_to_u64()?;
 
     // update state
-    self.total_supply = self.total_supply.safe_sub(token_amount)?;
+    self.circulating_supply = self.circulating_supply.safe_sub(token_amount)?;
     self.reserve_token_balance = self.reserve_token_balance.safe_sub(reserve_tokens_returned)?;
     self.price = self.calc_price()?;
 
@@ -215,7 +215,7 @@ mod tests {
     let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 100, 1);
     let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
-    assert_eq!(curve.total_supply, 793004689489822);
+    assert_eq!(curve.circulating_supply, 793004689489822);
     assert_eq!(curve.reserve_token_balance, 89800000000);
   }
 
@@ -226,7 +226,7 @@ mod tests {
     let tokens_received = curve.process_purchase_return(89800000000).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
     assert_eq!(received, 89800000000);
-    assert_eq!(curve.total_supply, 0);
+    assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 0);
   }
 
@@ -269,7 +269,7 @@ mod tests {
     let sol_received = curve.process_sale_return(buyer_1_tokens).unwrap();
     println!("Buyer 1 Sent {} Tokens and Received {:?} SOL. {:?}", buyer_1_tokens, sol_received, curve);
     
-    assert_eq!(curve.total_supply, 0);
+    assert_eq!(curve.circulating_supply, 0);
     // some rounding errors due to divisions made above. The point is that the amount left is tiny
     assert_eq!(curve.reserve_token_balance, 2);
   }

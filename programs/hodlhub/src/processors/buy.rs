@@ -21,7 +21,7 @@ pub struct BuyEvent {
   token_amount: String,
   is_complete: bool,
   price: String,
-  total_supply: String,
+  circulating_supply: String,
   buyer_balance: String,
 }
 
@@ -187,7 +187,7 @@ pub fn exec<'info>(
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
 
   let price = curve.price;
-  let total_supply = curve.total_supply;
+  let circulating_supply = curve.circulating_supply;
   let is_complete = curve.is_complete();
 
   if is_complete {
@@ -213,7 +213,7 @@ pub fn exec<'info>(
       token_amount: token_amount.to_string(),
       is_complete,
       price: price.to_string(),
-      total_supply: total_supply.to_string(),
+      circulating_supply: circulating_supply.to_string(),
       buyer_balance: buyer_balance.to_string(),
     });
   }
