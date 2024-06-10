@@ -26,7 +26,7 @@ pub struct BondingCurve {
   /// Current circulating supply of the token in the lowest denomination i.e. decimals included
   pub circulating_supply: u64,
   /// The total supply of the newly created tokens in the lowest denomination i.e. decimals included
-  pub token_supply: u64,
+  pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
   /// The current price of the curve in lamports
@@ -51,7 +51,7 @@ impl BondingCurve {
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
-    token_supply: u64,
+    total_supply: u64,
     bump: u8,
   ) -> Self {
     Self {
@@ -62,7 +62,7 @@ impl BondingCurve {
       trade_fee_bps,
       creator_fee,
       circulating_supply: 0,
-      token_supply,
+      total_supply,
       reserve_token_balance: 0,
       price: 0,
       bump,
@@ -192,18 +192,10 @@ impl BondingCurve {
     Ok(net)
   }
 
-  /// We need to mint enough tokens so that the current price is preserved when liquidity
-  /// moves to a constant product curve (Raydium). Note that the token calculation does account
-  /// for the fees that are deducted from the `reserve_token_balance`.
-  /// 
-  /// The equations is y = x / P
+  /// We need enough tokens to fill the total supply set for this curve
   pub fn calc_token_amount_to_mint(&self) -> Result<u64> {
-    let price = Decimal::safe_from_u64(self.price)?;
-    let net_amount = self.reserve_token_balance.safe_sub(self.calc_migration_fees()?)?;
-    let reserve_token_balance = Decimal::safe_from_u64(net_amount)?;
-    let amount = reserve_token_balance.safe_div(price)?.safe_mul(Self::ONE_TOKEN)?;
-
-    Ok(amount.safe_to_u64()?)
+    let amount = self.total_supply.safe_sub(self.circulating_supply)?;
+    Ok(amount)
   }
 }
 
