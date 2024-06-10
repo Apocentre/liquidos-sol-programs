@@ -63,14 +63,27 @@ fn send_sol_to_curve<'info>(
   Ok(())
 }
 
-/// Collects fees from the SOL accumulated in the pool
-fn collect_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Result<()> {
+/// Collects fees from the SOL accumulated in the pool and sends to the treasury
+fn collect_protocol_fees(ctx: &Context<Buy>, curve_acc_info: &AccountInfo<'_>) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
+
+  transfer_from_pda(
+    &mut curve_acc_info.to_account_info(),
+    &mut ctx.accounts.treasury.to_account_info(),
+    curve.protocol_fee,
+  )?;
+
+  Ok(())
+}
+
+/// Collects fees from the SOL accumulated in the pool and sends to the bonding curve creator acount
+fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
 
   transfer_from_pda(
     &mut curve_acc_info,
-    &mut ctx.accounts.treasury.to_account_info(),
-    curve.calc_protocol_fees()?,
+    &mut ctx.accounts.token_creator.to_account_info(),
+    curve.creator_fee,
   )?;
 
   Ok(())
@@ -94,7 +107,7 @@ fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
   Ok(())
 }
 
-/// Send WSOL and TOKKEN to the buyer whose purchase triggered the liquidity move.
+/// Send WSOL and $TOKEN to the buyer whose purchase triggered the liquidity move.
 /// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
 fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
@@ -179,7 +192,8 @@ pub fn exec<'info>(
 
   if is_complete {
     fund_creator_account(&ctx, signer_seeds)?;
-    collect_fees(&ctx, curve_acc_info)?;
+    collect_protocol_fees(&ctx, &curve_acc_info)?;
+    collect_creator_fees(&ctx, curve_acc_info)?;
     
     // mark the curve as closed
     let curve = &mut ctx.accounts.bonding_curve;

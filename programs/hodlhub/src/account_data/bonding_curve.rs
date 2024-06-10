@@ -17,12 +17,14 @@ pub struct BondingCurve {
   pub token: Pubkey,
   /// Target of SOL each pool should receive
   pub sol_target: u64,
-  /// Current protocol fees (BPS). This is applied when the pool is created on Raydium
-  pub protocol_fee_bps: u64,
+  /// Current protocol fees (fixed lamports amount).. This is applied when the pool is created on Raydium
+  pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub trade_fee_bps: u64,
   /// Total supply of the token in the lowest denomination i.e. decimals included
   pub total_supply: u64,
+  /// Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  pub creator_fee: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
   /// The current price of the curve in lamports
@@ -44,16 +46,18 @@ impl BondingCurve {
     token_creator: Pubkey,
     token: Pubkey,
     sol_target: u64,
-    protocol_fee_bps: u64,
+    protocol_fee: u64,
     trade_fee_bps: u64,
+    creator_fee: u64,
     bump: u8,
   ) -> Self {
     Self {
       token_creator,
       token,
       sol_target,
-      protocol_fee_bps,
+      protocol_fee,
       trade_fee_bps,
+      creator_fee,
       total_supply: 0,
       reserve_token_balance: 0,
       price: 0,
@@ -148,6 +152,12 @@ impl BondingCurve {
     Ok(value)
   }
 
+  /// Calculates the total fees to be paid when funds are migrated to Raydium.
+  fn calc_migration_fees(&self) -> Result<u64> {
+    let total_fee = self.protocol_fee.safe_add(self.creator_fee)?;
+    Ok(total_fee)
+  }
+
   /// Returns the max amount one can send to the curve. It depends on the sol target
   /// and the current amount of tokens in the pool
   pub fn max_accepted_amount(&self) -> Result<u64> {
@@ -163,14 +173,6 @@ impl BondingCurve {
     self.closed = 1;
   }
 
-  pub fn calc_protocol_fees(&self) -> Result<u64> {
-    let fees = self.reserve_token_balance
-    .safe_mul(self.protocol_fee_bps)?
-    .safe_div(10_000)?;
-
-    Ok(fees)
-  }
-
   pub fn calc_trade_fees(&self, sol_amount: u64) -> Result<u64> {
     let fees = sol_amount
     .safe_mul(self.trade_fee_bps)?
@@ -181,7 +183,7 @@ impl BondingCurve {
 
   /// Find the net amount of reserve token that can be used as liquidity in the Raydium pool
   pub fn net_reserve_token_liquidity(&self) -> Result<u64> {
-    let net = self.reserve_token_balance.safe_sub(self.calc_protocol_fees()?)?;
+    let net = self.reserve_token_balance.safe_sub(self.calc_migration_fees()?)?;
 
     Ok(net)
   }
@@ -193,7 +195,7 @@ impl BondingCurve {
   /// The equations is y = x / P
   pub fn calc_token_amount_to_mint(&self) -> Result<u64> {
     let price = Decimal::safe_from_u64(self.price)?;
-    let net_amount = self.reserve_token_balance.safe_sub(self.calc_protocol_fees()?)?;
+    let net_amount = self.reserve_token_balance.safe_sub(self.calc_migration_fees()?)?;
     let reserve_token_balance = Decimal::safe_from_u64(net_amount)?;
     let amount = reserve_token_balance.safe_div(price)?.safe_mul(Self::ONE_TOKEN)?;
 
@@ -210,7 +212,7 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 100, 1);
     let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -219,7 +221,7 @@ mod tests {
 
   #[test]
   fn process_sale_return_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 100, 1);
 
     let tokens_received = curve.process_purchase_return(89800000000).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
@@ -230,7 +232,7 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 100, 1);
     
     for _ in 0..90 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
@@ -240,7 +242,7 @@ mod tests {
 
   #[test]
   fn simulate_buy_and_sell() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 100, 1);
     let received = curve.process_purchase_return(500000000).unwrap(); // 0.5
     println!("Buyer 1 Sent 0.5 SOL and Received {:?} Tokens. {:?}", received, curve);
     let received_2 = curve.process_purchase_return(300000000).unwrap(); // 0.3

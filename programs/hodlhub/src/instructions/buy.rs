@@ -18,12 +18,19 @@ pub struct Buy<'info> {
   #[account()]
   pub state: Box<Account<'info, State>>,
 
-  /// CHECK: The treasury account that collects the fees
+  /// CHECK: The treasury account that collects the protocol fees
   #[account(
     mut,
     constraint = treasury.key() == state.treasury @ ErrorCode::WrongTreasury,
   )]
   pub treasury: AccountInfo<'info>,
+
+  /// CHECK: The creator of the curve  that collects the creator fees
+  #[account(
+    mut,
+    constraint = token_creator.key() == bonding_curve.token_creator @ ErrorCode::WrongTokenCreator,
+  )]
+  pub token_creator: AccountInfo<'info>,
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
