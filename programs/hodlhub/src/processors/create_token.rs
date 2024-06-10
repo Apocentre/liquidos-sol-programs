@@ -84,7 +84,7 @@ pub fn exec(
     token_creator,
     ctx.accounts.token.key(),
     state.sol_target,
-    state.protocol_fee_bps,
+    state.protocol_fee,
     state.trade_fee_bps,
     ctx.bumps.bonding_curve,
   );

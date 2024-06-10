@@ -5,7 +5,7 @@ pub fn exec(
   ctx: Context<Initialize>,
   treasury: Pubkey,
   sol_target: u64,
-  protocol_fee_bps: u64,
+  protocol_fee: u64,
   trade_fee_bps: u64,
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
@@ -14,7 +14,7 @@ pub fn exec(
     owner,
     treasury,
     sol_target,
-    protocol_fee_bps,
+    protocol_fee,
     trade_fee_bps,
   );
 
