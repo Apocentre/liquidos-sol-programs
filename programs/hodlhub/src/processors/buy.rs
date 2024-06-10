@@ -63,14 +63,27 @@ fn send_sol_to_curve<'info>(
   Ok(())
 }
 
-/// Collects fees from the SOL accumulated in the pool
-fn collect_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Result<()> {
+/// Collects fees from the SOL accumulated in the pool and sends to the treasury
+fn collect_protocol_fees(ctx: &Context<Buy>, curve_acc_info: &AccountInfo<'_>) -> Result<()> {
+  let curve = &ctx.accounts.bonding_curve;
+
+  transfer_from_pda(
+    &mut curve_acc_info.to_account_info(),
+    &mut ctx.accounts.treasury.to_account_info(),
+    curve.protocol_fee,
+  )?;
+
+  Ok(())
+}
+
+/// Collects fees from the SOL accumulated in the pool and sends to the bonding curve creator acount
+fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
 
   transfer_from_pda(
     &mut curve_acc_info,
-    &mut ctx.accounts.treasury.to_account_info(),
-    curve.protocol_fee,
+    &mut ctx.accounts.token_creator.to_account_info(),
+    curve.creator_fee,
   )?;
 
   Ok(())
@@ -179,7 +192,8 @@ pub fn exec<'info>(
 
   if is_complete {
     fund_creator_account(&ctx, signer_seeds)?;
-    collect_fees(&ctx, curve_acc_info)?;
+    collect_protocol_fees(&ctx, &curve_acc_info)?;
+    collect_creator_fees(&ctx, curve_acc_info)?;
     
     // mark the curve as closed
     let curve = &mut ctx.accounts.bonding_curve;

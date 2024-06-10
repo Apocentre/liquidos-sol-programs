@@ -6,8 +6,10 @@ pub enum ErrorCode {
   OnlyOwner,
   #[msg("Slippage violation")]
   SlippageViolation,
-  #[msg("Wrong rreasury")]
+  #[msg("Wrong treasury")]
   WrongTreasury,
+  #[msg("Wrong token creator")]
+  WrongTokenCreator,
   #[msg("Curve closed")]
   CurveClosed,
   #[msg("Curve not complete")]

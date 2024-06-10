@@ -152,6 +152,12 @@ impl BondingCurve {
     Ok(value)
   }
 
+  /// Calculates the total fees to be paid when funds are migrated to Raydium.
+  fn calc_migration_fees(&self) -> Result<u64> {
+    let total_fee = self.protocol_fee.safe_add(self.creator_fee)?;
+    Ok(total_fee)
+  }
+
   /// Returns the max amount one can send to the curve. It depends on the sol target
   /// and the current amount of tokens in the pool
   pub fn max_accepted_amount(&self) -> Result<u64> {
@@ -177,7 +183,7 @@ impl BondingCurve {
 
   /// Find the net amount of reserve token that can be used as liquidity in the Raydium pool
   pub fn net_reserve_token_liquidity(&self) -> Result<u64> {
-    let net = self.reserve_token_balance.safe_sub(self.protocol_fee)?;
+    let net = self.reserve_token_balance.safe_sub(self.calc_migration_fees()?)?;
 
     Ok(net)
   }
@@ -189,7 +195,7 @@ impl BondingCurve {
   /// The equations is y = x / P
   pub fn calc_token_amount_to_mint(&self) -> Result<u64> {
     let price = Decimal::safe_from_u64(self.price)?;
-    let net_amount = self.reserve_token_balance.safe_sub(self.protocol_fee)?;
+    let net_amount = self.reserve_token_balance.safe_sub(self.calc_migration_fees()?)?;
     let reserve_token_balance = Decimal::safe_from_u64(net_amount)?;
     let amount = reserve_token_balance.safe_div(price)?.safe_mul(Self::ONE_TOKEN)?;
 
