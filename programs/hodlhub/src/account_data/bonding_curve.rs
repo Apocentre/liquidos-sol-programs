@@ -23,6 +23,8 @@ pub struct BondingCurve {
   pub trade_fee_bps: u64,
   /// Total supply of the token in the lowest denomination i.e. decimals included
   pub total_supply: u64,
+  /// Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  pub creator_fee: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
   /// The current price of the curve in lamports
@@ -46,6 +48,7 @@ impl BondingCurve {
     sol_target: u64,
     protocol_fee: u64,
     trade_fee_bps: u64,
+    creator_fee: u64,
     bump: u8,
   ) -> Self {
     Self {
@@ -54,6 +57,7 @@ impl BondingCurve {
       sol_target,
       protocol_fee,
       trade_fee_bps,
+      creator_fee,
       total_supply: 0,
       reserve_token_balance: 0,
       price: 0,
@@ -202,7 +206,7 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 100, 1);
     let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.total_supply, 793004689489822);
@@ -211,7 +215,7 @@ mod tests {
 
   #[test]
   fn process_sale_return_amount() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 1000, 100, 100, 1);
 
     let tokens_received = curve.process_purchase_return(89800000000).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
@@ -222,7 +226,7 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 100, 1);
     
     for _ in 0..90 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
@@ -232,7 +236,7 @@ mod tests {
 
   #[test]
   fn simulate_buy_and_sell() {
-    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 1);
+    let mut curve = BondingCurve::new(Pubkey::zeroed(), Pubkey::zeroed(), 100, 500, 100, 100, 1);
     let received = curve.process_purchase_return(500000000).unwrap(); // 0.5
     println!("Buyer 1 Sent 0.5 SOL and Received {:?} Tokens. {:?}", received, curve);
     let received_2 = curve.process_purchase_return(300000000).unwrap(); // 0.3

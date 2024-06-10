@@ -7,6 +7,7 @@ pub fn exec(
   sol_target: u64,
   protocol_fee: u64,
   trade_fee_bps: u64,
+  creator_fee: u64,
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
   let state = &mut ctx.accounts.state;
@@ -16,6 +17,7 @@ pub fn exec(
     sol_target,
     protocol_fee,
     trade_fee_bps,
+    creator_fee,
   );
 
   Ok(())

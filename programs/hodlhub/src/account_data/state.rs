@@ -16,6 +16,8 @@ pub struct State {
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   pub trade_fee_bps: u64,
+  /// Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  pub creator_fee: u64,
 }
 
 impl State {
@@ -29,6 +31,7 @@ impl State {
     sol_target: u64,
     protocol_fee: u64,
     trade_fee_bps: u64,
+    creator_fee: u64,
   ) -> Self {
     Self {
       owner,
@@ -36,6 +39,7 @@ impl State {
       sol_target,
       protocol_fee,
       trade_fee_bps,
+      creator_fee,
     }
   }
 }
