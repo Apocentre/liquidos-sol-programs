@@ -13,7 +13,7 @@ pub struct SellEvent {
   token_amount: String,
   sol_amount: String,
   price: String,
-  total_supply: String,
+  circulating_supply: String,
   seller_balance: String,
 }
 
@@ -61,7 +61,7 @@ pub fn exec(
   require!(sol_amount >= min_sol_amount_out, ErrorCode::SlippageViolation);
 
   let price = curve.price;
-  let total_supply = curve.total_supply;
+  let circulating_supply = curve.circulating_supply;
   let fees = curve.calc_trade_fees(sol_amount)?;
   let net_amount = sol_amount.safe_sub(fees)?;
 
@@ -79,7 +79,7 @@ pub fn exec(
     sol_amount: sol_amount.to_string(),
     token_amount: token_amount.to_string(),
     price: price.to_string(),
-    total_supply: total_supply.to_string(),
+    circulating_supply: circulating_supply.to_string(),
     seller_balance: seller_balance.to_string(),
   });
 

@@ -26,6 +26,7 @@ pub mod hodlhub {
   /// * `protocol_fee` - Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   /// * `creator_fee` - Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  /// * `total_token_supply` - The total supply of the newly created tokens in the lowest denomination i.e. decimals included
   pub fn initialize(
     ctx: Context<Initialize>,
     treasury: Pubkey,
@@ -33,6 +34,7 @@ pub mod hodlhub {
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
+    total_token_supply: u64,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
@@ -41,6 +43,7 @@ pub mod hodlhub {
       protocol_fee,
       trade_fee_bps,
       creator_fee,
+      total_token_supply,
     )
   }
 

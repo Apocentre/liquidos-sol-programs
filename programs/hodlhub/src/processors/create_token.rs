@@ -87,6 +87,7 @@ pub fn exec(
     state.protocol_fee,
     state.trade_fee_bps,
     state.creator_fee,
+    state.total_token_supply,
     ctx.bumps.bonding_curve,
   );
 

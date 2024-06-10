@@ -2,6 +2,8 @@
   "state": "6JVsHrSm4MEZkJcDMHr6SdoxCzSmGFdgMgd9FnLqsFfM",
   "treasury": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
   "solTarget": "180000000",
-  "protocolFeeBps": 500,
-  "tradeFeeBps": 100
+  "protocolFee": 2000000000,
+  "creatorFee": 1000000000,
+  "tradeFeeBps": 100,
+  "totalTokenSupply": 1000000000000000
 }
