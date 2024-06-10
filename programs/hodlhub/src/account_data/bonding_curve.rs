@@ -163,14 +163,6 @@ impl BondingCurve {
     self.closed = 1;
   }
 
-  pub fn calc_protocol_fees(&self) -> Result<u64> {
-    let fees = self.reserve_token_balance
-    .safe_mul(self.protocol_fee)?
-    .safe_div(10_000)?;
-
-    Ok(fees)
-  }
-
   pub fn calc_trade_fees(&self, sol_amount: u64) -> Result<u64> {
     let fees = sol_amount
     .safe_mul(self.trade_fee_bps)?
@@ -181,7 +173,7 @@ impl BondingCurve {
 
   /// Find the net amount of reserve token that can be used as liquidity in the Raydium pool
   pub fn net_reserve_token_liquidity(&self) -> Result<u64> {
-    let net = self.reserve_token_balance.safe_sub(self.calc_protocol_fees()?)?;
+    let net = self.reserve_token_balance.safe_sub(self.protocol_fee)?;
 
     Ok(net)
   }
@@ -193,7 +185,7 @@ impl BondingCurve {
   /// The equations is y = x / P
   pub fn calc_token_amount_to_mint(&self) -> Result<u64> {
     let price = Decimal::safe_from_u64(self.price)?;
-    let net_amount = self.reserve_token_balance.safe_sub(self.calc_protocol_fees()?)?;
+    let net_amount = self.reserve_token_balance.safe_sub(self.protocol_fee)?;
     let reserve_token_balance = Decimal::safe_from_u64(net_amount)?;
     let amount = reserve_token_balance.safe_div(price)?.safe_mul(Self::ONE_TOKEN)?;
 
