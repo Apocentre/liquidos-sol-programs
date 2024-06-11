@@ -14,7 +14,7 @@ const main = async () => {
   const tokenSymbol= "SYMBOL_HUB";
   const state = new PublicKey(config.state);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
-  const program = anchor.workspace.Hodlhub;
+  const program = anchor.workspace.Onlybags;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
@@ -24,7 +24,7 @@ const main = async () => {
   .createToken(
     tokenName,
     tokenSymbol,
-    "http://hodlhub.fun"
+    "http://onlybags.fun"
   )
   .accounts({
     state,

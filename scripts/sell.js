@@ -12,7 +12,7 @@ const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
   const deployer = provider.wallet.payer;
-  const program = anchor.workspace.Hodlhub;
+  const program = anchor.workspace.Onlybags;
   const web3 = Web3(deployer.publicKey);
   const tokenName = "TOKEN_HUB";
   const tokenSymbol= "SYMBOL_HUB";

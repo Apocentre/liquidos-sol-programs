@@ -11,7 +11,7 @@ const getTokenAccount = (state, program) => {
 }
 
 const main = async () => {
-  const program = anchor.workspace.Hodlhub;
+  const program = anchor.workspace.Onlybags;
   const state = new PublicKey(config.state);
   const stateData = await program.account.state.fetch(state);
   const bondingCurve = accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];

@@ -13,7 +13,7 @@ use crate::instructions::{
 declare_id!("EFSwN5K21AvHznYp7CH8bz1e2qdhFGj3vYxrRZq5M1bZ");
 
 #[program]
-pub mod hodlhub {
+pub mod onlybags {
   use super::*;
 
   /// Initialize

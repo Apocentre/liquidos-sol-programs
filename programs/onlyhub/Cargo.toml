@@ -1,14 +1,14 @@
 [package]
-name = "hodlhub"
+name = "onlybags"
 version = "0.1.0"
-description = "hodlhub main program"
+description = "onlybags main program"
 edition = "2021"
 license = "BUSL-1.1"
 
 [lib]
 doctest = false
 crate-type = ["cdylib", "lib"]
-name = "hodlhub"
+name = "onlybags"
 
 [features]
 default = ["devnet"]

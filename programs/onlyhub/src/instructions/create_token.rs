@@ -23,7 +23,7 @@ pub struct CreateToken<'info> {
     mint::token_program = token_2022,
     extensions::metadata_pointer::authority = bonding_curve.key(),
     extensions::metadata_pointer::metadata_address = token.key(),
-    seeds = [b"hodlhub_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
+    seeds = [b"onlybags_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
     bump,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,

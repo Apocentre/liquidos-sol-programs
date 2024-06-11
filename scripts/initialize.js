@@ -12,7 +12,7 @@ const {SystemProgram, PublicKey} = anchor.web3
 
 const main = async () => {
   const state = accounts.state();
-  const program = anchor.workspace.Hodlhub;
+  const program = anchor.workspace.Onlybags;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
 
