@@ -14,17 +14,27 @@ use super::create_token::update_account_lamports_to_minimum_balance;
 pub const MINT_LEN: usize = 346;
 const DECIMALS: u8 = 6;
 
-fn create_mint_account(ctx: &Context<CreateTaxToken>) -> Result<()> {
+fn create_mint_account(ctx: &Context<CreateTaxToken>, name: &str, symbol: &str) -> Result<()> {
+  let state_key = &ctx.accounts.state.key();
+  let name_symbol = format!("{}-{}", name, symbol);
+  let seeds: &[&[u8]] = &[
+    b"onlybags_token",
+    state_key.as_ref(),
+    name_symbol.as_ref(),
+    &[ctx.bumps.token],
+  ];
+  let signer_seeds: &[&[&[u8]]] = &[&seeds[..]];
+
   let cpi_accounts = CreateAccount {
     from: ctx.accounts.token_creator.to_account_info(),
-    to: ctx.accounts.token.to_account_info(),
+    to:  ctx.accounts.token.to_account_info(),
   };
 
   let cpi_ctx = CpiContext::new(ctx.accounts.system_program.to_account_info(), cpi_accounts);
   let lamports = Rent::get()?.minimum_balance(MINT_LEN);
 
   create_account(
-    cpi_ctx.with_signer(&[]),
+    cpi_ctx.with_signer(signer_seeds),
     lamports,
     MINT_LEN as u64,
     &ctx.accounts.token_2022.key(),
@@ -133,7 +143,7 @@ fn setup_mint(
   max_fee: u64,
   signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
-  create_mint_account(ctx)?;
+  create_mint_account(ctx, &name, &symbol)?;
   register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
   register_metadata_pointer_extention(ctx, signer_seeds)?;
   init_mint(ctx, signer_seeds)?;
