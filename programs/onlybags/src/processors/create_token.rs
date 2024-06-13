@@ -7,12 +7,13 @@ use crate::{
 
 #[event]
 pub struct TokenCreatedEvent {
-  creator: Pubkey,
-  address: Pubkey,
-  name: String,
-  symbol: String,
-  uri: String,
-  curve: Pubkey,
+  pub creator: Pubkey,
+  pub address: Pubkey,
+  pub name: String,
+  pub symbol: String,
+  pub uri: String,
+  pub curve: Pubkey,
+  pub has_tax: bool,
 }
 
 pub fn update_account_lamports_to_minimum_balance<'info>(
@@ -53,8 +54,8 @@ fn create_metadata(
     metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
     mint_authority: ctx.accounts.bonding_curve.to_account_info(),
     update_authority: ctx.accounts.bonding_curve.to_account_info(),
-  }
-  ;
+  };
+  
   let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.token_2022.to_account_info(), cpi_accounts, signer_seeds);
   token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
 
@@ -100,6 +101,7 @@ pub fn exec(
     symbol,
     uri,
     curve: curve_key,
+    has_tax: false,
   });
 
   Ok(())

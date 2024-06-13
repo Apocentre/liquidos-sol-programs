@@ -7,10 +7,10 @@ pub mod raydium;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{
-  initialize::*, create_token::*, buy::*, sell::*, move_liquidity::*,
+  initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
 };
 
-declare_id!("EFSwN5K21AvHznYp7CH8bz1e2qdhFGj3vYxrRZq5M1bZ");
+declare_id!("3vVWsiMcHXqacBY1ApXj7YFrpmob3uDGm3TTStcywKEn");
 
 #[program]
 pub mod onlybags {
@@ -64,6 +64,29 @@ pub mod onlybags {
     uri: String,
   ) -> Result<()> {
     processors::create_token::exec(ctx, name, symbol, uri)
+  }
+
+  /// CreateToken
+  ///
+  /// Creates a new tax token
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `name` - The name of the token (used in the metadata account)
+  /// * `symbol` - The symbol of the token (used in the metadata account)
+  /// * `uri` - The uri of the token (used in the metadata account)
+  /// * `fee_bps` - Transfer fee BPS
+  /// * `max_fee` - Max fee that can be applied
+  pub fn create_tax_token(
+    ctx: Context<CreateTaxToken>,
+    name: String,
+    symbol: String,
+    uri: String,
+    fee_bps: u16,
+    max_fee: u64,
+  ) -> Result<()> {
+    processors::create_tax_token::exec(ctx, name, symbol, uri, fee_bps, max_fee)
   }
 
   /// Buy

@@ -7,7 +7,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-onlybags = "EFSwN5K21AvHznYp7CH8bz1e2qdhFGj3vYxrRZq5M1bZ"
+onlybags = "3vVWsiMcHXqacBY1ApXj7YFrpmob3uDGm3TTStcywKEn"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1,40 +1,29 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  associated_token::AssociatedToken, token_interface::{Mint, TokenInterface, TokenAccount},
+  associated_token::AssociatedToken, token_interface::TokenInterface,
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
-
 #[derive(Accounts)]
 #[instruction(name: String, symbol: String)]
-pub struct CreateToken<'info> {
+pub struct CreateTaxToken<'info> {
   /// The state account of each instance of this program
   #[account()]
   pub state: Box<Account<'info, State>>,
 
-  /// The Mint account of the newly created token.
+  /// CHECK: The Mint account of the newly created token. The initialization and extension setup will
+  /// take place in the processor function.
   #[account(
-    init,
-    payer = token_creator,
-    mint::decimals = 6,
-    mint::authority = bonding_curve,
-    mint::token_program = token_2022,
-    extensions::metadata_pointer::authority = bonding_curve.key(),
-    extensions::metadata_pointer::metadata_address = token.key(),
+    mut,
     seeds = [b"onlybags_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
     bump,
   )]
-  pub token: Box<InterfaceAccount<'info, Mint>>,
+  pub token: AccountInfo<'info>,
 
-  /// The ATA that will hold the liquidity of the curve (token side).
-  #[account(
-    init,
-    payer = token_creator,
-    associated_token::mint = token,
-    associated_token::authority = bonding_curve,
-    associated_token::token_program = token_2022,
-  )]
-  pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+  /// CHECK: The ATA that will hold the liquidity of the curve (token side). The account will be initialized
+  /// in the processor function
+  #[account(mut)]
+  pub curve_ata: AccountInfo<'info>,
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
@@ -53,4 +42,5 @@ pub struct CreateToken<'info> {
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
+  pub rent: Sysvar<'info, Rent>,
 }
