@@ -41,3 +41,7 @@ The deployment (or upgrade) might not be fully finished for various reasons e.g.
 
 `solana program close --keypair ./wallets/deployer.json --buffers --recipient 3amghT6p74VNhStZRudHdMXFNVhTnswWs1V6my74qR7A`
 
+
+## Extend program account size
+
+solana program extend BtqVBXSbaMY6A4ZWHS1HSZZkPvPPwae8w5553F3k6ut  1000 -u devnet --keypair ./wallets/deployer.json

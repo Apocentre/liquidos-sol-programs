@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, system_program::{CreateAccount, create_account}};
 use anchor_spl::{associated_token, token_2022::{initialize_mint, InitializeMint}, token_interface::{
   metadata_pointer_initialize, token_metadata_initialize, transfer_fee_initialize,
   MetadataPointerInitialize, TokenMetadataInitialize, TransferFeeInitialize,
@@ -9,7 +9,29 @@ use crate::{
 };
 use super::create_token::update_account_lamports_to_minimum_balance;
 
+//  We run getMintLen from the `@solana/spl-token` js package to get this value
+// mint will include two extentions, the metadata pointer and the transfer fee
+pub const MINT_LEN: usize = 346;
 const DECIMALS: u8 = 6;
+
+fn create_mint_account(ctx: &Context<CreateTaxToken>) -> Result<()> {
+  let cpi_accounts = CreateAccount {
+    from: ctx.accounts.token_creator.to_account_info(),
+    to: ctx.accounts.token.to_account_info(),
+  };
+
+  let cpi_ctx = CpiContext::new(ctx.accounts.system_program.to_account_info(), cpi_accounts);
+  let lamports = Rent::get()?.minimum_balance(MINT_LEN);
+
+  create_account(
+    cpi_ctx.with_signer(&[]),
+    lamports,
+    MINT_LEN as u64,
+    &ctx.accounts.token_2022.key(),
+  )?;
+
+  Ok(())
+}
 
 fn register_transfer_fee_extention(
   ctx: &Context<CreateTaxToken>,
@@ -111,6 +133,7 @@ fn setup_mint(
   max_fee: u64,
   signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
+  create_mint_account(ctx)?;
   register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
   register_metadata_pointer_extention(ctx, signer_seeds)?;
   init_mint(ctx, signer_seeds)?;

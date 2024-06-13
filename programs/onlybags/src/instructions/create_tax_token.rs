@@ -4,10 +4,6 @@ use anchor_spl::{
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
-//  We run getMintLen from the `@solana/spl-token` js package to get this value
-// mint will include two extentions, the metadata pointer and the transfer fee
-pub const MINT_LEN: usize = 346;
-
 #[derive(Accounts)]
 #[instruction(name: String, symbol: String)]
 pub struct CreateTaxToken<'info> {
@@ -18,9 +14,6 @@ pub struct CreateTaxToken<'info> {
   /// CHECK: The Mint account of the newly created token. The initialization and extension setup will
   /// take place in the processor function.
   #[account(
-    init,
-    space = MINT_LEN,
-    payer = token_creator,
     seeds = [b"onlybags_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
     bump,
   )]
