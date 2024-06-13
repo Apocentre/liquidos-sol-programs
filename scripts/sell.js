@@ -14,8 +14,8 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const program = anchor.workspace.Onlybags;
   const web3 = Web3(deployer.publicKey);
-  const tokenName = "TOKEN_HUB";
-  const tokenSymbol= "SYMBOL_HUB";
+  const tokenName = "TOKEN_TAX_HUB_1";
+  const tokenSymbol= "SYMBOL_TAX_HUB_1";
   const seller = Keypair.fromSecretKey(Buffer.from(sellerKey))
   const state = new PublicKey(config.state);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];

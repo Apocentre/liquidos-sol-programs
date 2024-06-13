@@ -11,8 +11,8 @@ const {BN} = anchor.default;
 const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
 
 const main = async () => {
-  const tokenName = "TOKEN_HUB";
-  const tokenSymbol= "SYMBOL_HUB";
+  const tokenName = "TOKEN_TAX_HUB_2";
+  const tokenSymbol= "SYMBOL_TAX_HUB_2";
   const state = new PublicKey(config.state);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Onlybags;
@@ -27,7 +27,7 @@ const main = async () => {
     tokenSymbol,
     "http://onlybags.fun",
     new BN(200), // 2% transfer fee
-    new BN(200), // 2% max fee
+    new BN(web3.toBase("20000000", 6)), // max fee that can be charged is 2% of the total supply i.e. 20M
   )
   .accounts({
     state,

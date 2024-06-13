@@ -15,9 +15,9 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const tokenName = "TOKEN_HUB";
-  const tokenSymbol= "SYMBOL_HUB";
-  const amount = new BN(web3.toBase("3", 9));
+  const tokenName = "TOKEN_TAX_HUB_2";
+  const tokenSymbol= "SYMBOL_TAX_HUB_2";
+  const amount = new BN(web3.toBase("70", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
