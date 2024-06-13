@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  associated_token::AssociatedToken, token_interface::{TokenInterface, TokenAccount},
+  associated_token::AssociatedToken, token_interface::TokenInterface,
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
@@ -28,14 +28,8 @@ pub struct CreateTaxToken<'info> {
 
   /// CHECK: The ATA that will hold the liquidity of the curve (token side). The account will be initialized
   /// in the processor function
-  #[account(
-    init,
-    payer = token_creator,
-    associated_token::mint = token,
-    associated_token::authority = bonding_curve,
-    associated_token::token_program = token_2022,
-  )]
-  pub curve_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+  #[account(mut)]
+  pub curve_ata: AccountInfo<'info>,
 
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
