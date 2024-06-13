@@ -14,6 +14,7 @@ pub struct CreateTaxToken<'info> {
   /// CHECK: The Mint account of the newly created token. The initialization and extension setup will
   /// take place in the processor function.
   #[account(
+    mut,
     seeds = [b"onlybags_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
     bump,
   )]
