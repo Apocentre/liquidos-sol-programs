@@ -1,5 +1,8 @@
 use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instruction::transfer}};
-use anchor_spl::token_interface::{token_metadata_initialize, transfer_fee_initialize, TokenMetadataInitialize, TransferFeeInitialize};
+use anchor_spl::token_interface::{
+  metadata_pointer_initialize, token_metadata_initialize, transfer_fee_initialize,
+  MetadataPointerInitialize, TokenMetadataInitialize, TransferFeeInitialize,
+};
 use crate::{
   account_data::bonding_curve::BondingCurve,
   instructions::create_tax_token::CreateTaxToken, processors::create_token::TokenCreatedEvent,
@@ -15,15 +18,15 @@ fn register_transfer_fee_extention(
 ) -> Result<()> {
   let token = &ctx.accounts.token;
   let token_2022 = &ctx.accounts.token_2022;
-  // register extentions and initialize mint
   let cpi_accounts = TransferFeeInitialize {
     token_program_id: token_2022.to_account_info(),
     mint: token.to_account_info(),
   };
   let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  
   transfer_fee_initialize(
     cpi_ctx,
-    None,
+    Some(&ctx.accounts.bonding_curve.key()),
     Some(&ctx.accounts.token_creator.key()),
     fee_bps,
     max_fee
@@ -31,6 +34,30 @@ fn register_transfer_fee_extention(
 
   Ok(())
 }
+
+
+fn register_metadata_pointer_extention(
+  ctx: &Context<CreateTaxToken>,
+  signer_seeds: &[&[&[u8]]],
+) -> Result<()> {
+  let token = &ctx.accounts.token;
+  let token_2022 = &ctx.accounts.token_2022;
+
+  let cpi_accounts = MetadataPointerInitialize {
+    token_program_id: token_2022.to_account_info(),
+    mint: token.to_account_info()
+  };
+
+  let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  metadata_pointer_initialize(
+    cpi_ctx,
+    Some(ctx.accounts.bonding_curve.key()),
+    Some(token.key()),
+  )?;
+
+  Ok(())
+}
+
 
 fn init_mint(
   ctx: &Context<CreateTaxToken>,
@@ -51,7 +78,8 @@ fn init_mint(
   let signer_seeds: &[&[&[u8]]] = &[&seeds[..]];
   
   register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
-  
+  register_metadata_pointer_extention(ctx, signer_seeds)?;
+
   // Initialize the token metadata
   let cpi_accounts = TokenMetadataInitialize {
     token_program_id: token_2022.to_account_info(),
