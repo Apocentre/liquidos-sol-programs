@@ -59,7 +59,7 @@ fn register_transfer_fee_extention(
   
   transfer_fee_initialize(
     cpi_ctx,
-    Some(&ctx.accounts.bonding_curve.key()),
+    None,
     Some(&ctx.accounts.token_creator.key()),
     fee_bps,
     max_fee
