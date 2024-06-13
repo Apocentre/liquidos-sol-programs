@@ -26,7 +26,8 @@ pub struct CreateTaxToken<'info> {
   )]
   pub token: AccountInfo<'info>,
 
-  /// The ATA that will hold the liquidity of the curve (token side).
+  /// CHECK: The ATA that will hold the liquidity of the curve (token side). The account will be initialized
+  /// in the processor function
   #[account(
     init,
     payer = token_creator,
