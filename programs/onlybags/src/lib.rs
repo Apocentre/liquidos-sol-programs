@@ -10,7 +10,7 @@ use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
 };
 
-declare_id!("EFSwN5K21AvHznYp7CH8bz1e2qdhFGj3vYxrRZq5M1bZ");
+declare_id!("BtqVBXSbaMY6A4ZWHS1HSZZkPvPPwae8w5553F3k6ut");
 
 #[program]
 pub mod onlybags {
