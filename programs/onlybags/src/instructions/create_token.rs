@@ -1,11 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  associated_token::AssociatedToken, token_2022::spl_token_2022::extension::ExtensionType,
-  token_interface::{Mint, TokenInterface, TokenAccount},
+  associated_token::AssociatedToken, token_interface::{Mint, TokenInterface, TokenAccount},
 };
 use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
-pub const MINT_EXTENSIONS: [ExtensionType; 1] = [ExtensionType::MetadataPointer];
 
 #[derive(Accounts)]
 #[instruction(name: String, symbol: String)]
