@@ -1,42 +1,44 @@
 use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instruction::transfer}};
-use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
+use anchor_spl::token_interface::{token_metadata_initialize, transfer_fee_initialize, TokenMetadataInitialize, TransferFeeInitialize};
 use crate::{
   account_data::bonding_curve::BondingCurve,
-  instructions::create_token::CreateToken,
+  instructions::create_tax_token::CreateTaxToken, processors::create_token::TokenCreatedEvent,
 };
 
-#[event]
-pub struct TokenCreatedEvent {
-  pub creator: Pubkey,
-  pub address: Pubkey,
-  pub name: String,
-  pub symbol: String,
-  pub uri: String,
-  pub curve: Pubkey,
-  pub has_tax: bool,
-}
+use super::create_token::update_account_lamports_to_minimum_balance;
 
-pub fn update_account_lamports_to_minimum_balance<'info>(
-  account: AccountInfo<'info>,
-  payer: AccountInfo<'info>,
-  system_program: AccountInfo<'info>,
+fn register_transfer_fee_extention(
+  ctx: &Context<CreateTaxToken>,
+  fee_bps: u16,
+  max_fee: u64,
+  signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
-  let extra_lamports = Rent::get()?.minimum_balance(account.data_len()) - account.get_lamports();
+  let token = &ctx.accounts.token;
+  let token_2022 = &ctx.accounts.token_2022;
+  // register extentions and initialize mint
+  let cpi_accounts = TransferFeeInitialize {
+    token_program_id: token_2022.to_account_info(),
+    mint: token.to_account_info(),
+  };
+  let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  transfer_fee_initialize(
+    cpi_ctx,
+    None,
+    Some(&ctx.accounts.token_creator.key()),
+    fee_bps,
+    max_fee
+  )?;
 
-  if extra_lamports > 0 {
-    invoke(
-      &transfer(payer.key, account.key, extra_lamports),
-      &[payer, account, system_program],
-    )?;
-  }
   Ok(())
 }
 
-fn create_metadata(
-  ctx: &Context<CreateToken>,
+fn init_mint(
+  ctx: &Context<CreateTaxToken>,
   name: String,
   symbol: String,
   uri: String,
+  fee_bps: u16,
+  max_fee: u64,
 ) -> Result<()> {
   let token_key = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();
@@ -46,17 +48,20 @@ fn create_metadata(
     token_key.as_ref(),
     &[ctx.bumps.bonding_curve],
   ];
-  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-
+  let signer_seeds: &[&[&[u8]]] = &[&seeds[..]];
+  
+  register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
+  
+  // Initialize the token metadata
   let cpi_accounts = TokenMetadataInitialize {
-    token_program_id: ctx.accounts.token_2022.to_account_info(),
+    token_program_id: token_2022.to_account_info(),
     mint: ctx.accounts.token.to_account_info(),
     metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
     mint_authority: ctx.accounts.bonding_curve.to_account_info(),
     update_authority: ctx.accounts.bonding_curve.to_account_info(),
   };
   
-  let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
   token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
 
   // the new metadata will be stored on the Mint account. However, we have allocated enougg space for
@@ -67,14 +72,17 @@ fn create_metadata(
     ctx.accounts.system_program.to_account_info(),
   )?;
 
+
   Ok(())
 }
 
 pub fn exec(
-  ctx: Context<CreateToken>,
+  ctx: Context<CreateTaxToken>,
   name: String,
   symbol: String,
   uri: String,
+  fee_bps: u16,
+  max_fee: u64, 
 ) -> Result<()> {
   let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
@@ -92,7 +100,14 @@ pub fn exec(
     ctx.bumps.bonding_curve,
   );
 
-  create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
+  init_mint(
+    &ctx,
+    name.clone(),
+    symbol.clone(),
+    uri.clone(),
+    fee_bps,
+    max_fee,
+  )?;
 
   emit!(TokenCreatedEvent {
     creator: token_creator,
@@ -101,7 +116,7 @@ pub fn exec(
     symbol,
     uri,
     curve: curve_key,
-    has_tax: false,
+    has_tax: true,
   });
 
   Ok(())
