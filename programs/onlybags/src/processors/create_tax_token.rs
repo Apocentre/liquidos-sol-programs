@@ -1,14 +1,15 @@
 use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instruction::transfer}};
-use anchor_spl::token_interface::{
+use anchor_spl::{token_2022::{initialize_mint, InitializeMint}, token_interface::{
   metadata_pointer_initialize, token_metadata_initialize, transfer_fee_initialize,
   MetadataPointerInitialize, TokenMetadataInitialize, TransferFeeInitialize,
-};
+}};
 use crate::{
   account_data::bonding_curve::BondingCurve,
   instructions::create_tax_token::CreateTaxToken, processors::create_token::TokenCreatedEvent,
 };
-
 use super::create_token::update_account_lamports_to_minimum_balance;
+
+const DECIMALS: u8 = 6;
 
 fn register_transfer_fee_extention(
   ctx: &Context<CreateTaxToken>,
@@ -35,20 +36,15 @@ fn register_transfer_fee_extention(
   Ok(())
 }
 
-
-fn register_metadata_pointer_extention(
-  ctx: &Context<CreateTaxToken>,
-  signer_seeds: &[&[&[u8]]],
-) -> Result<()> {
+fn register_metadata_pointer_extention(ctx: &Context<CreateTaxToken>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let token = &ctx.accounts.token;
   let token_2022 = &ctx.accounts.token_2022;
-
   let cpi_accounts = MetadataPointerInitialize {
     token_program_id: token_2022.to_account_info(),
     mint: token.to_account_info()
   };
-
   let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  
   metadata_pointer_initialize(
     cpi_ctx,
     Some(ctx.accounts.bonding_curve.key()),
@@ -58,8 +54,25 @@ fn register_metadata_pointer_extention(
   Ok(())
 }
 
+fn init_mint(ctx: &Context<CreateTaxToken>, signer_seeds: &[&[&[u8]]],) -> Result<()> {
+  let token = &ctx.accounts.token;
+  let token_2022 = &ctx.accounts.token_2022;
+  let cpi_accounts = InitializeMint {
+    mint: token.to_account_info(),
+    rent: ctx.accounts.rent.to_account_info(),
+  };
+  let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  initialize_mint(
+    cpi_ctx,
+    DECIMALS,
+    &ctx.accounts.bonding_curve.key(),
+    Some(&ctx.accounts.bonding_curve.key()),
+  )?;
 
-fn init_mint(
+  Ok(())
+}
+
+fn setup_mint(
   ctx: &Context<CreateTaxToken>,
   name: String,
   symbol: String,
@@ -79,6 +92,7 @@ fn init_mint(
   
   register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
   register_metadata_pointer_extention(ctx, signer_seeds)?;
+  init_mint(ctx)?;
 
   // Initialize the token metadata
   let cpi_accounts = TokenMetadataInitialize {
@@ -128,7 +142,7 @@ pub fn exec(
     ctx.bumps.bonding_curve,
   );
 
-  init_mint(
+  setup_mint(
     &ctx,
     name.clone(),
     symbol.clone(),
