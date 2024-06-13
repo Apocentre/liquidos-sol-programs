@@ -5,5 +5,6 @@
   "protocolFee": 2000000000,
   "creatorFee": 1000000000,
   "tradeFeeBps": 100,
-  "totalTokenSupply": 1000000000000000
+  "totalTokenSupply": 1000000000000000,
+  "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X"
 }
