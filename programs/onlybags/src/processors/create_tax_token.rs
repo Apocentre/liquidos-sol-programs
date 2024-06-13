@@ -72,6 +72,36 @@ fn init_mint(ctx: &Context<CreateTaxToken>, signer_seeds: &[&[&[u8]]],) -> Resul
   Ok(())
 }
 
+fn init_metadata(
+  ctx: &Context<CreateTaxToken>,
+  name: String,
+  symbol: String,
+  uri: String,
+  signer_seeds: &[&[&[u8]]],
+) -> Result<()> {
+  let token_2022 = &ctx.accounts.token_2022;
+  let cpi_accounts = TokenMetadataInitialize {
+    token_program_id: token_2022.to_account_info(),
+    mint: ctx.accounts.token.to_account_info(),
+    metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
+    mint_authority: ctx.accounts.bonding_curve.to_account_info(),
+    update_authority: ctx.accounts.bonding_curve.to_account_info(),
+  };
+  
+  let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
+
+  // the new metadata will be stored on the Mint account. However, we have allocated enougg space for
+  // the MetadataPoint and the Mint data. We need to allocate additional space to fit the metadata.
+  update_account_lamports_to_minimum_balance(
+    ctx.accounts.token.to_account_info(),
+    ctx.accounts.token_creator.to_account_info(),
+    ctx.accounts.system_program.to_account_info(),
+  )?;
+  
+  Ok(())
+}
+
 fn setup_mint(
   ctx: &Context<CreateTaxToken>,
   name: String,
@@ -92,28 +122,8 @@ fn setup_mint(
   
   register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
   register_metadata_pointer_extention(ctx, signer_seeds)?;
-  init_mint(ctx)?;
-
-  // Initialize the token metadata
-  let cpi_accounts = TokenMetadataInitialize {
-    token_program_id: token_2022.to_account_info(),
-    mint: ctx.accounts.token.to_account_info(),
-    metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
-    mint_authority: ctx.accounts.bonding_curve.to_account_info(),
-    update_authority: ctx.accounts.bonding_curve.to_account_info(),
-  };
-  
-  let cpi_ctx = CpiContext::new_with_signer(token_2022.to_account_info(), cpi_accounts, signer_seeds);
-  token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
-
-  // the new metadata will be stored on the Mint account. However, we have allocated enougg space for
-  // the MetadataPoint and the Mint data. We need to allocate additional space to fit the metadata.
-  update_account_lamports_to_minimum_balance(
-    ctx.accounts.token.to_account_info(),
-    ctx.accounts.token_creator.to_account_info(),
-    ctx.accounts.system_program.to_account_info(),
-  )?;
-
+  init_mint(ctx, signer_seeds)?;
+  init_metadata(ctx, name, symbol, uri, signer_seeds)?;
 
   Ok(())
 }
