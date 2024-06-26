@@ -39,7 +39,7 @@ solana program close 3vVWsiMcHXqacBY1ApXj7YFrpmob3uDGm3TTStcywKEn --recipient 85
 
 The deployment (or upgrade) might not be fully finished for various reasons e.g. ctl+c. This result in multiple intemediate accounts being created which are not closed. Thus quite a bit of SOL will be locked in those account. To restore that balance we need to close the account. There is a command in the cli to do so.
 
-`solana program close --keypair ./wallets/deployer.json --buffers --recipient 3amghT6p74VNhStZRudHdMXFNVhTnswWs1V6my74qR7A`
+`solana program close --keypair ./wallets/deployer.json --buffers --recipient 85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X`
 
 
 ## Extend program account size
