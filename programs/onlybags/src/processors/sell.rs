@@ -71,6 +71,7 @@ pub fn exec(
   collect_trade_fees(&ctx, fees)?;
   send_sol_to_seller(&ctx, net_amount)?;
 
+  ctx.accounts.seller_ata.reload()?;
   let seller_balance = ctx.accounts.seller_ata.amount;
   
   emit!(SellEvent {

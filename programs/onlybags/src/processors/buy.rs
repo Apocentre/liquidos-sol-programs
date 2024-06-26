@@ -204,6 +204,7 @@ pub fn exec<'info>(
 
   {
     let buyer = ctx.accounts.buyer.key();
+    ctx.accounts.buyer_ata.reload()?;
     let buyer_balance = ctx.accounts.buyer_ata.amount;
 
     emit!(BuyEvent {
