@@ -22,6 +22,7 @@ pub struct BuyEvent {
   is_complete: bool,
   price: String,
   circulating_supply: String,
+  sol_balance: String,
   buyer_balance: String,
 }
 
@@ -189,6 +190,7 @@ pub fn exec<'info>(
   let price = curve.price;
   let circulating_supply = curve.circulating_supply;
   let is_complete = curve.is_complete();
+  let sol_balance = curve.reserve_token_balance.to_string();
 
   if is_complete {
     fund_creator_account(&ctx, signer_seeds)?;
@@ -215,6 +217,7 @@ pub fn exec<'info>(
       is_complete,
       price: price.to_string(),
       circulating_supply: circulating_supply.to_string(),
+      sol_balance,
       buyer_balance: buyer_balance.to_string(),
     });
   }

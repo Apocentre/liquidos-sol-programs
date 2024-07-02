@@ -14,6 +14,7 @@ pub struct SellEvent {
   sol_amount: String,
   price: String,
   circulating_supply: String,
+  sol_balance: String,
   seller_balance: String,
 }
 
@@ -64,6 +65,7 @@ pub fn exec(
   let circulating_supply = curve.circulating_supply;
   let fees = curve.calc_trade_fees(sol_amount)?;
   let net_amount = sol_amount.safe_sub(fees)?;
+  let sol_balance = curve.reserve_token_balance.to_string();
 
   // Important! burn_tokens makes a CPI so it must come before the other two functions which
   // directly manipulate the PDA account. More on this here https://stackoverflow.com/a/77591006/512783
@@ -81,6 +83,7 @@ pub fn exec(
     token_amount: token_amount.to_string(),
     price: price.to_string(),
     circulating_supply: circulating_supply.to_string(),
+    sol_balance,
     seller_balance: seller_balance.to_string(),
   });
 
