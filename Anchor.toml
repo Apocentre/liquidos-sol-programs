@@ -9,6 +9,9 @@ skip-lint = false
 [programs.localnet]
 onlybags = "3vVWsiMcHXqacBY1ApXj7YFrpmob3uDGm3TTStcywKEn"
 
+[programs.mainnet]
+onlybags = "3vVWsiMcHXqacBY1ApXj7YFrpmob3uDGm3TTStcywKEn"
+
 [registry]
 url = "https://api.apr.dev"
 
