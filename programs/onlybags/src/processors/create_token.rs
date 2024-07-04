@@ -75,13 +75,15 @@ pub fn exec(
   name: String,
   symbol: String,
   uri: String,
+  curve_type: u8,
 ) -> Result<()> {
   let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
   let curve_key = ctx.accounts.bonding_curve.key();
   let curve = &mut ctx.accounts.bonding_curve;
 
-  ***curve = BondingCurve::new(
+  ***curve = BondingCurve::try_new(
+    curve_type,
     token_creator,
     ctx.accounts.token.key(),
     state.sol_target,
@@ -90,7 +92,7 @@ pub fn exec(
     state.creator_fee,
     state.total_token_supply,
     ctx.bumps.bonding_curve,
-  );
+  )?;
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 

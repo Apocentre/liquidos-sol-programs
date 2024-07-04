@@ -1,8 +1,6 @@
 
 use std::mem::size_of;
 use anchor_lang::prelude::*;
-use rust_decimal::prelude::*;
-use rust_decimal_macros::dec;
 use anchor_safe_math::SafeMath;
 use crate::curve_formulas::CurveType;
 
@@ -43,11 +41,8 @@ impl BondingCurve {
   pub const MAX_SIZE: usize = 8
   + size_of::<Self>();
 
-  const ONE_TOKEN: Decimal = dec!(1_000_000);
-  const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
-
-  pub fn new(
-    curve_type: CurveType,
+  pub fn try_new(
+    curve_type: u8,
     token_creator: Pubkey,
     token: Pubkey,
     sol_target: u64,
@@ -56,9 +51,9 @@ impl BondingCurve {
     creator_fee: u64,
     total_supply: u64,
     bump: u8,
-  ) -> Self {
-    Self {
-      curve_type,
+  ) -> Result<Self> {
+    Ok(Self {
+      curve_type: curve_type.try_into()?,
       token_creator,
       token,
       sol_target,
@@ -71,22 +66,18 @@ impl BondingCurve {
       price: 0,
       bump,
       closed: 0,
-    }
+    })
   }
 
   /// Finds the current price of the curve
   fn calc_price(&self) -> Result<u64> {
-    match self.curve_type {
-      CurveType::CurveV1 => todo!(),
-      CurveType::CurveV2 => todo!(),
-    }
-    
-    Ok(p)
+    self.curve_type.calc_price(self.circulating_supply)
   }
 
   /// Calculates the number of tokens to mint based on the given amount of reserve tokens.
   /// This function is used when user buys the token with SOL
   pub fn process_purchase_return(&mut self, reserve_tokens_received: u64) -> Result<u64> {
+    let k = self.curve_type.process_purchase_return(reserve_tokens_received, self.circulating_supply)?;
 
     // update state
     self.circulating_supply = self.circulating_supply.safe_add(k)?;
@@ -99,6 +90,8 @@ impl BondingCurve {
   /// Given an amount of tokens, calucates the amount of reserve tokens to be sent back.
   /// This function is used when user sells the tokens and receives back SOL
   pub fn process_sale_return(&mut self, token_amount: u64) -> Result<u64> {
+    let reserve_tokens_returned = self.curve_type.process_sale_return(token_amount, self.circulating_supply)?;
+
     // update state
     self.circulating_supply = self.circulating_supply.safe_sub(token_amount)?;
     self.reserve_token_balance = self.reserve_token_balance.safe_sub(reserve_tokens_returned)?;
@@ -159,7 +152,8 @@ mod tests {
 
   #[test]
   fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
       100,
@@ -168,7 +162,7 @@ mod tests {
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
     let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.circulating_supply, 793004689489822);
@@ -177,7 +171,8 @@ mod tests {
 
   #[test]
   fn process_sale_return_amount() {
-    let mut curve = BondingCurve::new(
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
       100,
@@ -186,7 +181,7 @@ mod tests {
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
 
     let tokens_received = curve.process_purchase_return(89800000000).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
@@ -197,7 +192,8 @@ mod tests {
 
   #[test]
   fn simulate() {
-    let mut curve = BondingCurve::new(
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
       100,
@@ -206,7 +202,7 @@ mod tests {
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
     
     for _ in 0..90 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
@@ -216,7 +212,8 @@ mod tests {
 
   #[test]
   fn simulate_buy_and_sell() {
-    let mut curve = BondingCurve::new(
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
       100,
@@ -225,7 +222,7 @@ mod tests {
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
     let received = curve.process_purchase_return(500000000).unwrap(); // 0.5
     println!("Buyer 1 Sent 0.5 SOL and Received {:?} Tokens. {:?}", received, curve);
     let received_2 = curve.process_purchase_return(300000000).unwrap(); // 0.3

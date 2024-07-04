@@ -174,14 +174,16 @@ pub fn exec(
   symbol: String,
   uri: String,
   fee_bps: u16,
-  max_fee: u64, 
+  max_fee: u64,
+  curve_type: u8,
 ) -> Result<()> {
   let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
   let curve_key = ctx.accounts.bonding_curve.key();
   let curve = &mut ctx.accounts.bonding_curve;
 
-  ***curve = BondingCurve::new(
+  ***curve = BondingCurve::try_new(
+    curve_type,
     token_creator,
     ctx.accounts.token.key(),
     state.sol_target,
@@ -190,7 +192,7 @@ pub fn exec(
     state.creator_fee,
     state.total_token_supply,
     ctx.bumps.bonding_curve,
-  );
+  )?;
 
   let token_key = &ctx.accounts.token.key();
   let state_key = &ctx.accounts.state.key();

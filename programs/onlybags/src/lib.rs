@@ -58,13 +58,15 @@ pub mod onlybags {
   /// * `name` - The name of the token (used in the metadata account)
   /// * `symbol` - The symbol of the token (used in the metadata account)
   /// * `uri` - The uri of the token (used in the metadata account)
+  /// * `curve_type` - The type of the curve. The numner defines the version e.g. CurveV1 then curve_type = 1
   pub fn create_token(
     ctx: Context<CreateToken>,
     name: String,
     symbol: String,
     uri: String,
+    curve_type: u8,
   ) -> Result<()> {
-    processors::create_token::exec(ctx, name, symbol, uri)
+    processors::create_token::exec(ctx, name, symbol, uri, curve_type)
   }
 
   /// CreateToken
@@ -79,6 +81,7 @@ pub mod onlybags {
   /// * `uri` - The uri of the token (used in the metadata account)
   /// * `fee_bps` - Transfer fee BPS
   /// * `max_fee` - Max fee that can be applied
+  /// * `curve_type` - The type of the curve. The numner defines the version e.g. CurveV1 then curve_type = 1
   pub fn create_tax_token(
     ctx: Context<CreateTaxToken>,
     name: String,
@@ -86,8 +89,9 @@ pub mod onlybags {
     uri: String,
     fee_bps: u16,
     max_fee: u64,
+    curve_type: u8,
   ) -> Result<()> {
-    processors::create_tax_token::exec(ctx, name, symbol, uri, fee_bps, max_fee)
+    processors::create_tax_token::exec(ctx, name, symbol, uri, fee_bps, max_fee, curve_type)
   }
 
   /// Buy
