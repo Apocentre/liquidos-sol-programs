@@ -4,13 +4,15 @@ use anchor_lang::prelude::*;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 use anchor_safe_math::SafeMath;
-use crate::math::decimal_error::DecimalErrorHandler;
+use crate::curve_formulas::CurveType;
 
 pub const MAX_OPERATORS: usize = 5;
 
 #[account]
 #[derive(Debug)]
 pub struct BondingCurve {
+  /// The type of the curve. This implement the main logic of the curve i.e. the formulas
+  pub curve_type: CurveType,
   /// The creator of the token this bonding curve is associated with
   pub token_creator: Pubkey,
   /// The mint account of the token associated with this curve
@@ -45,6 +47,7 @@ impl BondingCurve {
   const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
 
   pub fn new(
+    curve_type: CurveType,
     token_creator: Pubkey,
     token: Pubkey,
     sol_target: u64,
@@ -55,6 +58,7 @@ impl BondingCurve {
     bump: u8,
   ) -> Self {
     Self {
+      curve_type,
       token_creator,
       token,
       sol_target,
@@ -72,41 +76,17 @@ impl BondingCurve {
 
   /// Finds the current price of the curve
   fn calc_price(&self) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
-
-    let p = std::f64::consts::E.powf(a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?);
-    let p = Decimal::safe_from_f64(p)?
-    .safe_mul(Self::LAMPORT_IN_SOL)?
-    .safe_to_u64()?;
-
+    match self.curve_type {
+      CurveType::CurveV1 => todo!(),
+      CurveType::CurveV2 => todo!(),
+    }
+    
     Ok(p)
   }
 
   /// Calculates the number of tokens to mint based on the given amount of reserve tokens.
   /// This function is used when user buys the token with SOL
   pub fn process_purchase_return(&mut self, reserve_tokens_received: u64) -> Result<u64> {
-    // divide by 10e9 to convert lamports to SOL
-    let reserve_tokens_received_sol = Self::normalize_sol_amount(reserve_tokens_received)?;
-
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
-    // divide by 10e6 to convert token amount to the highest denomination
-    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
-    let d = a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?;
-    let e = std::f64::consts::E.powf(d);
-    let e = Decimal::safe_from_f64(e)?;
-    
-    let k = reserve_tokens_received_sol.safe_div(c)?
-    .safe_add(e)?
-    .safe_ln()?
-    .safe_add(b)?
-    .safe_div(a)?
-    .safe_sub(circulating_supply)?
-    .safe_mul(Self::ONE_TOKEN)?
-    .safe_to_u64()?;
 
     // update state
     self.circulating_supply = self.circulating_supply.safe_add(k)?;
@@ -119,25 +99,6 @@ impl BondingCurve {
   /// Given an amount of tokens, calucates the amount of reserve tokens to be sent back.
   /// This function is used when user sells the tokens and receives back SOL
   pub fn process_sale_return(&mut self, token_amount: u64) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
-    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
-    let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
-
-    let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?
-    .safe_mul(dec!(-1))?
-    .safe_mul(Self::LAMPORT_IN_SOL)?
-    .safe_to_u64()?;
-
     // update state
     self.circulating_supply = self.circulating_supply.safe_sub(token_amount)?;
     self.reserve_token_balance = self.reserve_token_balance.safe_sub(reserve_tokens_returned)?;
@@ -145,17 +106,7 @@ impl BondingCurve {
 
     Ok(reserve_tokens_returned) 
   }
-
-  fn normalize_token_amount(amount: u64) -> Result<Decimal> {
-    let value = Decimal::safe_from_u64(amount)?.safe_div(Self::ONE_TOKEN)?;
-    Ok(value)
-  }
-
-  fn normalize_sol_amount(amount: u64) -> Result<Decimal> {
-    let value = Decimal::safe_from_u64(amount)?.safe_div(Self::LAMPORT_IN_SOL)?;
-    Ok(value)
-  }
-
+  
   /// Calculates the total fees to be paid when funds are migrated to Raydium.
   fn calc_migration_fees(&self) -> Result<u64> {
     let total_fee = self.protocol_fee.safe_add(self.creator_fee)?;
