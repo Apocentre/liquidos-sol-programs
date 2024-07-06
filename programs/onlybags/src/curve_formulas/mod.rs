@@ -28,6 +28,13 @@ impl TryFrom<u8> for CurveType {
 }
 
 impl CurveType {
+  pub fn sol_target(&self) -> u64 {
+    match self {
+      CurveType::CurveV1 => 89800000000,
+      CurveType::CurveV2 => 248000000000,
+    }
+  }
+
   pub fn calc_price(&self, circulating_supply: u64) -> Result<u64> {
     match self {
       CurveType::CurveV1 => CurveV1::calc_price(circulating_supply),

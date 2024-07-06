@@ -10,8 +10,6 @@ pub struct State {
   pub owner: Pubkey,
   /// The treasury account that receives fees
   pub treasury: Pubkey,
-  /// Current target of SOL each pool should receive
-  pub sol_target: u64,
   /// Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
@@ -30,7 +28,6 @@ impl State {
   pub fn new(
     owner: Pubkey,
     treasury: Pubkey,
-    sol_target: u64,
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
@@ -39,7 +36,6 @@ impl State {
     Self {
       owner,
       treasury,
-      sol_target,
       protocol_fee,
       trade_fee_bps,
       creator_fee,

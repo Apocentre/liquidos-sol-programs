@@ -15,8 +15,6 @@ pub struct BondingCurve {
   pub token_creator: Pubkey,
   /// The mint account of the token associated with this curve
   pub token: Pubkey,
-  /// Target of SOL each pool should receive
-  pub sol_target: u64,
   /// Current protocol fees (fixed lamports amount).. This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
@@ -45,7 +43,6 @@ impl BondingCurve {
     curve_type: u8,
     token_creator: Pubkey,
     token: Pubkey,
-    sol_target: u64,
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
@@ -56,7 +53,6 @@ impl BondingCurve {
       curve_type: curve_type.try_into()?,
       token_creator,
       token,
-      sol_target,
       protocol_fee,
       trade_fee_bps,
       creator_fee,
@@ -109,12 +105,12 @@ impl BondingCurve {
   /// Returns the max amount one can send to the curve. It depends on the sol target
   /// and the current amount of tokens in the pool
   pub fn max_accepted_amount(&self) -> Result<u64> {
-    let amount = self.sol_target.safe_sub(self.reserve_token_balance)?;
+    let amount = self.curve_type.sol_target().safe_sub(self.reserve_token_balance)?;
     Ok(amount)
   }
 
   pub fn is_complete(&self) -> bool {
-    self.reserve_token_balance == self.sol_target
+    self.reserve_token_balance == self.curve_type.sol_target()
   }
 
   pub fn close_curve(&mut self) {
