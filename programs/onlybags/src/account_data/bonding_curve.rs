@@ -259,9 +259,10 @@ mod tests {
       1_000_000_000 * 10e6 as u64,
       1,
     ).unwrap();
-    println!(">>>>>>>>>>>>>>>>>> {}", received);
-    // assert_eq!(received, 793004689489822);
-    // assert_eq!(curve.circulating_supply, 793004689489822);
-    // assert_eq!(curve.reserve_token_balance, 89800000000);
+
+    let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(received, 666243429435124);
+    assert_eq!(curve.circulating_supply, 666243429435124);
+    assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
   }
 }
