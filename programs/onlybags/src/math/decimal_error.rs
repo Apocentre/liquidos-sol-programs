@@ -71,6 +71,13 @@ impl DecimalErrorHandler for Decimal {
       None => Err(error!(ErrorCode::DecimalError)),
     }
   }
+
+  fn safe_ln(&self) -> Result<Decimal> {
+    match self.() {
+      Some(val) => Ok(val),
+      None => Err(error!(ErrorCode::DecimalError)),
+    }
+  }
   
   fn safe_from_u64(rhs: u64)-> Result<Decimal> {
     match Decimal::from_u64(rhs) {

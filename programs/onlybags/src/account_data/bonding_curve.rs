@@ -147,12 +147,11 @@ mod tests {
   use super::BondingCurve;
 
   #[test]
-  fn returns_correct_purchase_amount() {
+  fn curve_1_returns_correct_purchase_amount() {
     let mut curve = BondingCurve::try_new(
       1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       1000,
       100,
       100,
@@ -166,12 +165,11 @@ mod tests {
   }
 
   #[test]
-  fn process_sale_return_amount() {
+  fn curve_1_process_sale_return_amount() {
     let mut curve = BondingCurve::try_new(
       1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       1000,
       100,
       100,
@@ -187,12 +185,11 @@ mod tests {
   }
 
   #[test]
-  fn simulate() {
+  fn simulate_curve_1() {
     let mut curve = BondingCurve::try_new(
       1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       500,
       100,
       100,
@@ -207,12 +204,11 @@ mod tests {
   }
 
   #[test]
-  fn simulate_buy_and_sell() {
+  fn curve_1_simulate_buy_and_sell() {
     let mut curve = BondingCurve::try_new(
       1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       500,
       100,
       100,
@@ -248,5 +244,24 @@ mod tests {
     assert_eq!(curve.circulating_supply, 0);
     // some rounding errors due to divisions made above. The point is that the amount left is tiny
     assert_eq!(curve.reserve_token_balance, 2);
+  }
+
+
+  #[test]
+  fn curve_2_returns_correct_purchase_amount() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+    println!(">>>>>>>>>>>>>>>>>> {}", received);
+    // assert_eq!(received, 793004689489822);
+    // assert_eq!(curve.circulating_supply, 793004689489822);
+    // assert_eq!(curve.reserve_token_balance, 89800000000);
   }
 }

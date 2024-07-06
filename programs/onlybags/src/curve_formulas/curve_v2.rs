@@ -9,60 +9,52 @@ pub struct CurveV2;
 
 impl CurveFormula for CurveV2 {
   fn calc_price(circulating_supply: u64) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
+    let a = dec!(9.31).safe_mul(dec!(10).safe_powd(dec!(-16))?)?;
+    let b = dec!(6.21).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
 
-    let p = std::f64::consts::E.powf(a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?);
-    let p = Decimal::safe_from_f64(p)?
+    let p = a.safe_mul(circulating_supply)?
+    .safe_add(b)?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 
     Ok(p)
   }
 
-  fn process_purchase_return(reserve_tokens_received: u64, circulating_supply: u64) -> Result<u64> {
+  fn process_purchase_return(reserve_tokens_received: u64, _: u64) -> Result<u64> {
     // divide by 10e9 to convert lamports to SOL
     let reserve_tokens_received_sol = Self::normalize_sol_amount(reserve_tokens_received)?;
 
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
-    // divide by 10e6 to convert token amount to the highest denomination
-    let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
-    let d = a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?;
-    let e = std::f64::consts::E.powf(d);
-    let e = Decimal::safe_from_f64(e)?;
+    let a = dec!(9.31).safe_mul(dec!(10).safe_powd(dec!(-16))?)?;
+    let b = dec!(6.21).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let c = b.safe_powd(dec!(2))?
+    .safe_add(dec!(2).safe_mul(a)?.safe_mul(reserve_tokens_received_sol)?)?;
+    let d = Decimal::safe_from_f64(
+      c.safe_to_f64()?.sqrt()
+    )?;
     
-    let k = reserve_tokens_received_sol.safe_div(c)?
-    .safe_add(e)?
-    .safe_ln()?
-    .safe_add(b)?
+    let k = b.safe_mul(dec!(-1))?
+    .safe_add(d)?
     .safe_div(a)?
-    .safe_sub(circulating_supply)?
     .safe_mul(ONE_TOKEN)?
     .safe_to_u64()?;
-    
+
     Ok(k)
   }
 
   fn process_sale_return(token_amount: u64, circulating_supply: u64) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
+    let a = dec!(9.31).safe_mul(dec!(10).safe_powd(dec!(-16))?)?;
+    let b = dec!(6.21).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
+    let c = a.safe_mul(token_amount_normalized.safe_powd(dec!(2))?)?
+    .safe_div(dec!(2))?;
+    let d = b.safe_mul(token_amount_normalized)?;
 
-    let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?
-    .safe_mul(dec!(-1))?
+    let reserve_tokens_returned = a.safe_mul(circulating_supply)?
+    .safe_mul(token_amount_normalized)?
+    .safe_sub(c)?
+    .safe_add(d)?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 

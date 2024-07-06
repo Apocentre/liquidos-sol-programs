@@ -19,7 +19,6 @@ const main = async () => {
   const ix = await program.methods
   .initialize(
     new PublicKey(config.treasury),
-    new BN(config.solTarget),
     new BN(config.protocolFee),
     new BN(config.tradeFeeBps),
     new BN(config.creatorFee),
