@@ -7,6 +7,7 @@ use crate::{
 
 #[event]
 pub struct TokenCreatedEvent {
+  pub curve_type: u8,
   pub creator: Pubkey,
   pub address: Pubkey,
   pub name: String,
@@ -96,6 +97,7 @@ pub fn exec(
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 
   emit!(TokenCreatedEvent {
+    curve_type,
     creator: token_creator,
     address: ctx.accounts.token.key(),
     name,

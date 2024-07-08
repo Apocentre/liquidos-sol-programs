@@ -206,6 +206,7 @@ pub fn exec(
   create_curve_ata(&ctx, signer_seeds)?;
 
   emit!(TokenCreatedEvent {
+    curve_type,
     creator: token_creator,
     address: ctx.accounts.token.key(),
     name,

@@ -15,6 +15,15 @@ pub enum CurveType {
   CurveV2,
 }
 
+impl From<&CurveType> for u8 {
+  fn from(value: &CurveType) -> Self {
+    match value {
+      CurveType::CurveV1 => 1,
+      CurveType::CurveV2 => 2,
+    }
+  }
+}
+
 impl TryFrom<u8> for CurveType {
   type Error = Error;
 
