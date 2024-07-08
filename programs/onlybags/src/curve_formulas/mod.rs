@@ -31,7 +31,7 @@ impl CurveType {
   pub fn sol_target(&self) -> u64 {
     match self {
       CurveType::CurveV1 => 89800000000,
-      CurveType::CurveV2 => 248000000000,
+      CurveType::CurveV2 => 248420000000,
     }
   }
 

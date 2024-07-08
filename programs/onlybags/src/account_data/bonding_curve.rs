@@ -246,6 +246,22 @@ mod tests {
     assert_eq!(curve.reserve_token_balance, 2);
   }
 
+  #[test]
+  fn curve_2_price() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+
+    curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(curve.price, 682);
+  }
 
   #[test]
   fn curve_2_returns_correct_purchase_amount() {
@@ -261,8 +277,8 @@ mod tests {
     ).unwrap();
 
     let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(received, 666243429435124);
-    assert_eq!(curve.circulating_supply, 666243429435124);
+    assert_eq!(received, 666858670694688);
+    assert_eq!(curve.circulating_supply, 666858670694688);
     assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
   }
 
@@ -283,7 +299,7 @@ mod tests {
     let tokens_received = curve.process_purchase_return(sol_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
     // rounding error of 1 Lamport
-    assert_eq!(received, 247999999999);
+    assert_eq!(received, 248419999999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 1);
   }
@@ -301,12 +317,14 @@ mod tests {
       1,
     ).unwrap();
 
+    println!("received, circulating_supply, reserve_token_balance, price");
     for _ in 0..248 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
-      println!(
-        "Sent 1 SOL and Received {:?} Tokens. {:?}", received,
-        (curve.circulating_supply, curve.reserve_token_balance, curve.price)
-      );
+      println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
+
+    // final 0.42 SOL sent
+    let received = curve.process_purchase_return(420000000).unwrap();
+    println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
   }
 }
