@@ -288,4 +288,25 @@ mod tests {
     assert_eq!(curve.reserve_token_balance, 1);
   }
 
+  #[test]
+  fn simulate_curve_2() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      500,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+
+    for _ in 0..248 {
+      let received = curve.process_purchase_return(1_000_000_000).unwrap();
+      println!(
+        "Sent 1 SOL and Received {:?} Tokens. {:?}", received,
+        (curve.circulating_supply, curve.reserve_token_balance, curve.price)
+      );
+    }
+  }
 }
