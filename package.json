@@ -1,8 +1,9 @@
 {
   "type": "module",
   "scripts": {
+    "build:release": "anchor build -- --no-default-features",
     "deploy:mainnet": "solana program deploy --with-compute-unit-price 700000  --max-sign-attempts 1000 --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/test/onlybags.json target/deploy/onlybags.so",
-    "deploy:devnet": "solana program deploy --url https://api.devnet.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/test/onlybags_v2.json target/deploy/onlybags.so",
+    "deploy:devnet": "solana program deploy --with-compute-unit-price 700000  --max-sign-attempts 1000 --url https://api.devnet.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/test/onlybags_v2.json target/deploy/onlybags.so",
     "init:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/initialize.js",
     "init:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/initialize.js",
     "createToken:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/createToken.js",
