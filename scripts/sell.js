@@ -4,7 +4,7 @@ import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "./helpers/provider.js";
 import {createAndSendV0Tx} from "./helpers/tx.js";
 import config from "./config.json" assert { type: "json" };
-import sellerKey from "../wallets/test/buyer1.json" assert { type: "json" };
+import sellerKey from "../wallets/deployer.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -14,13 +14,13 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const program = anchor.workspace.Onlybags;
   const web3 = Web3(deployer.publicKey);
-  const tokenName = "TOKEN_TAX_HUB_1";
-  const tokenSymbol= "SYMBOL_TAX_HUB_1";
+  const tokenName = "T_16_CURVE_1";
+  const tokenSymbol= "S_16_CURVE_1";
   const seller = Keypair.fromSecretKey(Buffer.from(sellerKey))
   const state = new PublicKey(config.state);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
-  const amount = new BN(4355043485455);
+  const amount = new BN(14890926316);
   const minAmountOut = new BN(0); // no slippage
   const sellerAta = await web3.getAssociatedTokenAddress(token, seller.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
 

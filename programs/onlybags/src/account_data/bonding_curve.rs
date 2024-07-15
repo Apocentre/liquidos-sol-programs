@@ -1,22 +1,20 @@
 
 use std::mem::size_of;
 use anchor_lang::prelude::*;
-use rust_decimal::prelude::*;
-use rust_decimal_macros::dec;
 use anchor_safe_math::SafeMath;
-use crate::math::decimal_error::DecimalErrorHandler;
+use crate::curve_formulas::CurveType;
 
 pub const MAX_OPERATORS: usize = 5;
 
 #[account]
 #[derive(Debug)]
 pub struct BondingCurve {
+  /// The type of the curve. This implement the main logic of the curve i.e. the formulas
+  pub curve_type: CurveType,
   /// The creator of the token this bonding curve is associated with
   pub token_creator: Pubkey,
   /// The mint account of the token associated with this curve
   pub token: Pubkey,
-  /// Target of SOL each pool should receive
-  pub sol_target: u64,
   /// Current protocol fees (fixed lamports amount).. This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
@@ -41,23 +39,20 @@ impl BondingCurve {
   pub const MAX_SIZE: usize = 8
   + size_of::<Self>();
 
-  const ONE_TOKEN: Decimal = dec!(1_000_000);
-  const LAMPORT_IN_SOL: Decimal = dec!(1_000_000_000);
-
-  pub fn new(
+  pub fn try_new(
+    curve_type: u8,
     token_creator: Pubkey,
     token: Pubkey,
-    sol_target: u64,
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
     total_supply: u64,
     bump: u8,
-  ) -> Self {
-    Self {
+  ) -> Result<Self> {
+    Ok(Self {
+      curve_type: curve_type.try_into()?,
       token_creator,
       token,
-      sol_target,
       protocol_fee,
       trade_fee_bps,
       creator_fee,
@@ -67,46 +62,18 @@ impl BondingCurve {
       price: 0,
       bump,
       closed: 0,
-    }
+    })
   }
 
   /// Finds the current price of the curve
   fn calc_price(&self) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
-
-    let p = std::f64::consts::E.powf(a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?);
-    let p = Decimal::safe_from_f64(p)?
-    .safe_mul(Self::LAMPORT_IN_SOL)?
-    .safe_to_u64()?;
-
-    Ok(p)
+    self.curve_type.calc_price(self.circulating_supply)
   }
 
   /// Calculates the number of tokens to mint based on the given amount of reserve tokens.
   /// This function is used when user buys the token with SOL
   pub fn process_purchase_return(&mut self, reserve_tokens_received: u64) -> Result<u64> {
-    // divide by 10e9 to convert lamports to SOL
-    let reserve_tokens_received_sol = Self::normalize_sol_amount(reserve_tokens_received)?;
-
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
-    // divide by 10e6 to convert token amount to the highest denomination
-    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
-    let d = a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?;
-    let e = std::f64::consts::E.powf(d);
-    let e = Decimal::safe_from_f64(e)?;
-    
-    let k = reserve_tokens_received_sol.safe_div(c)?
-    .safe_add(e)?
-    .safe_ln()?
-    .safe_add(b)?
-    .safe_div(a)?
-    .safe_sub(circulating_supply)?
-    .safe_mul(Self::ONE_TOKEN)?
-    .safe_to_u64()?;
+    let k = self.curve_type.process_purchase_return(reserve_tokens_received, self.circulating_supply)?;
 
     // update state
     self.circulating_supply = self.circulating_supply.safe_add(k)?;
@@ -119,24 +86,7 @@ impl BondingCurve {
   /// Given an amount of tokens, calucates the amount of reserve tokens to be sent back.
   /// This function is used when user sells the tokens and receives back SOL
   pub fn process_sale_return(&mut self, token_amount: u64) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
-    let circulating_supply = Self::normalize_token_amount(self.circulating_supply)?;
-    let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
-
-    let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?
-    .safe_mul(dec!(-1))?
-    .safe_mul(Self::LAMPORT_IN_SOL)?
-    .safe_to_u64()?;
+    let reserve_tokens_returned = self.curve_type.process_sale_return(token_amount, self.circulating_supply)?;
 
     // update state
     self.circulating_supply = self.circulating_supply.safe_sub(token_amount)?;
@@ -145,17 +95,7 @@ impl BondingCurve {
 
     Ok(reserve_tokens_returned) 
   }
-
-  fn normalize_token_amount(amount: u64) -> Result<Decimal> {
-    let value = Decimal::safe_from_u64(amount)?.safe_div(Self::ONE_TOKEN)?;
-    Ok(value)
-  }
-
-  fn normalize_sol_amount(amount: u64) -> Result<Decimal> {
-    let value = Decimal::safe_from_u64(amount)?.safe_div(Self::LAMPORT_IN_SOL)?;
-    Ok(value)
-  }
-
+  
   /// Calculates the total fees to be paid when funds are migrated to Raydium.
   fn calc_migration_fees(&self) -> Result<u64> {
     let total_fee = self.protocol_fee.safe_add(self.creator_fee)?;
@@ -165,12 +105,12 @@ impl BondingCurve {
   /// Returns the max amount one can send to the curve. It depends on the sol target
   /// and the current amount of tokens in the pool
   pub fn max_accepted_amount(&self) -> Result<u64> {
-    let amount = self.sol_target.safe_sub(self.reserve_token_balance)?;
+    let amount = self.curve_type.sol_target().safe_sub(self.reserve_token_balance)?;
     Ok(amount)
   }
 
   pub fn is_complete(&self) -> bool {
-    self.reserve_token_balance == self.sol_target
+    self.reserve_token_balance == self.curve_type.sol_target()
   }
 
   pub fn close_curve(&mut self) {
@@ -207,17 +147,17 @@ mod tests {
   use super::BondingCurve;
 
   #[test]
-  fn returns_correct_purchase_amount() {
-    let mut curve = BondingCurve::new(
+  fn curve_1_returns_correct_purchase_amount() {
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       1000,
       100,
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
     let received = curve.process_purchase_return(89800000000).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.circulating_supply, 793004689489822);
@@ -225,17 +165,17 @@ mod tests {
   }
 
   #[test]
-  fn process_sale_return_amount() {
-    let mut curve = BondingCurve::new(
+  fn curve_1_process_sale_return_amount() {
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       1000,
       100,
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
 
     let tokens_received = curve.process_purchase_return(89800000000).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
@@ -245,36 +185,36 @@ mod tests {
   }
 
   #[test]
-  fn simulate() {
-    let mut curve = BondingCurve::new(
+  fn simulate_curve_1() {
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       500,
       100,
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
     
     for _ in 0..90 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
-      println!("Sent 1 SOL and Received {:?} Tokens. {:?}", received, curve);
+      println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
   }
 
   #[test]
-  fn simulate_buy_and_sell() {
-    let mut curve = BondingCurve::new(
+  fn curve_1_simulate_buy_and_sell() {
+    let mut curve = BondingCurve::try_new(
+      1,
       Pubkey::zeroed(),
       Pubkey::zeroed(),
-      100,
       500,
       100,
       100,
       1_000_000_000 * 10e6 as u64,
       1,
-    );
+    ).unwrap();
     let received = curve.process_purchase_return(500000000).unwrap(); // 0.5
     println!("Buyer 1 Sent 0.5 SOL and Received {:?} Tokens. {:?}", received, curve);
     let received_2 = curve.process_purchase_return(300000000).unwrap(); // 0.3
@@ -304,5 +244,87 @@ mod tests {
     assert_eq!(curve.circulating_supply, 0);
     // some rounding errors due to divisions made above. The point is that the amount left is tiny
     assert_eq!(curve.reserve_token_balance, 2);
+  }
+
+  #[test]
+  fn curve_2_price() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+
+    curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(curve.price, 682);
+  }
+
+  #[test]
+  fn curve_2_returns_correct_purchase_amount() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+
+    let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(received, 666858670694688);
+    assert_eq!(curve.circulating_supply, 666858670694688);
+    assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
+  }
+
+  #[test]
+  fn curve_2_process_sale_return_amount() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+
+    let sol_target = curve.curve_type.sol_target();
+    let tokens_received = curve.process_purchase_return(sol_target).unwrap();
+    let received = curve.process_sale_return(tokens_received).unwrap();
+    // rounding error of 1 Lamport
+    assert_eq!(received, 248419999999);
+    assert_eq!(curve.circulating_supply, 0);
+    assert_eq!(curve.reserve_token_balance, 1);
+  }
+
+  #[test]
+  fn simulate_curve_2() {
+    let mut curve = BondingCurve::try_new(
+      2,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      500,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      1,
+    ).unwrap();
+
+    println!("received, circulating_supply, reserve_token_balance, price");
+    for _ in 0..248 {
+      let received = curve.process_purchase_return(1_000_000_000).unwrap();
+      println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
+    }
+
+    // final 0.42 SOL sent
+    let received = curve.process_purchase_return(420000000).unwrap();
+    println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
   }
 }

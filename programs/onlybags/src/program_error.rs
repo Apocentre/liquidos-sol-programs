@@ -22,4 +22,6 @@ pub enum ErrorCode {
   WrongIxData,
   #[msg("Expected MoveLiquidity ix")]
   ExpectedMoveLiquidityIx,
+  #[msg("Curve type not supported")]
+  CurveTypeNotSupported,
 }

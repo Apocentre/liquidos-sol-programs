@@ -16,10 +16,11 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
 
+  console.log(">>>>>>>>>", program.programId)
+
   const ix = await program.methods
   .initialize(
     new PublicKey(config.treasury),
-    new BN(config.solTarget),
     new BN(config.protocolFee),
     new BN(config.tradeFeeBps),
     new BN(config.creatorFee),

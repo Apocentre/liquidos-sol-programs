@@ -15,6 +15,7 @@ use super::common::deser;
 
 #[event]
 pub struct BuyEvent {
+  curve_type: u8,
   buyer: Pubkey,
   token: Pubkey,
   sol_amount: String,
@@ -183,6 +184,8 @@ pub fn exec<'info>(
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
   let curve = &ctx.accounts.bonding_curve;
+  let curve_type = (&curve.curve_type).into();
+
   collect_trade_fees(&ctx, spendable_amount)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
@@ -200,16 +203,17 @@ pub fn exec<'info>(
     // mark the curve as closed
     let curve = &mut ctx.accounts.bonding_curve;
     curve.close_curve();
-
+    
     instrospect_next_ix(&ctx)?;
   }
-
+  
   {
     let buyer = ctx.accounts.buyer.key();
     ctx.accounts.buyer_ata.reload()?;
     let buyer_balance = ctx.accounts.buyer_ata.amount;
 
     emit!(BuyEvent {
+      curve_type, 
       buyer,
       token: *token,
       sol_amount: spendable_amount.to_string(),

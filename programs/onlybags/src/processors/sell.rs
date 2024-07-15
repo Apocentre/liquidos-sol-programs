@@ -3,11 +3,12 @@ use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{burn, Burn};
 use super::common::transfer_from_pda;
 use crate::{
-  program_error::ErrorCode, instructions::sell::Sell,
+  instructions::sell::Sell, program_error::ErrorCode
 };
 
 #[event]
 pub struct SellEvent {
+  curve_type: u8,
   seller: Pubkey,
   token: Pubkey,
   token_amount: String,
@@ -66,6 +67,7 @@ pub fn exec(
   let fees = curve.calc_trade_fees(sol_amount)?;
   let net_amount = sol_amount.safe_sub(fees)?;
   let sol_balance = curve.reserve_token_balance.to_string();
+  let curve_type = (&curve.curve_type).into();
 
   // Important! burn_tokens makes a CPI so it must come before the other two functions which
   // directly manipulate the PDA account. More on this here https://stackoverflow.com/a/77591006/512783
@@ -75,8 +77,9 @@ pub fn exec(
 
   ctx.accounts.seller_ata.reload()?;
   let seller_balance = ctx.accounts.seller_ata.amount;
-  
+
   emit!(SellEvent {
+    curve_type,
     seller: ctx.accounts.seller.key(),
     token: ctx.accounts.token.key(),
     sol_amount: sol_amount.to_string(),

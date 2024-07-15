@@ -1,12 +1,13 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "./helpers/accounts.js";
+import * as provider from "./helpers/provider.js";
 import config from "./config.json" assert { type: "json" };
 
 const {PublicKey} = anchor.web3;
 
 const getTokenAccount = (state, program) => {
-  const tokenName = "TOKEN_HUB_3";
-  const tokenSymbol= "SYMBOL_HUB_3";
+  const tokenName = "Great Shibaa v100";
+  const tokenSymbol= "GreatSHiba";
   return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
 }
 
@@ -22,13 +23,14 @@ const main = async () => {
     solTarget: bondingCurveData.solTarget.toString(),
     solTarget: bondingCurveData.solTarget.toString(),
     totalSupply: bondingCurveData.totalSupply.toString(),
+    circulatingSupply: bondingCurveData.circulatingSupply.toString(),
     reserveTokenBalance: bondingCurveData.reserveTokenBalance.toString(),
     price: bondingCurveData.price.toString(),
     closed: bondingCurveData.closed,
+    creatorFee: bondingCurveData.creatorFee.toString(),
     protocolFee: bondingCurveData.protocolFee.toString(),
     creatorFee: bondingCurveData.creatorFee.toString(),
     tradeFeeBps: bondingCurveData.tradeFeeBps.toString(),
-    totalSupply: bondingCurveData.totalSupply.toString(),
   })
 }
 

@@ -10,8 +10,8 @@ const Web3 = Web3Pkg.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
-  const tokenName = "TOKEN_HUB";
-  const tokenSymbol= "SYMBOL_HUB";
+  const tokenName = "T_17_CURVE_1";
+  const tokenSymbol= "S_17_CURVE_1";
   const state = new PublicKey(config.state);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Onlybags;
@@ -24,7 +24,8 @@ const main = async () => {
   .createToken(
     tokenName,
     tokenSymbol,
-    "http://onlybags.fun"
+    "http://onlybags.fun",
+    2,
   )
   .accounts({
     state,
