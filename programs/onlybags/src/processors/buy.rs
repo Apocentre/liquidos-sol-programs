@@ -92,10 +92,8 @@ fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>)
 }
 
 /// Collects trade fees on each transaction. Fees collected in SOL
-fn collect_trade_fees(ctx: &Context<Buy>, sol_amount: u64) -> Result<()> {
+fn collect_trade_fees(ctx: &Context<Buy>, trade_fees: u64) -> Result<()> {
   let buyer = &ctx.accounts.buyer;
-  let curve = &ctx.accounts.bonding_curve;
-  let trade_fees = curve.calc_trade_fees(sol_amount)?;
   let treasury = &ctx.accounts.treasury;
 
   invoke(
@@ -167,10 +165,13 @@ pub fn exec<'info>(
   let curve_acc_info = ctx.accounts.bonding_curve.to_account_info();
   let curve = &mut ctx.accounts.bonding_curve;
   require!(curve.closed == 0, ErrorCode::CurveClosed);
+  
   let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
+  let trade_fees = curve.calc_trade_fees(spendable_amount)?;
+  let net_amount = spendable_amount.safe_sub(trade_fees)?;
 
   // Slippage check
-  let token_amount = curve.process_purchase_return(spendable_amount)?;
+  let token_amount = curve.process_purchase_return(net_amount)?;
   require!(token_amount >= min_amount_out, ErrorCode::SlippageViolation);
 
   let token = &ctx.accounts.token.key();
@@ -186,9 +187,9 @@ pub fn exec<'info>(
   let curve = &ctx.accounts.bonding_curve;
   let curve_type = (&curve.curve_type).into();
 
-  collect_trade_fees(&ctx, spendable_amount)?;
+  collect_trade_fees(&ctx, trade_fees)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
-  send_sol_to_curve(&ctx, spendable_amount, curve_key, curve_acc_info.clone())?;
+  send_sol_to_curve(&ctx, net_amount, curve_key, curve_acc_info.clone())?;
 
   let price = curve.price;
   let circulating_supply = curve.circulating_supply;
