@@ -15,9 +15,9 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const tokenName = "Great Shibaa v100";
-  const tokenSymbol= "GreatSHiba";
-  const amount = new BN(web3.toBase("4", 7));
+  const tokenName = "T_17_CURVE_1";
+  const tokenSymbol= "S_17_CURVE_1";
+  const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
@@ -27,7 +27,7 @@ const main = async () => {
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
-  const ammConfig = constants.raydiumAmmConfigMainnet;
+  const ammConfig = constants.raydiumAmmConfigDevnet;
 
   const buy_ix = await program.methods
   .buy(amount, minAmountOut)
@@ -49,7 +49,7 @@ const main = async () => {
   })
   .instruction();
 
-  const raydiumProgram = constants.raydiumProgramMainnet;
+  const raydiumProgram = constants.raydiumProgramDevnet;
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
   const [creatorToken0, creatorToken1] = token.toBuffer() < wsol.toBuffer() ? [buyerAta, buyerWsolAta] : [buyerWsolAta, buyerAta];
@@ -59,7 +59,7 @@ const main = async () => {
   ? [accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0]] 
   : [accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0]];
 
-  const createPoolFee = constants.raydiumCreatorPoolFeedMainnet;
+  const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
 
   const moveLiquidityIx = await program.methods
   .moveLiquidity()

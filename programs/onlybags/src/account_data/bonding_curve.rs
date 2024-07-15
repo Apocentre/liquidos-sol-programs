@@ -199,7 +199,7 @@ mod tests {
     
     for _ in 0..90 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
-      println!("Sent 1 SOL and Received {:?} Tokens. {:?}", received, curve);
+      println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
   }
 
