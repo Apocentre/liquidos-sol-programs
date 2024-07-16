@@ -213,7 +213,7 @@ pub fn exec(
     symbol,
     uri,
     curve: curve_key,
-    has_tax: true,
+    tax: Some(fee_bps),
   });
 
   Ok(())

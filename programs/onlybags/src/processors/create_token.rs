@@ -14,7 +14,7 @@ pub struct TokenCreatedEvent {
   pub symbol: String,
   pub uri: String,
   pub curve: Pubkey,
-  pub has_tax: bool,
+  pub tax: Option<u16>,
 }
 
 pub fn update_account_lamports_to_minimum_balance<'info>(
@@ -104,7 +104,7 @@ pub fn exec(
     symbol,
     uri,
     curve: curve_key,
-    has_tax: false,
+    tax: None,
   });
 
   Ok(())
