@@ -166,7 +166,17 @@ pub fn exec<'info>(
   let curve = &mut ctx.accounts.bonding_curve;
   require!(curve.closed == 0, ErrorCode::CurveClosed);
   
-  let spendable_amount = u64::min(curve.max_accepted_amount()?, amount);
+  // calculate curve.max_accepted_amount() / 0.9 if given fees is 10%.
+  // This way we make sure we accept as many SOL as needed to fill the curve and not less.
+  // For example:
+  // Current SOL in curve is 80 and user sends 15. The max_accepted_amount will be 10.8888888889
+  // the trader fees 1.08888888889 (given a 10% trader fee) and thus the net_amount will be 9.8
+  // which is exactly as much is needed to fill a curve v1 that accepts 89.8 max SOL.
+  let max_accepted_amount = curve.max_accepted_amount()?
+  .safe_div(10_000 - curve.trade_fee_bps)?
+  .safe_mul(10_000)?;
+
+  let spendable_amount = u64::min(max_accepted_amount, amount);
   let trade_fees = curve.calc_trade_fees(spendable_amount)?;
   let net_amount = spendable_amount.safe_sub(trade_fees)?;
 
