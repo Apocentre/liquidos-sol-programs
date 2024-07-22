@@ -32,7 +32,8 @@ pub struct MoveLiquidity<'info> {
 
   /// The ATA of the  token that is owned by the buyer. Create one if no already exists
   #[account(
-    mut,
+    init_if_needed,
+    payer = buyer,
     associated_token::mint = token,
     associated_token::authority = buyer,
     associated_token::token_program = token_2022,
@@ -41,7 +42,8 @@ pub struct MoveLiquidity<'info> {
 
   /// The ATA of the WSOL token that is owned by the buyer. Create one if no already exists
   #[account(
-    mut,
+    init_if_needed,
+    payer = buyer,
     associated_token::mint = wsol_token,
     associated_token::authority = buyer,
   )]
