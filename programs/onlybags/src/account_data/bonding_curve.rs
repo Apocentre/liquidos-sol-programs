@@ -110,7 +110,7 @@ impl BondingCurve {
   }
 
   pub fn is_complete(&self) -> bool {
-    // >= because we might have rouding issues by 1 lamport
+    // >= because we might have rounding issues by 1 lamport
     self.reserve_token_balance >= self.curve_type.sol_target()
   }
 
