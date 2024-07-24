@@ -173,8 +173,8 @@ pub fn exec<'info>(
   // the trader fees 1.08888888889 (given a 10% trader fee) and thus the net_amount will be 9.8
   // which is exactly as much is needed to fill a curve v1 that accepts 89.8 max SOL.
   let max_accepted_amount = curve.max_accepted_amount()?
-  .safe_div(10_000 - curve.trade_fee_bps)?
-  .safe_mul(10_000)?;
+  .safe_mul(10_000)?
+  .safe_div(10_000 - curve.trade_fee_bps)?;
 
   let spendable_amount = u64::min(max_accepted_amount, amount);
   let trade_fees = curve.calc_trade_fees(spendable_amount)?;
