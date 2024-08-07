@@ -11,7 +11,7 @@ use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
 };
 
-declare_id!("ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX");
+declare_id!("bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz");
 
 #[program]
 pub mod onlybags {

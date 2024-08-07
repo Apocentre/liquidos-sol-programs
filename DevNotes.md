@@ -29,7 +29,7 @@ We found it using the js library. More specifically:
 ### Close Program Account
 
 ```bash
-solana program close ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX --recipient 85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X --keypair ./wallets/deployer.json --bypass-warning
+solana program close bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz --recipient 85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X --keypair ./wallets/deployer.json --bypass-warning
 ```
 
 > NOTE! Once you delete a program account you can't resuse the same account again! i.e. you can't redeploy the program under the same address.
@@ -44,4 +44,4 @@ The deployment (or upgrade) might not be fully finished for various reasons e.g.
 
 ## Extend program account size
 
-solana program extend ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX  1000 -u devnet --keypair ./wallets/deployer.json
+solana program extend bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz  1000 -u devnet --keypair ./wallets/deployer.json
