@@ -15,21 +15,29 @@ const main = async () => {
   const program = anchor.workspace.Onlybags;
   const state = new PublicKey(config.state);
   const stateData = await program.account.state.fetch(state);
-  const bondingCurve = new PublicKey("9CDpUv7k38YHKMCkF8nCWkW9T9PXXbcG8KUD5BbSmCf"); //accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];
-  const bondingCurveData = await program.account.bondingCurve.fetch(bondingCurve);
+  // const bondingCurve = new PublicKey("9CDpUv7k38YHKMCkF8nCWkW9T9PXXbcG8KUD5BbSmCf"); //accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];
+  // const bondingCurveData = await program.account.bondingCurve.fetch(bondingCurve);
 
-  // console.log("state: ", stateData)
-  console.log("bondingCurve: ", {
-    totalSupply: bondingCurveData.totalSupply.toString(),
-    circulatingSupply: bondingCurveData.circulatingSupply.toString(),
-    reserveTokenBalance: bondingCurveData.reserveTokenBalance.toString(),
-    price: bondingCurveData.price.toString(),
-    closed: bondingCurveData.closed,
-    creatorFee: bondingCurveData.creatorFee.toString(),
-    protocolFee: bondingCurveData.protocolFee.toString(),
-    creatorFee: bondingCurveData.creatorFee.toString(),
-    tradeFeeBps: bondingCurveData.tradeFeeBps.toString(),
-  })
+  console.log("state: ", {
+    owner: stateData.owner.toString(),
+    treasury: stateData.treasury.toString(),
+    protocolFee: stateData.protocolFee.toString(),
+    tradeFeeBps: stateData.tradeFeeBps.toString(),
+    creatorFee: stateData.creatorFee.toString(),
+    totalTokenSupply: stateData.totalTokenSupply.toString(),
+  });
+
+  // console.log("bondingCurve: ", {
+  //   totalSupply: bondingCurveData.totalSupply.toString(),
+  //   circulatingSupply: bondingCurveData.circulatingSupply.toString(),
+  //   reserveTokenBalance: bondingCurveData.reserveTokenBalance.toString(),
+  //   price: bondingCurveData.price.toString(),
+  //   closed: bondingCurveData.closed,
+  //   creatorFee: bondingCurveData.creatorFee.toString(),
+  //   protocolFee: bondingCurveData.protocolFee.toString(),
+  //   creatorFee: bondingCurveData.creatorFee.toString(),
+  //   tradeFeeBps: bondingCurveData.tradeFeeBps.toString(),
+  // })
 }
 
 main()
