@@ -1,8 +1,8 @@
 {
-  "state": "Cy6gyEotyqMWVXFPLwKtyWxFnr7d3itV4ZASvTUq6cT4",
-  "treasury": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
-  "protocolFee": 50000000,
-  "creatorFee": 50000000,
+  "state": "",
+  "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
+  "protocolFee": 0,
+  "creatorFee": 2000000000,
   "tradeFeeBps": 100,
   "totalTokenSupply": 1000000000000000,
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X"
