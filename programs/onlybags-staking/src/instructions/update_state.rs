@@ -10,7 +10,7 @@ pub struct UpdateState<'info> {
   pub state: Account<'info, State>,
 
   #[account(
-    address = state.owner @ ErrorCode::OnlyOwner,
+    constraint = owner.key() == state.owner @ ErrorCode::OnlyOwner,
   )]
   pub owner: Signer<'info>,
 }

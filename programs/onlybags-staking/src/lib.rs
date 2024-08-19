@@ -43,16 +43,6 @@ pub mod onlybags_staking {
 
   /// UpdateState
   ///
-  /// # Arguments
-  ///
-  /// * `ctx` - The Anchor context holding the accounts
-  /// * `total_rewards` - The amount to withdraw
-  pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
-    processors::withdraw::exec(ctx, amount)
-  }  
-
-  /// CreatePool
-  ///
   /// Allows admit to update the state
   /// 
   /// # Arguments
@@ -66,6 +56,19 @@ pub mod onlybags_staking {
     protocol_fee: u16,
   ) -> Result<()> {
     processors::update_state::exec(ctx, staking_duration, protocol_fee)
+  }
+
+  /// CreatePool
+  ///
+  /// Allows admit to update the state
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `total_rewards` - Total amount of rewards to be distributed. Note the caller (Onlybags program) of this ix should
+  ///                      first transfer this amount to `reward_token_vault_ata`
+  pub fn create_pool(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
+    processors::create_pool::exec(ctx, total_rewards)
   }
 
   /// Deposit
