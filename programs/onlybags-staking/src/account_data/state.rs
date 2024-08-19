@@ -18,15 +18,11 @@ impl State {
   pub const MAX_SIZE: usize = 8
   + size_of::<Self>();
 
-  pub fn new(
-    owner: Pubkey,
-    staking_duration: i64,
-    reward_token: Option<Pubkey>,
-  ) -> Self {
+  pub fn new(owner: Pubkey, staking_duration: i64) -> Self {
     Self {
       owner,
       staking_duration,
-      reward_token,
+      reward_token: None,
       pool_count: 0,
     }
   }
