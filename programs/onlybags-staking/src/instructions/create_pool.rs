@@ -41,6 +41,7 @@ pub struct CreatePool<'info> {
   #[account(
     mut,
     seeds = [b"bonding_curve", state.onlybags_state.as_ref(), reward_token.key().as_ref()],
+    seeds::program = state.onlybags_program,
     bump,
   )]
   pub bonding_curve: Signer<'info>,

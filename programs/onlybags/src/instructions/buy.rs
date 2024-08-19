@@ -77,28 +77,6 @@ pub struct Buy<'info> {
   )]
   pub buyer_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
-  // ---------------- Staking Program accounts ----------------
-  /// CHECK: The staking program state. Checks will take place in Staking program
-  #[account(
-    mut,
-    constraint = staking_state.key() == state.staking_program_state.unwrap() @ ErrorCode::WrontStakingProgramState,
-  )]
-  pub staking_state: AccountInfo<'info>,
-  /// CHECK: The pool info. Checks will take place in Staking program
-  #[account(mut)]
-  pub pool_info: AccountInfo<'info>,
-  /// CHECK: The pool authority. Checks will take place in Staking program
-  #[account(mut)]
-  pub pool_authority: AccountInfo<'info>,
-  /// CHECK: The pool PDA ata that will hold the tokens. Checks will take place in Staking program
-  #[account(mut)]
-  pub reward_token_vault_ata: AccountInfo<'info>,
-  /// CHECK: The staking program id.
-  #[account(
-    constraint = staking_program.key() == state.staking_program.unwrap() @ ErrorCode::WrontStakingProgram,
-  )]
-  pub staking_program: AccountInfo<'info>,
-
   pub token_program: Program<'info, Token>,
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,

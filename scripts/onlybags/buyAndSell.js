@@ -5,7 +5,7 @@ import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
 import config from "../config.json" assert { type: "json" };
-import buyerKey1 from "../../wallets/deployer.json" assert { type: "json" };
+import buyerKey1 from "../../wallets/deployer_devnet.json" assert { type: "json" };
 import buyerKey2 from "../../wallets/test/buyer2.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
@@ -129,7 +129,7 @@ const main = async () => {
   const tokenSymbol= "SYMBOL_HUB_4";
   const buyer1 = Keypair.fromSecretKey(Buffer.from(buyerKey1))
   const buyer2 = Keypair.fromSecretKey(Buffer.from(buyerKey2))
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   

@@ -9,7 +9,7 @@ use crate::instructions::{
   initialize::*, update_state::*, create_pool::*, deposit::*, withdraw::*,
 };
 
-declare_id!("8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W");
+declare_id!("BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem");
 
 #[program]
 pub mod onlybags_staking {
@@ -20,6 +20,7 @@ pub mod onlybags_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
+  /// * `onlybags_program` - The onlybags program
   /// * `onlybags_state` - The state of the main Onlybags program
   /// * `treasury` - The treasury that will collect protocol fees
   /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
@@ -27,6 +28,7 @@ pub mod onlybags_staking {
   
   pub fn initialize(
     ctx: Context<Initialize>,
+    onlybags_program: Pubkey,
     onlybags_state: Pubkey,
     treasury: Pubkey,
     staking_duration: i64,
@@ -34,6 +36,7 @@ pub mod onlybags_staking {
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
+      onlybags_program,
       onlybags_state,
       treasury,
       staking_duration,

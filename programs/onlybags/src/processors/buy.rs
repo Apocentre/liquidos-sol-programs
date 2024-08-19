@@ -1,14 +1,15 @@
 use anchor_lang::{
   prelude::{borsh::BorshSerialize, *},
   solana_program::{
-    instruction::Instruction, program::invoke, system_instruction::transfer,
+    program::invoke, system_instruction::transfer,
     sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
   }, Discriminator,
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
-  instruction::MoveLiquidity, instructions::buy::Buy, processors::common::transfer_from_pda,
+  instruction::{MoveLiquidity, CreateStakingPool}, instructions::buy::Buy,
+  processors::common::transfer_from_pda,
   program_error::ErrorCode, raydium::{self, AmmConfig}, ID,
 };
 
@@ -26,11 +27,6 @@ pub struct BuyEvent {
   circulating_supply: String,
   sol_balance: String,
   buyer_balance: String,
-}
-
-#[derive(BorshSerialize)]
-pub struct CreatePoolIx {
-  pub total_rewards: u64,
 }
 
 fn mint_tokens(
@@ -147,68 +143,25 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   Ok(())
 }
 
-fn create_staking_pool(ctx: &Context<Buy>) -> Result<()> {
-  let curve = &ctx.accounts.bonding_curve;
-
-  let accounts = vec![
-    AccountMeta::new(ctx.accounts.staking_state.key(), false),
-    AccountMeta::new(ctx.accounts.pool_info.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.token.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.pool_authority.key(), false),
-    AccountMeta::new(ctx.accounts.reward_token_vault_ata.key(), false),
-    AccountMeta::new(ctx.accounts.bonding_curve.key(), true),
-    AccountMeta::new(ctx.accounts.buyer.key(), true),
-    AccountMeta::new_readonly(ctx.accounts.token_2022.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.associated_token_program.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.system_program.key(), false),
-  ];
-
-  // add the ix_discriminator so Staking Anchor program can identity the instruction
-  let mut data: Vec<u8> = vec![233, 146, 209, 142, 207, 104, 64, 188];
-  let mut ix_data: Vec<u8> = Vec::new();
-
-  CreatePoolIx {
-    total_rewards: curve.calc_staking_allocation()?,
-  }.serialize(&mut ix_data)?;
-
-  data.extend(&ix_data);
-  let ix = Instruction {
-    program_id: ctx.accounts.staking_program.key(),
-    accounts,
-    data,
-  };
-
-  invoke(
-    &ix,
-    &[
-      ctx.accounts.staking_state.to_account_info(),
-      ctx.accounts.pool_info.to_account_info(),
-      ctx.accounts.token.to_account_info(),
-      ctx.accounts.pool_authority.to_account_info(),
-      ctx.accounts.reward_token_vault_ata.to_account_info(),
-      ctx.accounts.bonding_curve.to_account_info(),
-      ctx.accounts.buyer.to_account_info(),
-      ctx.accounts.token_2022.to_account_info(),
-      ctx.accounts.associated_token_program.to_account_info(),
-      ctx.accounts.system_program.to_account_info(),
-    ]
-  )?;
-
-  Ok(())
-}
-
-/// When buying a token, the buyer will send two ixs: the Buy and the MoveLiquidity.
-/// The later will be ignored in the move_liquidity processor is the curve is not closed.
+/// When buying a token, the buyer will send three ixs: the Buy, the MoveLiquidity and the CreateStakingPool
+/// The later two will be ignored in the move_liquidity processor if the curve is not closed.
 /// This is important so we know that once the SOL is sent to the buyer_wsol_ata he atomically
-/// moves_liquidity.
+/// moves_liquidity and creates staking pool
 fn instrospect_next_ix(ctx: &Context<Buy>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+
+  // check MoveLiquidity
   let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
   require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
-  
   let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
   require!(discriminator.eq(&MoveLiquidity::DISCRIMINATOR), ErrorCode::ExpectedMoveLiquidityIx);
   
+  // check CreateStakingPool
+  let current_ix = load_instruction_at_checked((current_index + 2) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+  require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+  let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+  require!(discriminator.eq(&CreateStakingPool::DISCRIMINATOR), ErrorCode::ExpectedCreateStakingPoolIx);
+
   Ok(())
 }
 
@@ -266,7 +219,6 @@ pub fn exec<'info>(
     fund_creator_account(&ctx, signer_seeds)?;
     collect_protocol_fees(&ctx, &curve_acc_info)?;
     collect_creator_fees(&ctx, curve_acc_info)?;
-    create_staking_pool(&ctx)?;
     
     // mark the curve as closed
     let curve = &mut ctx.accounts.bonding_curve;

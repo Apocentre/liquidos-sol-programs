@@ -9,7 +9,7 @@ pub mod curve_formulas;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
-  update_state::*,
+  update_state::*, create_staking_pool::*,
 };
 
 declare_id!("bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz");
@@ -158,6 +158,17 @@ pub mod onlybags {
   /// * `ctx` - The Anchor context holding the accounts
   pub fn move_liquidity(ctx: Context<MoveLiquidity>) -> Result<()> {
     processors::move_liquidity::exec(ctx)
+  }
+
+  /// CreateStakingPool
+  ///
+  /// Creates a new staking pool
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn create_staking_pool(ctx: Context<CreateStakingPool>) -> Result<()> {
+    processors::create_staking_pool::exec(ctx)
   }
 
   /// Sell

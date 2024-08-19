@@ -10,20 +10,20 @@ const {BN} = anchor.default;
 const {PublicKey} = anchor.web3
 
 const main = async () => {
-  const state = accounts.state();
+  const state = new PublicKey(config.stakingState);
   const program = anchor.workspace.OnlybagsStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const stakingToken = new PublicKey("")
+  const stakingToken = new PublicKey(config.stakingToken)
 
   const ix = await program.methods
-  .update_state(
+  .updateState(
+    stakingToken,
     new BN(config.stakingDuration),
-    new PublicKey(stakingToken),
     new BN(config.stakingProtocolFee),
   )
   .accounts({
-    state: state.publicKey,
+    state,
     owner: deployer.publicKey,
   })
   .instruction();

@@ -15,8 +15,6 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
 
-  console.log(">>>>>>>>>", program.programId)
-
   const ix = await program.methods
   .initialize(
     new PublicKey(config.treasury),
@@ -24,7 +22,7 @@ const main = async () => {
     new BN(config.tradeFeeBps),
     new BN(config.creatorFee),
     new BN(config.totalTokenSupply),
-    new BN(config.staking_allocation_bps),
+    new BN(config.stakingAllocationBps),
   )
   .accounts({
     state: state.publicKey,

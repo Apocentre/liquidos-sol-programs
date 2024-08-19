@@ -4,7 +4,7 @@ import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import config from "../config.json" assert { type: "json" };
-import tokenCreatorKey from "../../wallets/deployer.json" assert { type: "json" };
+import tokenCreatorKey from "../../wallets/deployer_devnet.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -13,7 +13,7 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
 const main = async () => {
   const tokenName = "TOKEN_TAX_HUB_2";
   const tokenSymbol= "SYMBOL_TAX_HUB_2";
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Onlybags;
   const deployer = provider.wallet.payer;
