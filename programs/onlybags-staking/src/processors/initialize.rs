@@ -3,23 +3,20 @@ use crate::{account_data::state::State, instructions::initialize::Initialize};
 
 pub fn exec(
   ctx: Context<Initialize>,
+  onlybags_state: Pubkey,
   treasury: Pubkey,
-  protocol_fee: u64,
-  trade_fee_bps: u64,
-  creator_fee: u64,
-  total_token_supply: u64,
-  staking_allocation_bps: u64,
+  staking_duration: i64,
+  protocol_fee: u16,
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
   let state = &mut ctx.accounts.state;
   **state = State::new(
     owner,
+    onlybags_state,
     treasury,
+    staking_duration,
     protocol_fee,
-    trade_fee_bps,
-    creator_fee,
-    total_token_supply,
-    staking_allocation_bps,
+    ctx.bumps.pool_authority,
   );
 
   Ok(())

@@ -1,18 +1,17 @@
 import * as anchor from "@coral-xyz/anchor";
-import * as accounts from "./helpers/accounts.js";
+import * as accounts from "../helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
-import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx} from "./helpers/tx.js";
-import config from "./config.json" assert { type: "json" };
-import tokenCreatorKey from "../wallets/deployer.json" assert { type: "json" };
+import {provider} from "../helpers/provider.js";
+import {createAndSendV0Tx} from "../helpers/tx.js";
+import config from "../config.json" assert { type: "json" };
+import tokenCreatorKey from "../../wallets/deployer.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
-const {BN} = anchor.default;
-const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
+const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
-  const tokenName = "TOKEN_TAX_HUB_2";
-  const tokenSymbol= "SYMBOL_TAX_HUB_2";
+  const tokenName = "T_17_CURVE_1";
+  const tokenSymbol= "S_17_CURVE_1";
   const state = new PublicKey(config.state);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Onlybags;
@@ -22,12 +21,11 @@ const main = async () => {
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
 
   const ix = await program.methods
-  .createTaxToken(
+  .createToken(
     tokenName,
     tokenSymbol,
     "http://onlybags.fun",
-    new BN(200), // 2% transfer fee
-    new BN(web3.toBase("20000000", 6)), // max fee that can be charged is 2% of the total supply i.e. 20M
+    2,
   )
   .accounts({
     state,
@@ -38,7 +36,6 @@ const main = async () => {
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
-    rent: SYSVAR_RENT_PUBKEY,
   })
   .instruction();
 

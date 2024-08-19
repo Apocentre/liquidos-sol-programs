@@ -1,11 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
-import * as accounts from "./helpers/accounts.js";
+import * as accounts from "../helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
-import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx} from "./helpers/tx.js";
-import * as constants from "./helpers/constants.js";
-import config from "./config.json" assert { type: "json" };
-import buyerKey from "../wallets/deployer.json" assert { type: "json" };
+import {provider} from "../helpers/provider.js";
+import {createAndSendV0Tx} from "../helpers/tx.js";
+import * as constants from "../helpers/constants.js";
+import config from "../config.json" assert { type: "json" };
+import buyerKey from "../../wallets/deployer.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -15,12 +15,14 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
+  const stakingProgram = anchor.workspace.OnlybagsStaking;
   const tokenName = "T_17_CURVE_1";
   const tokenSymbol= "S_17_CURVE_1";
   const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
+  const stakingState = new PublicKey(config.stakingState);
   const tokenCreator = new PublicKey(config.tokenCreator);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
@@ -28,6 +30,9 @@ const main = async () => {
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const ammConfig = constants.raydiumAmmConfigDevnet;
+  const poolAuthority = accounts.poolAuthority(stakingState, program.programId)[0];
+  const poolInfo = accounts.poolAuthority(stakingState, token, stakingProgram.programId)[0];
+  const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(token, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
   const buy_ix = await program.methods
   .buy(amount, minAmountOut)
@@ -41,6 +46,11 @@ const main = async () => {
     buyerAta,
     buyerWsolAta,
     wsolToken: wsol,
+    stakingState,
+    poolInfo,
+    poolAuthority,
+    rewardTokenVaultAta,
+    stakingProgram: stakingProgram.programId,
     ammConfig,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     tokenProgram: spl.TOKEN_PROGRAM_ID,

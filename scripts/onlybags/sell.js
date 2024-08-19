@@ -1,10 +1,10 @@
 import * as anchor from "@coral-xyz/anchor";
-import * as accounts from "./helpers/accounts.js";
+import * as accounts from "../helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
-import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx} from "./helpers/tx.js";
-import config from "./config.json" assert { type: "json" };
-import sellerKey from "../wallets/deployer.json" assert { type: "json" };
+import {provider} from "../helpers/provider.js";
+import {createAndSendV0Tx} from "../helpers/tx.js";
+import config from "../config.json" assert { type: "json" };
+import sellerKey from "../../wallets/deployer.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;

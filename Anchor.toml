@@ -8,6 +8,7 @@ skip-lint = false
 
 [programs.localnet]
 onlybags = "bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz"
+onlybags_staking = "8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W"
 
 [programs.mainnet]
 onlybags = "bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz"
