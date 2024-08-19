@@ -10,4 +10,6 @@ pub enum ErrorCode {
   InvalidTreasury,
   #[msg("Pool ended")]
   PoolEnded,
+  #[msg("Insufficient withdraw amount")]
+  InsufficientWithdrawAmount,
 }
