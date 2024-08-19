@@ -4,8 +4,6 @@ use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use crate::curve_formulas::CurveType;
 
-pub const MAX_OPERATORS: usize = 5;
-
 #[account]
 #[derive(Debug)]
 pub struct BondingCurve {

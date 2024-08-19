@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use anchor_lang::prelude::*;
 
 #[account]
@@ -10,5 +11,10 @@ pub struct State {
   /// This value also decides what the rewards per second will be
   pub staking_duration: u64,
   /// The mint account of the reward token. This will be Onlybag's token ($BAGS)
-  pub reward_token: Pubkey,
+  pub reward_token: Option<Pubkey>,
+}
+
+impl State {
+  pub const MAX_SIZE: usize = 8
+  + size_of::<Self>();
 }
