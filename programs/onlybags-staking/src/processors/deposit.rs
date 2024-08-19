@@ -2,7 +2,8 @@ use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
-  instructions::deposit::Deposit, staking::{update_pool, NORMALIZATION_FACTOR, TOKEN_DECIMALS}
+  instructions::deposit::Deposit, staking::{update_pool, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
+  program_error::ErrorCode,
 };
 
 fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
@@ -23,6 +24,9 @@ fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
 
 pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
   let pool_info =  &mut ctx.accounts.pool_info;
+  let now = Clock::get().unwrap().unix_timestamp;
+
+  require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
   update_pool(pool_info)?;
 
