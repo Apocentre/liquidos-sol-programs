@@ -48,16 +48,16 @@ pub mod onlybags_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
   /// * `staking_token` - The mint account of the staking token. This will be Onlybag's token ($BAGS)
+  /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
   /// * `protocol_fee` - The fee in the reward token the protocol receives.
   pub fn update_state(
     ctx: Context<UpdateState>,
-    staking_duration: i64,
     staking_token: Pubkey,
+    staking_duration: i64,
     protocol_fee: u16,
   ) -> Result<()> {
-    processors::update_state::exec(ctx, staking_duration, staking_token, protocol_fee)
+    processors::update_state::exec(ctx, staking_token, staking_duration, protocol_fee)
   }
 
   /// CreatePool

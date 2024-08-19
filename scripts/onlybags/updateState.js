@@ -36,7 +36,7 @@ const main = async () => {
     provider,
     [priorityFeeIx, ix],
     deployer.publicKey,
-    [deployer, state]
+    [deployer]
   );
 
 }

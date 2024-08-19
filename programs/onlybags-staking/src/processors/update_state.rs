@@ -3,8 +3,8 @@ use crate::instructions::update_state::UpdateState;
 
 pub fn exec(
   ctx: Context<UpdateState>,
-  staking_duration: i64,
   staking_token: Pubkey,
+  staking_duration: i64,
   protocol_fee: u16,
 ) -> Result<()> {
   let state = &mut ctx.accounts.state;

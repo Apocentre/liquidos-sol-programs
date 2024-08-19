@@ -1,42 +1,30 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "../helpers/accounts.js";
-import Web3Pkg, {spl} from "@apocentre/solana-web3";
+import Web3Pkg from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import config from "../config.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
-const {SystemProgram, PublicKey} = anchor.web3
+const {PublicKey} = anchor.web3
 
 const main = async () => {
   const state = accounts.state();
   const program = anchor.workspace.OnlybagsStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-
-  const poolAuthority = accounts.poolAuthority(program.programId)[0];
   const stakingToken = new PublicKey("")
-  const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
   const ix = await program.methods
-  .initialize(
-    new PublicKey(config.stakingProgramState),
-    new BN(config.protocolFee),
-    new BN(config.tradeFeeBps),
-    new BN(config.creatorFee),
-    new BN(config.totalTokenSupply),
-    new BN(config.staking_allocation_bps),
+  .update_state(
+    new BN(config.stakingDuration),
+    new PublicKey(stakingToken),
+    new BN(config.stakingProtocolFee),
   )
   .accounts({
     state: state.publicKey,
-    poolAuthority,
-    stakingToken,
-    stakingTokenVaultAta,
     owner: deployer.publicKey,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
   })
   .instruction();
 
@@ -45,10 +33,8 @@ const main = async () => {
     provider,
     [priorityFeeIx, ix],
     deployer.publicKey,
-    [deployer, state]
+    [deployer]
   );
-
-  console.log("State: ", state.publicKey.toBase58());
 }
 
 main()

@@ -6,5 +6,7 @@
   "tradeFeeBps": 100,
   "stakingAllocationBps": 500,
   "totalTokenSupply": 1000000000000000,
-  "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X"
+  "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
+  "stakingDuration": 86400,
+  "stakingProtocolFee": 100
 }
