@@ -15,7 +15,7 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
 
-  const poolAuthority = accounts.poolAuthority(program.programId)[0];
+  const poolAuthority = accounts.poolAuthority(state.publicKey, program.programId)[0];
   const stakingToken = new PublicKey("")
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 

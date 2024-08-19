@@ -44,3 +44,9 @@ export const poolAuthority = (state, programId) => PublicKey.findProgramAddressS
   [utf8.encode("pool_authority"), state.toBuffer()],
   programId
 )
+
+
+export const poolInfo = (state, rewardToken, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("staking_pool"), state.toBuffer(), rewardToken.toBuffer()],
+  programId
+)
