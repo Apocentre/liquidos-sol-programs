@@ -5,7 +5,7 @@ use anchor_lang::prelude::*;
 #[account]
 pub struct PoolInfo {
   /// Accumulated reward per share
-  pub acc_reward_per_share: u128,
+  pub acc_reward_per_share: u64,
   /// The last time reward was calculated
   pub last_reward_ts: i64,
   /// The timestamp when the pool is closed so no more deposits are allowed
