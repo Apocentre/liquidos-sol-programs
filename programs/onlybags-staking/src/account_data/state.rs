@@ -16,6 +16,8 @@ pub struct State {
   pub pool_count: u16,
   /// The fee in the reward token the protocol receives
   pub protocol_fee: u16,
+  /// The PDA bump of this account
+  pub pool_authority_bump: u8,
 }
 
 impl State {
@@ -27,6 +29,7 @@ impl State {
     onlybags_state: Pubkey,
     staking_duration: i64,
     protocol_fee: u16,
+    pool_authority_bump: u8,
   ) -> Self {
     Self {
       owner,
@@ -35,6 +38,7 @@ impl State {
       staking_token: None,
       pool_count: 0,
       protocol_fee,
+      pool_authority_bump,
     }
   }
 }

@@ -14,6 +14,7 @@ pub fn exec(
     onlybags_state,
     staking_duration,
     protocol_fee,
+    ctx.bumps.pool_authority,
   );
 
   Ok(())
