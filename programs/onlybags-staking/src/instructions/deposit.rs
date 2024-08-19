@@ -10,16 +10,16 @@ use crate::{
 #[derive(Accounts)]
 pub struct Deposit<'info> {
   #[account()]
-  pub state: Account<'info, State>,
+  pub state: Box<Account<'info, State>>,
 
   #[account(
     seeds = [b"staking_pool", state.key().as_ref(), reward_token.key().as_ref()],
     bump,
   )]
-  pub pool_info: Account<'info, PoolInfo>,
+  pub pool_info: Box<Account<'info, PoolInfo>>,
 
   #[account()]
-  pub reward_token: InterfaceAccount<'info, Mint>,
+  pub reward_token: Box<InterfaceAccount<'info, Mint>>,
 
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
@@ -42,7 +42,7 @@ pub struct Deposit<'info> {
     associated_token::authority = treasury,
     associated_token::token_program = token_2022,
   )]
-  pub treasury_ata: InterfaceAccount<'info, TokenAccount>,
+  pub treasury_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   /// ATA that will store the reward tokens
   #[account(
@@ -50,14 +50,14 @@ pub struct Deposit<'info> {
     associated_token::authority = pool_authority,
     associated_token::token_program = token_2022,
   )]
-  pub reward_token_vault_ata: InterfaceAccount<'info, TokenAccount>,
+  pub reward_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
     mut,
     constraint = state.staking_token.is_some() @ ErrorCode::StakingTokenNotSet,
     constraint = staking_token.key() == state.staking_token.unwrap() @ ErrorCode::InvalidStakingToken,
   )]
-  pub staking_token: InterfaceAccount<'info, Mint>,
+  pub staking_token: Box<InterfaceAccount<'info, Mint>>,
 
   /// ATA that will store the staking tokens for all pools
   #[account(
@@ -65,7 +65,7 @@ pub struct Deposit<'info> {
     associated_token::authority = pool_authority,
     associated_token::token_program = token_2022,
   )]
-  pub staking_token_vault_ata: InterfaceAccount<'info, TokenAccount>,
+  pub staking_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
     init_if_needed,
@@ -74,7 +74,7 @@ pub struct Deposit<'info> {
     seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), staking_token.key().as_ref()],
     bump
   )]
-  pub user_info: Account<'info, UserInfo>,
+  pub user_info: Box<Account<'info, UserInfo>>,
 
   #[account(
     init_if_needed,
@@ -83,7 +83,7 @@ pub struct Deposit<'info> {
     associated_token::authority = user,
     associated_token::token_program = token_2022,
   )]
-  pub user_staking_ata: InterfaceAccount<'info, TokenAccount>,
+  pub user_staking_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
     init_if_needed,
@@ -92,7 +92,7 @@ pub struct Deposit<'info> {
     associated_token::authority = user,
     associated_token::token_program = token_2022,
   )]
-  pub user_reward_ata: InterfaceAccount<'info, TokenAccount>,
+  pub user_reward_ata: Box<InterfaceAccount<'info, TokenAccount>>,
   
   #[account(mut)]
   pub user: Signer<'info>,

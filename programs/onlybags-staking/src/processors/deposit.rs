@@ -1,14 +1,47 @@
 use anchor_lang::prelude::*;
+use anchor_safe_math::SafeMath;
+use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
-  account_data::{pool_info::PoolInfo, user_info::UserInfo},
-  instructions::deposit::Deposit, staking::update_pool
+  instructions::deposit::Deposit, staking::{update_pool, NORMALIZATION_FACTOR, TOKEN_DECIMALS}
 };
 
+fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
+  let cpi_accounts = TransferChecked {
+    from: ctx.accounts.user_staking_ata.to_account_info(),
+    mint: ctx.accounts.staking_token.to_account_info(),
+    to: ctx.accounts.staking_token_vault_ata.to_account_info(),
+    authority: ctx.accounts.user.to_account_info(),
+  };
+
+  let cpi_program = ctx.accounts.token_2022.to_account_info();
+  let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+  token_2022::transfer_checked(cpi_ctx, amount, TOKEN_DECIMALS)?;
+
+  Ok(())
+}
+
 pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
-  let state = &ctx.accounts.state;
   let pool_info =  &mut ctx.accounts.pool_info;
 
   update_pool(pool_info)?;
+
+  let pool_info =  &mut ctx.accounts.pool_info;
+  let acc_reward_per_share = pool_info.acc_reward_per_share;
+
+  if amount > 0 {
+    let user_info = &mut ctx.accounts.user_info;
+
+    pool_info.total_staked = pool_info.total_staked.safe_add(amount)?;
+    user_info.staked_amount = user_info.staked_amount.safe_add(amount)?;
+
+    lock_stake(&ctx, amount)?;
+  }
+
+  let user_info = &mut ctx.accounts.user_info;
+  user_info.reward_debt = user_info.staked_amount
+  .safe_mul(acc_reward_per_share)?
+  .safe_div(NORMALIZATION_FACTOR)?;
 
   Ok(())
 }
