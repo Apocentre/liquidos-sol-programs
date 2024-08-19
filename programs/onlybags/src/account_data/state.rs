@@ -20,7 +20,7 @@ pub struct State {
   /// The total supply of the newly created tokens in the lowest denomination i.e. decimals included
   pub total_token_supply: u64,
   /// Staking allocation (BPS). This percentage of the total allocation will be distributed though the staking program
-  pub staking_allocation: u64,
+  pub staking_allocation_bps: u64,
 }
 
 impl State {
@@ -34,7 +34,7 @@ impl State {
     trade_fee_bps: u64,
     creator_fee: u64,
     total_token_supply: u64,
-    staking_allocation: u64,
+    staking_allocation_bps: u64,
   ) -> Self {
     Self {
       owner,
@@ -44,7 +44,7 @@ impl State {
       trade_fee_bps,
       creator_fee,
       total_token_supply,
-      staking_allocation,
+      staking_allocation_bps,
     }
   }
 }
