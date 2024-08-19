@@ -16,8 +16,8 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
   const stakingProgram = anchor.workspace.OnlybagsStaking;
-  const tokenName = "T_CURVE_1";
-  const tokenSymbol= "S_CURVE_1";
+  const tokenName = "T_CURVE_2";
+  const tokenSymbol= "S_CURVE_2";
   const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
@@ -97,6 +97,23 @@ const main = async () => {
     rent: SYSVAR_RENT_PUBKEY,
   })
   .instruction();
+
+  console.log({
+    buyer: buyer.publicKey,
+    state,
+    bondingCurve,
+    token,
+    stakingState,
+    poolInfo,
+    poolAuthority,
+    rewardTokenVaultAta,
+    stakingProgram: stakingProgram.programId,
+    ammConfig,
+    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    tokenProgram: spl.TOKEN_PROGRAM_ID,
+    token2022: spl.TOKEN_2022_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+  })
 
   const createStakingPoolIx = await program.methods
   .createStakingPool()

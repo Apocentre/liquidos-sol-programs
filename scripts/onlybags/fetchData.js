@@ -6,8 +6,8 @@ import config from "../config.json" assert { type: "json" };
 const {PublicKey} = anchor.web3;
 
 const getTokenAccount = (state, program) => {
-  const tokenName = "T_CURVE_1";
-  const tokenSymbol= "S_CURVE_1";
+  const tokenName = "T_CURVE_2";
+  const tokenSymbol= "S_CURVE_2";
   return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
 }
 
