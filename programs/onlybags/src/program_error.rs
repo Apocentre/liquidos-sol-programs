@@ -24,4 +24,6 @@ pub enum ErrorCode {
   ExpectedMoveLiquidityIx,
   #[msg("Curve type not supported")]
   CurveTypeNotSupported,
+  #[msg("Wrong staking program state")]
+  WrontStakingProgramState,
 }

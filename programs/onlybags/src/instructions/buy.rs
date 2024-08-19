@@ -25,7 +25,7 @@ pub struct Buy<'info> {
   )]
   pub treasury: AccountInfo<'info>,
 
-  /// CHECK: The creator of the curve  that collects the creator fees
+  /// CHECK: The creator of the curve that collects the creator fees
   #[account(
     mut,
     constraint = token_creator.key() == bonding_curve.token_creator @ ErrorCode::WrongTokenCreator,
@@ -76,6 +76,20 @@ pub struct Buy<'info> {
     associated_token::token_program = token_2022,
   )]
   pub buyer_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+
+  // ---------------- Staking Program accounts ----------------
+  /// CHECK: The staking program state. Checks will take place in Staking program
+  #[account(
+    mut,
+    address = state.staking_program_state.unwrap() @ ErrorCode::WrontStakingProgramState,
+  )]
+  pub staking_state: AccountInfo<'info>,
+  /// CHECK: The pool info. Checks will take place in Staking program
+  #[account(mut)]
+  pub pool_info: AccountInfo<'info>,
+  /// CHECK: The pool authority. Checks will take place in Staking program
+  #[account(mut)]
+  pub pool_authority: AccountInfo<'info>,
 
   pub token_program: Program<'info, Token>,
   pub associated_token_program: Program<'info, AssociatedToken>,
