@@ -21,7 +21,7 @@ const main = async () => {
   const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const stakingState = new PublicKey(config.stakingState);
   const tokenCreator = new PublicKey(config.tokenCreator);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
@@ -34,7 +34,7 @@ const main = async () => {
   const poolInfo = accounts.poolAuthority(stakingState, token, stakingProgram.programId)[0];
   const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(token, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
-  const buy_ix = await program.methods
+  const buyIx = await program.methods
   .buy(amount, minAmountOut)
   .accounts({
     buyer: buyer.publicKey,
@@ -46,11 +46,6 @@ const main = async () => {
     buyerAta,
     buyerWsolAta,
     wsolToken: wsol,
-    stakingState,
-    poolInfo,
-    poolAuthority,
-    rewardTokenVaultAta,
-    stakingProgram: stakingProgram.programId,
     ammConfig,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     tokenProgram: spl.TOKEN_PROGRAM_ID,
@@ -103,11 +98,31 @@ const main = async () => {
   })
   .instruction();
 
+  const createStakingPoolIx = await program.methods
+  .createStakingPool()
+  .accounts({
+    buyer: buyer.publicKey,
+    state,
+    bondingCurve,
+    token,
+    stakingState,
+    poolInfo,
+    poolAuthority,
+    rewardTokenVaultAta,
+    stakingProgram: stakingProgram.programId,
+    ammConfig,
+    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    tokenProgram: spl.TOKEN_PROGRAM_ID,
+    token2022: spl.TOKEN_2022_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+  })
+  .instruction();
+
   const cbIx = web3.getComputationBudgetIx(750_000);
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, buy_ix, moveLiquidityIx],
+    [cbIx, priorityFeeIx, buyIx, moveLiquidityIx, createStakingPoolIx],
     buyer.publicKey,
     [buyer],
     [],

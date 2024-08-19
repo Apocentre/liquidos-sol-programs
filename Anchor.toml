@@ -7,8 +7,12 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-onlybags = "bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz"
-onlybags_staking = "8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W"
+onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
+onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
+
+[programs.devnet]
+onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
+onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
 
 [programs.mainnet]
 onlybags = "bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz"

@@ -17,7 +17,7 @@ const main = async () => {
   const tokenName = "T_16_CURVE_1";
   const tokenSymbol= "S_16_CURVE_1";
   const seller = Keypair.fromSecretKey(Buffer.from(sellerKey))
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const amount = new BN(14890926316);

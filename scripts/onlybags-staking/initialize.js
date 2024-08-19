@@ -16,17 +16,15 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
 
   const poolAuthority = accounts.poolAuthority(state.publicKey, program.programId)[0];
-  const stakingToken = new PublicKey("")
+  const stakingToken = new PublicKey(config.stakingToken)
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
   const ix = await program.methods
   .initialize(
-    new PublicKey(config.stakingProgramState),
-    new BN(config.protocolFee),
-    new BN(config.tradeFeeBps),
-    new BN(config.creatorFee),
-    new BN(config.totalTokenSupply),
-    new BN(config.staking_allocation_bps),
+    new PublicKey(config.onlyBagsState),
+    new PublicKey(config.treasury),
+    new BN(config.stakingDuration),
+    new BN(config.stakingProtocolFee),
   )
   .accounts({
     state: state.publicKey,

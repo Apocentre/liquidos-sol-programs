@@ -9,7 +9,7 @@ use crate::instructions::{
   initialize::*, update_state::*, create_pool::*, deposit::*, withdraw::*,
 };
 
-declare_id!("8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W");
+declare_id!("BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem");
 
 #[program]
 pub mod onlybags_staking {

@@ -13,7 +13,7 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
 const main = async () => {
   const tokenName = "TOKEN_TAX_HUB_2";
   const tokenSymbol= "SYMBOL_TAX_HUB_2";
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Onlybags;
   const deployer = provider.wallet.payer;

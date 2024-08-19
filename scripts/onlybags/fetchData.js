@@ -13,7 +13,7 @@ const getTokenAccount = (state, program) => {
 
 const main = async () => {
   const program = anchor.workspace.Onlybags;
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const stateData = await program.account.state.fetch(state);
   // const bondingCurve = new PublicKey("9CDpUv7k38YHKMCkF8nCWkW9T9PXXbcG8KUD5BbSmCf"); //accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];
   // const bondingCurveData = await program.account.bondingCurve.fetch(bondingCurve);

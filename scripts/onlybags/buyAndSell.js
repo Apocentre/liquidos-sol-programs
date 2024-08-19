@@ -129,7 +129,7 @@ const main = async () => {
   const tokenSymbol= "SYMBOL_HUB_4";
   const buyer1 = Keypair.fromSecretKey(Buffer.from(buyerKey1))
   const buyer2 = Keypair.fromSecretKey(Buffer.from(buyerKey2))
-  const state = new PublicKey(config.state);
+  const state = new PublicKey(config.onlyBagsState);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   
