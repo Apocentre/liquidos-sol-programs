@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{associated_token::AssociatedToken, token_interface::{Mint, TokenAccount, TokenInterface}};
-use crate::account_data::state::State;
+use crate::account_data::{pool_info::PoolInfo, state::State};
 
 #[derive(Accounts)]
 pub struct CreatePool<'info> {
@@ -8,13 +8,14 @@ pub struct CreatePool<'info> {
   #[account()]
   pub state: Account<'info, State>,
   
-  /// The state of the bonding curve that will be used during buys and sells
   #[account(
-    mut,
-    seeds = [b"bonding_curve", state.onlybags_state.as_ref(), reward_token.key().as_ref()],
+    init,
+    payer = payer,
+    space = PoolInfo::MAX_SIZE,
+    seeds = [b"staking_pool", state.key().as_ref(), bonding_curve.key().as_ref()],
     bump,
   )]
-  pub bonding_curve: Signer<'info>,
+  pub pool_info: Account<'info, PoolInfo>,
 
   #[account()]
   pub reward_token: InterfaceAccount<'info, Mint>,
@@ -36,6 +37,13 @@ pub struct CreatePool<'info> {
   )]
   pub pool_vault_ata: InterfaceAccount<'info, TokenAccount>,
 
+  /// The state of the bonding curve that will be used during buys and sells
+  #[account(
+    mut,
+    seeds = [b"bonding_curve", state.onlybags_state.as_ref(), reward_token.key().as_ref()],
+    bump,
+  )]
+  pub bonding_curve: Signer<'info>,
   /// This is the user the call the instruction which calls this instruction via CPI. We need this to pay
   /// for the rent for the above created accounts
   #[account(mut)]
