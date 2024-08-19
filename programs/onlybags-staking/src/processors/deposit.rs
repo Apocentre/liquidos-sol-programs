@@ -2,8 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
-  instructions::deposit::Deposit, staking::{update_pool, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
-  program_error::ErrorCode,
+  instructions::deposit::Deposit, program_error::ErrorCode, staking::{release_pending, update_pool, AccountContainer, NORMALIZATION_FACTOR, TOKEN_DECIMALS}
 };
 
 fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
@@ -29,7 +28,18 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
   require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
   update_pool(pool_info)?;
-
+  release_pending(&mut AccountContainer {
+    state: &mut ctx.accounts.state,
+    user_info: &mut ctx.accounts.user_info,
+    pool_info: &mut ctx.accounts.pool_info,
+    reward_token: &ctx.accounts.reward_token,
+    reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
+    pool_authority: &ctx.accounts.pool_authority,
+    user_reward_ata: &ctx.accounts.user_reward_ata,
+    treasury_ata: &ctx.accounts.treasury_ata,
+    token_2022: &ctx.accounts.token_2022,
+  })?;
+  
   let pool_info =  &mut ctx.accounts.pool_info;
   let acc_reward_per_share = pool_info.acc_reward_per_share;
 

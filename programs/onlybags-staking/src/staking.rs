@@ -1,13 +1,14 @@
 use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
-use anchor_spl::{token::Token, token_2022::{self, TransferChecked}, token_interface::{Mint, TokenAccount}};
+use anchor_spl::{
+  token_2022::{self, TransferChecked}, token_interface::{Mint, TokenAccount, TokenInterface},
+};
 use crate::account_data::{pool_info::PoolInfo, state::State, user_info::UserInfo};
 
 pub const NORMALIZATION_FACTOR: u64 = 1_000_000;
 pub const TOKEN_DECIMALS: u8 = 6;
 
-pub fn update_pool(pool_info: &mut PoolInfo
-) -> Result<()> {
+pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
   let now = Clock::get().unwrap().unix_timestamp;
 
   if now > pool_info.last_reward_ts {
@@ -22,15 +23,15 @@ pub fn update_pool(pool_info: &mut PoolInfo
 }
 
 pub struct AccountContainer<'a, 'info> {
-  pub state: &'a Account<'info, State>,
-  pub user_info: &'a mut Account<'info, UserInfo>,
-  pub pool_info: &'a mut Account<'info, PoolInfo>,
-  pub reward_token: &'a Account<'info, Mint>,
-  pub reward_token_vault_ata: InterfaceAccount<'info, TokenAccount>,
+  pub state: &'a Box<Account<'info, State>>,
+  pub user_info: &'a mut Box<Account<'info, UserInfo>>,
+  pub pool_info: &'a mut Box<Account<'info, PoolInfo>>,
+  pub reward_token: &'a Box<InterfaceAccount<'info, Mint>>,
+  pub reward_token_vault_ata: &'a Box<InterfaceAccount<'info, TokenAccount>>,
   pub pool_authority: &'a AccountInfo<'info>,
-  pub user_reward_ata: &'a Account<'info, TokenAccount>,
-  pub treasury_ata: &'a Account<'info, TokenAccount>,
-  pub token_2022: &'a Program<'info, Token>,
+  pub user_reward_ata: &'a Box<InterfaceAccount<'info, TokenAccount>>,
+  pub treasury_ata: &'a Box<InterfaceAccount<'info, TokenAccount>>,
+  pub token_2022: &'a Interface<'info, TokenInterface>,
 }
 
 pub fn release_pending(accounts: &mut AccountContainer) -> Result<()>{
