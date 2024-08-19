@@ -39,3 +39,8 @@ export const raydiumObservationState = (poolState, programId) => PublicKey.findP
   [utf8.encode("observation"), poolState.toBuffer()],
   programId
 )
+
+export const poolAuthority = (state, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("pool_authority"), state.toBuffer()],
+  programId
+)
