@@ -17,8 +17,8 @@ const main = async () => {
   const program = anchor.workspace.OnlybagsStaking;
   const state = new PublicKey(config.stakingState);
   const stateData = await program.account.state.fetch(state);
-  // const poolInfo = accounts.poolAuthority(state, getTokenAccount(), program.programId)[0];
-  // const poolInfoData = await program.account.state.fetch(poolInfo);
+  const poolInfo = accounts.poolInfo(state, getTokenAccount(), program.programId)[0];
+  const poolInfoData = await program.account.poolInfo.fetch(poolInfo);
 
   console.log("state: ", {
     owner: stateData.owner.toString(),
@@ -30,16 +30,16 @@ const main = async () => {
     protocolFee: stateData.protocolFee.toString(),
   });
 
-  // console.log("poolInfoData: ", {
-  //   accRewardPerShare: poolInfoData.accRewardPerShare.toString(),
-  //   lastRewardTs: poolInfoData.lastRewardTs.toString(),
-  //   endTs: poolInfoData.endTs.toString(),
-  //   totalReward: poolInfoData.totalReward.toString(),
-  //   totalStaked: poolInfoData.totalStaked.toString(),
-  //   rewardPerSec: poolInfoData.rewardPerSec.toString(),
-  //   rewardToken: poolInfoData.rewardToken.toString(),
-  //   protocolFee: poolInfoData.protocolFee.toString(),
-  // })
+  console.log("poolInfoData: ", {
+    accRewardPerShare: poolInfoData.accRewardPerShare.toString(),
+    lastRewardTs: poolInfoData.lastRewardTs.toString(),
+    endTs: poolInfoData.endTs.toString(),
+    totalReward: poolInfoData.totalReward.toString(),
+    totalStaked: poolInfoData.totalStaked.toString(),
+    rewardPerSec: poolInfoData.rewardPerSec.toString(),
+    rewardToken: poolInfoData.rewardToken.toString(),
+    protocolFee: poolInfoData.protocolFee.toString(),
+  })
 }
 
 main()
