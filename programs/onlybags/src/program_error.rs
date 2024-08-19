@@ -22,6 +22,8 @@ pub enum ErrorCode {
   WrongIxData,
   #[msg("Expected MoveLiquidity ix")]
   ExpectedMoveLiquidityIx,
+  #[msg("Expected CreateStakingPool ix")]
+  ExpectedCreateStakingPoolIx,
   #[msg("Curve type not supported")]
   CurveTypeNotSupported,
   #[msg("Wrong staking program")]
