@@ -3,6 +3,7 @@ use crate::instructions::update_state::UpdateState;
 
 pub fn exec(
   ctx: Context<UpdateState>,
+  staking_program: Pubkey,
   staking_program_state: Pubkey,
   protocol_fee: u64,
   trade_fee_bps: u64,
@@ -11,6 +12,7 @@ pub fn exec(
   staking_allocation_bps: u64,
 ) -> Result<()> {
   let state = &mut ctx.accounts.state;
+  state.staking_program = Some(staking_program);
   state.staking_program_state = Some(staking_program_state);
   state.protocol_fee = protocol_fee;
   state.trade_fee_bps = trade_fee_bps;

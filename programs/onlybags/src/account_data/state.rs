@@ -9,6 +9,8 @@ pub struct State {
   pub owner: Pubkey,
   /// The treasury account that receives fees
   pub treasury: Pubkey,
+  /// The staking program Id
+  pub staking_program: Option<Pubkey>,
   /// The state of the staking program
   pub staking_program_state: Option<Pubkey>,
   /// Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
@@ -39,6 +41,7 @@ impl State {
     Self {
       owner,
       treasury,
+      staking_program: None,
       staking_program_state: None,
       protocol_fee,
       trade_fee_bps,

@@ -55,6 +55,7 @@ pub mod onlybags {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
+  /// * `staking_program` - The staking program Id
   /// * `staking_program_state` - The state of the staking program
   /// * `protocol_fee` - Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
@@ -64,6 +65,7 @@ pub mod onlybags {
   ///    the staking program
   pub fn update_state(
     ctx: Context<UpdateState>,
+    staking_program: Pubkey,
     staking_program_state: Pubkey,
     protocol_fee: u64,
     trade_fee_bps: u64,
@@ -73,6 +75,7 @@ pub mod onlybags {
   ) -> Result<()> {
     processors::update_state::exec(
       ctx,
+      staking_program,
       staking_program_state,
       protocol_fee,
       trade_fee_bps,
