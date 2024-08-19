@@ -3,6 +3,7 @@ use crate::{account_data::state::State, instructions::initialize::Initialize};
 
 pub fn exec(
   ctx: Context<Initialize>,
+  onlybags_program: Pubkey,
   onlybags_state: Pubkey,
   treasury: Pubkey,
   staking_duration: i64,
@@ -12,6 +13,7 @@ pub fn exec(
   let state = &mut ctx.accounts.state;
   **state = State::new(
     owner,
+    onlybags_program,
     onlybags_state,
     treasury,
     staking_duration,

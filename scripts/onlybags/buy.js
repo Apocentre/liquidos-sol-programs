@@ -30,8 +30,8 @@ const main = async () => {
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const ammConfig = constants.raydiumAmmConfigDevnet;
-  const poolAuthority = accounts.poolAuthority(stakingState, program.programId)[0];
-  const poolInfo = accounts.poolAuthority(stakingState, token, stakingProgram.programId)[0];
+  const poolAuthority = accounts.poolAuthority(stakingState, stakingProgram.programId)[0];
+  const poolInfo = accounts.poolInfo(stakingState, token, stakingProgram.programId)[0];
   const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(token, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
   const buyIx = await program.methods

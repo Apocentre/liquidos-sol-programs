@@ -5,6 +5,8 @@ use anchor_lang::prelude::*;
 pub struct State {
   /// The owner that can handle various admin related teasks
   pub owner: Pubkey,
+  /// The onlybags program
+  pub onlybags_program: Pubkey,
   /// The state of the main Onlybags program
   pub onlybags_state: Pubkey,
   /// The treasury that will collect protocol fees
@@ -28,6 +30,7 @@ impl State {
 
   pub fn new(
     owner: Pubkey,
+    onlybags_program: Pubkey,
     onlybags_state: Pubkey,
     treasury: Pubkey,
     staking_duration: i64,
@@ -36,6 +39,7 @@ impl State {
   ) -> Self {
     Self {
       owner,
+      onlybags_program,
       onlybags_state,
       treasury,
       staking_duration,
