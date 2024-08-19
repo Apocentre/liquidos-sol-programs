@@ -149,6 +149,17 @@ pub mod onlybags {
     processors::buy::exec(ctx, amount, min_amount_out)
   }
 
+  /// MoveLiquidity
+  ///
+  /// Moves the liquidity to Raydium
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn move_liquidity(ctx: Context<MoveLiquidity>) -> Result<()> {
+    processors::move_liquidity::exec(ctx)
+  }
+
   /// Sell
   ///
   /// Sell tokens
