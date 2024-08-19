@@ -9,6 +9,7 @@ pub mod curve_formulas;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
+  update_state::*,
 };
 
 declare_id!("bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz");
@@ -42,6 +43,35 @@ pub mod onlybags {
       trade_fee_bps,
       creator_fee,
       total_token_supply,
+    )
+  }
+
+  /// UpdateState
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `staking_program_state` - The state of the staking program
+  /// * `protocol_fee` - Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
+  /// * `creator_fee` - Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  /// * `total_token_supply` - The total supply of the newly created tokens in the lowest denomination i.e. decimals included
+  pub fn update_state(
+    ctx: Context<UpdateState>,
+    staking_program_state: Pubkey,
+    protocol_fee: u64,
+    trade_fee_bps: u64,
+    creator_fee: u64,
+    total_token_supply: u64,
+  ) -> Result<()> {
+    processors::update_state::exec(
+      ctx,
+      staking_program_state,
+      protocol_fee,
+      trade_fee_bps,
+      creator_fee,
+      total_token_supply,
+
     )
   }
 
