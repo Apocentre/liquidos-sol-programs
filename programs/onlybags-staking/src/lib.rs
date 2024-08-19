@@ -2,9 +2,12 @@ pub mod account_data;
 pub mod instructions;
 pub mod processors;
 pub mod program_error;
+pub mod staking;
 
 use anchor_lang::prelude::*;
-use crate::instructions::initialize::*;
+use crate::instructions::{
+  initialize::*, create_pool::*,
+};
 
 declare_id!("8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W");
 
@@ -33,5 +36,16 @@ pub mod onlybags_staking {
       staking_duration,
       protocol_fee,
     )
+  }
+
+  /// CreatePool
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `total_rewards` - Total amount of rewards to be distributed. Note the caller (Onlybags program) of this ix should
+  ///                      first transfer this amount to `reward_token_vault_ata`
+  pub fn create_pool(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
+    processors::create_pool::exec(ctx, total_rewards)
   }
 }
