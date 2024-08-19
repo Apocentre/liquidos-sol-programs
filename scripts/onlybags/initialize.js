@@ -1,14 +1,13 @@
 import * as anchor from "@coral-xyz/anchor";
-import * as accounts from "./helpers/accounts.js";
+import * as accounts from "../helpers/accounts.js";
 import Web3Pkg from "@apocentre/solana-web3";
-import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx} from "./helpers/tx.js";
-import config from "./config.json" assert { type: "json" };
+import {provider} from "../helpers/provider.js";
+import {createAndSendV0Tx} from "../helpers/tx.js";
+import config from "../config.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
 const {SystemProgram, PublicKey} = anchor.web3
-
 
 const main = async () => {
   const state = accounts.state();
@@ -25,6 +24,7 @@ const main = async () => {
     new BN(config.tradeFeeBps),
     new BN(config.creatorFee),
     new BN(config.totalTokenSupply),
+    new BN(config.staking_allocation_bps),
   )
   .accounts({
     state: state.publicKey,

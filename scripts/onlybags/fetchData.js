@@ -1,7 +1,7 @@
 import * as anchor from "@coral-xyz/anchor";
-import * as accounts from "./helpers/accounts.js";
-import * as provider from "./helpers/provider.js";
-import config from "./config.json" assert { type: "json" };
+import * as accounts from "../helpers/accounts.js";
+import * as provider from "../helpers/provider.js";
+import config from "../config.json" assert { type: "json" };
 
 const {PublicKey} = anchor.web3;
 
