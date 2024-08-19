@@ -6,7 +6,7 @@ pub mod staking;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{
-  initialize::*, create_pool::*, deposit::*, withdraw::*,
+  initialize::*, update_state::*, create_pool::*, deposit::*, withdraw::*,
 };
 
 declare_id!("8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W");
@@ -41,15 +41,31 @@ pub mod onlybags_staking {
     )
   }
 
-  /// CreatePool
+  /// UpdateState
   ///
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `total_rewards` - Total amount of rewards to be distributed. Note the caller (Onlybags program) of this ix should
-  ///                      first transfer this amount to `reward_token_vault_ata`
-  pub fn create_pool(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
-    processors::create_pool::exec(ctx, total_rewards)
+  /// * `total_rewards` - The amount to withdraw
+  pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+    processors::withdraw::exec(ctx, amount)
+  }  
+
+  /// CreatePool
+  ///
+  /// Allows admit to update the state
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
+  /// * `protocol_fee` - The fee in the reward token the protocol receives.
+  pub fn update_state(
+    ctx: Context<UpdateState>,
+    staking_duration: i64,
+    protocol_fee: u16,
+  ) -> Result<()> {
+    processors::update_state::exec(ctx, staking_duration, protocol_fee)
   }
 
   /// Deposit

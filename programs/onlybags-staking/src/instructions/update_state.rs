@@ -4,7 +4,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct UpdateState<'info> {
   /// The state account of each instance of this program
   #[account(mut)]
   pub state: Account<'info, State>,
