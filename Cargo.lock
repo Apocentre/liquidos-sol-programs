@@ -1452,6 +1452,7 @@ dependencies = [
  "anchor-lang",
  "anchor-safe-math",
  "anchor-spl",
+ "bytemuck",
 ]
 
 [[package]]

@@ -23,9 +23,10 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
 }
 
 pub struct AccountContainer<'a, 'info> {
-  pub state: &'a Box<Account<'info, State>>,
+  pub state: &'a mut State,
+  pub state_key: Pubkey,
   pub user_info: &'a mut Box<Account<'info, UserInfo>>,
-  pub pool_info: &'a mut Box<Account<'info, PoolInfo>>,
+  pub pool_info: &'a mut PoolInfo,
   pub reward_token: &'a Box<InterfaceAccount<'info, Mint>>,
   pub reward_token_vault_ata: &'a Box<InterfaceAccount<'info, TokenAccount>>,
   pub pool_authority: &'a AccountInfo<'info>,
@@ -93,10 +94,9 @@ fn transfer_rewards<'info>(
   user_amount: u64,
   treasury_amount: u64
 ) -> Result<()> {
-  let state_key = accounts.state.key();
   let seeds: &[&[u8]] = &[
     b"pool_authority",
-    state_key.as_ref(),
+    accounts.state_key.as_ref(),
     &[accounts.state.pool_authority_bump],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];

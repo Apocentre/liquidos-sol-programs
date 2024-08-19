@@ -23,16 +23,18 @@ fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
 }
 
 pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
-  let pool_info =  &mut ctx.accounts.pool_info;
+  let mut pool_info = ctx.accounts.pool_info.load_mut()?;
+  let mut state = ctx.accounts.state.load_mut()?;
   let now = Clock::get().unwrap().unix_timestamp;
 
   require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
-  update_pool(pool_info)?;
+  update_pool(&mut *pool_info)?;
   release_pending(&mut AccountContainer {
-    state: &mut ctx.accounts.state,
+    state: &mut *state,
+    state_key: ctx.accounts.state.key(),
     user_info: &mut ctx.accounts.user_info,
-    pool_info: &mut ctx.accounts.pool_info,
+    pool_info: &mut *pool_info,
     reward_token: &ctx.accounts.reward_token,
     reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
     pool_authority: &ctx.accounts.pool_authority,
@@ -41,7 +43,6 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     token_2022: &ctx.accounts.token_2022,
   })?;
   
-  let pool_info =  &mut ctx.accounts.pool_info;
   let acc_reward_per_share = pool_info.acc_reward_per_share;
 
   if amount > 0 {

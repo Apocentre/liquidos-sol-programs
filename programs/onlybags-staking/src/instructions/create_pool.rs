@@ -6,7 +6,7 @@ use crate::account_data::{pool_info::PoolInfo, state::State};
 pub struct CreatePool<'info> {
   /// The state account of each instance of this program
   #[account(mut)]
-  pub state: Account<'info, State>,
+  pub state: AccountLoader<'info, State>,
   
   #[account(
     init,
@@ -15,7 +15,7 @@ pub struct CreatePool<'info> {
     seeds = [b"staking_pool", state.key().as_ref(), reward_token.key().as_ref()],
     bump,
   )]
-  pub pool_info: Account<'info, PoolInfo>,
+  pub pool_info: AccountLoader<'info, PoolInfo>,
 
   #[account()]
   pub reward_token: InterfaceAccount<'info, Mint>,
@@ -23,7 +23,7 @@ pub struct CreatePool<'info> {
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
     seeds = [b"pool_authority", state.key().as_ref()],
-    bump = state.pool_authority_bump,
+    bump = state.load()?.pool_authority_bump,
   )]
   pub pool_authority: AccountInfo<'info>,
 
@@ -40,7 +40,7 @@ pub struct CreatePool<'info> {
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
     mut,
-    seeds = [b"bonding_curve", state.onlybags_state.as_ref(), reward_token.key().as_ref()],
+    seeds = [b"bonding_curve", state.load()?.onlybags_state.as_ref(), reward_token.key().as_ref()],
     bump,
   )]
   pub bonding_curve: Signer<'info>,

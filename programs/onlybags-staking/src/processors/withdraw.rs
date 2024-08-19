@@ -6,12 +6,12 @@ use crate::{
   staking::{release_pending, update_pool, AccountContainer, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
 };
 
-fn unlock_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
+fn unlock_stake(ctx: &Context<Withdraw>, amount: u64, pool_authority_bump: u8) -> Result<()> {
   let state_key = ctx.accounts.state.key();
   let seeds: &[&[u8]] = &[
     b"pool_authority",
     state_key.as_ref(),
-    &[ctx.accounts.state.pool_authority_bump],
+    &[pool_authority_bump],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
@@ -31,16 +31,18 @@ fn unlock_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
 }
 
 pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
-  let pool_info = &mut ctx.accounts.pool_info;
+  let mut pool_info = ctx.accounts.pool_info.load_mut()?;
+  let mut state = ctx.accounts.state.load_mut()?;
   let user_info = &ctx.accounts.user_info;
   
   require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount,);
 
-  update_pool(pool_info)?;
+  update_pool(&mut *pool_info)?;
   release_pending(&mut AccountContainer {
-    state: &mut ctx.accounts.state,
+    state: &mut *state,
+    state_key: ctx.accounts.state.key(),
     user_info: &mut ctx.accounts.user_info,
-    pool_info: &mut ctx.accounts.pool_info,
+    pool_info: &mut *pool_info,
     reward_token: &ctx.accounts.reward_token,
     reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
     pool_authority: &ctx.accounts.pool_authority,
@@ -49,7 +51,6 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
     token_2022: &ctx.accounts.token_2022,
   })?;
 
-  let pool_info =  &mut ctx.accounts.pool_info;
   let acc_reward_per_share = pool_info.acc_reward_per_share;
 
   if amount > 0 {
@@ -58,7 +59,7 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
     pool_info.total_staked = pool_info.total_staked.safe_sub(amount)?;
     user_info.staked_amount = user_info.staked_amount.safe_sub(amount)?;
 
-    unlock_stake(&ctx, amount)?;
+    unlock_stake(&ctx, amount, state.pool_authority_bump)?;
   }
 
   let user_info = &mut ctx.accounts.user_info;

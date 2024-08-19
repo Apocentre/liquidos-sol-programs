@@ -10,13 +10,13 @@ use crate::{
 #[derive(Accounts)]
 pub struct Withdraw<'info> {
   #[account()]
-  pub state: Box<Account<'info, State>>,
+  pub state: AccountLoader<'info, State>,
 
   #[account(
     seeds = [b"staking_pool", state.key().as_ref(), reward_token.key().as_ref()],
     bump,
   )]
-  pub pool_info: Box<Account<'info, PoolInfo>>,
+  pub pool_info: AccountLoader<'info, PoolInfo>,
 
   #[account()]
   pub reward_token: Box<InterfaceAccount<'info, Mint>>,
@@ -24,13 +24,13 @@ pub struct Withdraw<'info> {
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
     seeds = [b"pool_authority", state.key().as_ref()],
-    bump = state.pool_authority_bump,
+    bump = state.load()?.pool_authority_bump,
   )]
   pub pool_authority: AccountInfo<'info>,
 
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
-    constraint = treasury.key() == state.treasury @ ErrorCode::InvalidTreasury,
+    constraint = treasury.key() == state.load()?.treasury @ ErrorCode::InvalidTreasury,
   )]
   pub treasury: AccountInfo<'info>,
 
@@ -52,8 +52,8 @@ pub struct Withdraw<'info> {
 
   #[account(
     mut,
-    constraint = state.staking_token.is_some() @ ErrorCode::StakingTokenNotSet,
-    constraint = staking_token.key() == state.staking_token.unwrap() @ ErrorCode::InvalidStakingToken,
+    constraint = state.load()?.staking_token != Pubkey::default() @ ErrorCode::StakingTokenNotSet,
+    constraint = staking_token.key() == state.load()?.staking_token @ ErrorCode::InvalidStakingToken,
   )]
   pub staking_token: Box<InterfaceAccount<'info, Mint>>,
 

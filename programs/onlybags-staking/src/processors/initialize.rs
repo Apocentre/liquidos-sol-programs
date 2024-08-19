@@ -9,7 +9,8 @@ pub fn exec(
   protocol_fee: u16,
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
-  let state = &mut ctx.accounts.state;
+  // We need to call load_init only once so anchor adds the discriminator.
+  let state = &mut ctx.accounts.state.load_init()?;
   **state = State::new(
     owner,
     onlybags_state,

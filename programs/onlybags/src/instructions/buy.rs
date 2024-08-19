@@ -81,7 +81,7 @@ pub struct Buy<'info> {
   /// CHECK: The staking program state. Checks will take place in Staking program
   #[account(
     mut,
-    constraint = staking_state.key() == state.staking_program_state.unwrap() @ ErrorCode::WrontStakingProgramState,
+    constraint = staking_state.key() == state.staking_program_state.unwrap() @ ErrorCode::WrongStakingProgramState,
   )]
   pub staking_state: AccountInfo<'info>,
   /// CHECK: The pool info. Checks will take place in Staking program
@@ -95,7 +95,7 @@ pub struct Buy<'info> {
   pub reward_token_vault_ata: AccountInfo<'info>,
   /// CHECK: The staking program id.
   #[account(
-    constraint = staking_program.key() == state.staking_program.unwrap() @ ErrorCode::WrontStakingProgram,
+    constraint = staking_program.key() == state.staking_program.unwrap() @ ErrorCode::WrongStakingProgram,
   )]
   pub staking_program: AccountInfo<'info>,
 

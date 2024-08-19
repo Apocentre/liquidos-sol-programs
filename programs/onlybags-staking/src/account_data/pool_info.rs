@@ -2,7 +2,7 @@ use std::mem::size_of;
 
 use anchor_lang::prelude::*;
 
-#[account]
+#[account(zero_copy)]
 pub struct PoolInfo {
   /// Accumulated reward per share
   pub acc_reward_per_share: u64,
@@ -20,6 +20,8 @@ pub struct PoolInfo {
   pub reward_token: Pubkey,
   /// The fee in the reward token the protocol receives
   pub protocol_fee: u16,
+  // https://github.com/coral-xyz/anchor/issues/2759#issuecomment-1874845771
+  _padding: [u8; 6]
 }
 
 impl PoolInfo {
@@ -43,6 +45,7 @@ impl PoolInfo {
       reward_token,
       reward_per_sec,
       protocol_fee,
+      _padding: [0; 6]
     }
   }
 }

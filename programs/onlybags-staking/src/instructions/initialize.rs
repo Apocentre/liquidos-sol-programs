@@ -12,7 +12,7 @@ pub struct Initialize<'info> {
     payer = owner,
     space = State::MAX_SIZE,
   )]
-  pub state: Account<'info, State>,
+  pub state: AccountLoader<'info, State>,
 
   /// CHECK: This is the authority that will control the ATA of each pool and execute CPIs
   #[account(
