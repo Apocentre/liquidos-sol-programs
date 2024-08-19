@@ -6,7 +6,7 @@ pub mod staking;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{
-  initialize::*, create_pool::*,
+  initialize::*, create_pool::*, deposit::*, withdraw::*,
 };
 
 declare_id!("8c3Znxt8mLm3kbmJBYkbKJSsEq7SCxDntNgRJeeGbr8W");
@@ -51,4 +51,24 @@ pub mod onlybags_staking {
   pub fn create_pool(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
     processors::create_pool::exec(ctx, total_rewards)
   }
+
+  /// Deposit
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `total_rewards` - The amount to deposit
+  pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
+    processors::deposit::exec(ctx, amount)
+  }
+
+  /// Withdraw
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `total_rewards` - The amount to withdraw
+  pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+    processors::withdraw::exec(ctx, amount)
+  }  
 }
