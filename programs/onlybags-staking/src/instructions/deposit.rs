@@ -4,8 +4,7 @@ use anchor_spl::{
   token_interface::{Mint, TokenAccount, TokenInterface}
 };
 use crate::{
-  program_error::ErrorCode,
-  account_data::{pool_info::PoolInfo, state::State},
+  account_data::{pool_info::PoolInfo, state::State, user_info::UserInfo}, program_error::ErrorCode
 };
 
 #[derive(Accounts)]
@@ -51,7 +50,37 @@ pub struct Deposit<'info> {
     associated_token::token_program = token_2022,
   )]
   pub staking_token_vault_ata: InterfaceAccount<'info, TokenAccount>,
+
+  #[account(
+    init_if_needed,
+    payer = user,
+    space = UserInfo::MAX_SIZE,
+    seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), staking_token.key().as_ref()],
+    bump
+  )]
+  pub user_info: Account<'info, UserInfo>,
+
+  #[account(
+    init_if_needed,
+    payer = user,
+    associated_token::mint = staking_token,
+    associated_token::authority = user,
+    associated_token::token_program = token_2022,
+  )]
+  pub user_staking_ata: InterfaceAccount<'info, TokenAccount>,
+
+  #[account(
+    init_if_needed,
+    payer = user,
+    associated_token::mint = reward_token,
+    associated_token::authority = user,
+    associated_token::token_program = token_2022,
+  )]
+  pub user_reward_ata: InterfaceAccount<'info, TokenAccount>,
   
+  #[account(mut)]
+  pub user: Signer<'info>,
   pub token_2022: Interface<'info, TokenInterface>, 
   associated_token_program: Program<'info, AssociatedToken>,
+  pub system_program: Program<'info, System>,
 }
