@@ -1441,6 +1441,7 @@ dependencies = [
  "anchor-safe-math",
  "anchor-spl",
  "bytemuck",
+ "onlybags-staking",
  "rust_decimal",
  "rust_decimal_macros",
 ]
