@@ -6,4 +6,6 @@ pub enum ErrorCode {
   InvalidStakingToken,
   #[msg("Staking token not set yet")]
   StakingTokenNotSet,
+  #[msg("Invalid treasury account")]
+  InvalidTreasury,
 }

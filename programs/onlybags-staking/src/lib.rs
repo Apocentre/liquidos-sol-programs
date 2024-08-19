@@ -21,18 +21,21 @@ pub mod onlybags_staking {
   ///
   /// * `ctx` - The Anchor context holding the accounts
   /// * `onlybags_state` - The state of the main Onlybags program
+  /// * `treasury` - The treasury that will collect protocol fees
   /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
   /// * `protocol_fee` - The fee in the reward token the protocol receives.
   
   pub fn initialize(
     ctx: Context<Initialize>,
     onlybags_state: Pubkey,
+    treasury: Pubkey,
     staking_duration: i64,
     protocol_fee: u16,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
       onlybags_state,
+      treasury,
       staking_duration,
       protocol_fee,
     )

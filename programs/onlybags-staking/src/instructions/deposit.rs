@@ -28,6 +28,22 @@ pub struct Deposit<'info> {
   )]
   pub pool_authority: AccountInfo<'info>,
 
+  /// CHECK: This is the authority of all the ATA that will store the staked tokens
+  #[account(
+    constraint = treasury.key() == state.treasury @ ErrorCode::InvalidTreasury,
+  )]
+  pub treasury: AccountInfo<'info>,
+
+  /// ATA that will store the reward tokens
+  #[account(
+    init_if_needed,
+    payer = user,
+    associated_token::mint = reward_token,
+    associated_token::authority = treasury,
+    associated_token::token_program = token_2022,
+  )]
+  pub treasury_ata: InterfaceAccount<'info, TokenAccount>,
+
   /// ATA that will store the reward tokens
   #[account(
     associated_token::mint = reward_token,
