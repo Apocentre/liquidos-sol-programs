@@ -5,7 +5,7 @@ use crate::account_data::{pool_info::PoolInfo, state::State};
 #[derive(Accounts)]
 pub struct CreatePool<'info> {
   /// The state account of each instance of this program
-  #[account()]
+  #[account(mut)]
   pub state: Account<'info, State>,
   
   #[account(
