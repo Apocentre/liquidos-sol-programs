@@ -24,7 +24,7 @@ pub struct Initialize<'info> {
   )]
   pub pool_authority: AccountInfo<'info>,
 
-  #[account(mut)]
+  #[account()]
   pub staking_token: InterfaceAccount<'info, Mint>,
 
   /// ATA that will store the staking tokens for all pools
