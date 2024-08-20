@@ -6,6 +6,18 @@ use crate::{
   staking::{release_pending, update_pool, AccountContainer, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
 };
 
+#[event]
+pub struct DepositEvent {
+  reward_token: Pubkey,
+  buyer: Pubkey,
+  amount: String,
+  claimed: String,
+  user_total_staked: String,
+  user_total_claimed: String,
+  pool_total_staked: String,
+  pool_total_reward: String,
+}
+
 fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
   let cpi_accounts = TransferChecked {
     from: ctx.accounts.user_staking_ata.to_account_info(),
@@ -23,16 +35,16 @@ fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
 }
 
 pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
-  let pool_info =  &mut ctx.accounts.pool_info;
+  let pool_info = &mut ctx.accounts.pool_info;
   let now = Clock::get().unwrap().unix_timestamp;
 
   require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
   update_pool(pool_info)?;
-  release_pending(&mut AccountContainer {
+  let claimed = release_pending(&mut AccountContainer {
     state: &mut ctx.accounts.state,
     user_info: &mut ctx.accounts.user_info,
-    pool_info: &mut ctx.accounts.pool_info,
+    pool_info,
     reward_token: &ctx.accounts.reward_token,
     reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
     pool_authority: &ctx.accounts.pool_authority,
@@ -41,22 +53,35 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     token_2022: &ctx.accounts.token_2022,
   })?;
   
-  let pool_info =  &mut ctx.accounts.pool_info;
-  let acc_reward_per_share = pool_info.acc_reward_per_share;
-
   if amount > 0 {
+    let pool_info = &mut ctx.accounts.pool_info;
     let user_info = &mut ctx.accounts.user_info;
-
+    
     pool_info.total_staked = pool_info.total_staked.safe_add(amount)?;
     user_info.staked_amount = user_info.staked_amount.safe_add(amount)?;
 
     lock_stake(&ctx, amount)?;
   }
 
+  let pool_info = &ctx.accounts.pool_info;
+  let acc_reward_per_share = pool_info.acc_reward_per_share;
+  let reward_token = pool_info.reward_token;
   let user_info = &mut ctx.accounts.user_info;
+
   user_info.reward_debt = user_info.staked_amount
   .safe_mul(acc_reward_per_share)?
   .safe_div(NORMALIZATION_FACTOR)?;
+
+  emit!(DepositEvent {
+    reward_token,
+    buyer: ctx.accounts.user.key(),
+    amount: amount.to_string(),
+    claimed: claimed.to_string(),
+    user_total_staked: user_info.staked_amount.to_string(),
+    user_total_claimed: user_info.total_claimed.to_string(),
+    pool_total_staked: pool_info.total_staked.to_string(),
+    pool_total_reward: pool_info.total_reward.to_string(),
+  });
 
   Ok(())
 }

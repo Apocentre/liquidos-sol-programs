@@ -36,9 +36,10 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
   Ok(())
 }
 
-pub fn release_pending(accounts: &mut AccountContainer) -> Result<()>{
+pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
   let user_info = &mut accounts.user_info;
   let pool_info =  &mut accounts.pool_info;
+  let mut amount = 0;
 
   if user_info.staked_amount > 0 {
     let pending = user_info.staked_amount
@@ -47,6 +48,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<()>{
     .safe_sub(user_info.reward_debt)?;
 
     let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, pending)?;
+    amount = user_amount;
 
     if pending > 0 {
       user_info.total_claimed = user_info.total_claimed.safe_add(user_amount)?;
@@ -59,7 +61,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<()>{
     }
   }
 
-  Ok(())
+  Ok(amount)
 } 
 
 fn calc_pending_reward(pool_info: &PoolInfo, now: i64) -> Result<u64> {
