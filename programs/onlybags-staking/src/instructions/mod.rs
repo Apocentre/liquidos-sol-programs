@@ -3,4 +3,4 @@ pub mod create_pool;
 pub mod deposit;
 pub mod withdraw;
 pub mod update_state;
-pub mod pending_reward;
+pub mod read_pending_reward;

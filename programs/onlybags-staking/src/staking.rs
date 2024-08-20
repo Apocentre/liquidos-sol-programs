@@ -20,6 +20,21 @@ pub struct AccountContainer<'a, 'info> {
   pub token_2022: &'a Interface<'info, TokenInterface>,
 }
 
+pub fn get_pending_rewards<'info>(
+  pool_info: &Account<'info, PoolInfo>,
+  user_info: &Account<'info, UserInfo>,
+) -> Result<u64> {  
+  let now = Clock::get().unwrap().unix_timestamp;
+  let acc_reward_per_share = calc_acc_reward_per_share(pool_info, now)?;
+
+  let pending = user_info.staked_amount
+  .safe_mul(acc_reward_per_share)?
+  .safe_div(NORMALIZATION_FACTOR)?
+  .safe_sub(user_info.reward_debt)?;
+
+  Ok(pending)
+}
+
 pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
   let now = Clock::get().unwrap().unix_timestamp;
 

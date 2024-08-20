@@ -7,6 +7,7 @@ pub mod staking;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, update_state::*, create_pool::*, deposit::*, withdraw::*,
+  read_pending_reward::*,
 };
 
 declare_id!("BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem");
@@ -101,6 +102,17 @@ pub mod onlybags_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `account` - The account pending rewards will be calculated for
-  pub fn pending_rewards(_ctx: Context<CpiReturn>, account: Pubkey) -> Result<u64> {}
+  /// * `user` - The account pending rewards will be calculated for
+  /// * `state` - The state of this instance of program
+  /// * `reward_token` - The reward token of the pool
+  /// * `staking_token` - The staking token
+  pub fn read_pending_reward(
+    ctx: Context<ReadPendingReward>,
+    _user: Pubkey,
+    _state: Pubkey,
+    _reward_token: Pubkey,
+    _staking_token: Pubkey,
+  ) -> Result<u64> {
+    processors::read_pending_reward::exec(ctx)
+  }
 }

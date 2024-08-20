@@ -3,7 +3,7 @@ use crate::account_data::{pool_info::PoolInfo, user_info::UserInfo};
 
 #[derive(Accounts)]
 #[instruction(user: Pubkey, state: Pubkey, reward_token: Pubkey, staking_token: Pubkey)]
-pub struct GetPendingReward<'info> {
+pub struct ReadPendingReward<'info> {
   #[account(
     seeds = [b"staking_pool", state.as_ref(), reward_token.as_ref()],
     bump,
