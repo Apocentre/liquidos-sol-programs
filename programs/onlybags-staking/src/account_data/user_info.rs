@@ -8,6 +8,7 @@ pub struct UserInfo {
   pub staked_amount: u64,
   pub reward_debt: u64,
   pub total_claimed: u64,
+  pub initialized: bool,
 }
 
 impl UserInfo {

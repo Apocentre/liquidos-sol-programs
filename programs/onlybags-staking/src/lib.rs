@@ -7,7 +7,7 @@ pub mod staking;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, update_state::*, create_pool::*, deposit::*, withdraw::*,
-  read_pending_reward::*,
+  read_pending_reward::*, init_user_info::*,
 };
 
 declare_id!("BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem");
@@ -75,6 +75,16 @@ pub mod onlybags_staking {
   ///                      first transfer this amount to `reward_token_vault_ata`
   pub fn create_pool(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
     processors::create_pool::exec(ctx, total_rewards)
+  }
+
+  /// InitUserInfo
+  /// 
+  /// Creates several user accounts. We separate that from deposit and withdraw due to stack limitation issues
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn init_user_info(ctx: Context<InitUserInfo>) -> Result<()> {
+    processors::init_user_info::exec(ctx)
   }
 
   /// Deposit
