@@ -70,7 +70,8 @@ pub struct Withdraw<'info> {
   pub staking_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
-    seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), user_info.key().as_ref()],
+    mut,
+    seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), reward_token.key().as_ref()],
     bump
   )]
   pub user_info: Box<Account<'info, UserInfo>>,

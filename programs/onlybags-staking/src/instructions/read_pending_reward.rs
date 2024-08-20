@@ -11,7 +11,7 @@ pub struct ReadPendingReward<'info> {
   pub pool_info: AccountLoader<'info, PoolInfo>,
 
   #[account(
-    seeds = [b"user_info", user.as_ref(), state.as_ref(), staking_token.as_ref()],
+    seeds = [b"user_info", user.as_ref(), state.as_ref(), reward_token.as_ref()],
     bump
   )]
   pub user_info: Account<'info, UserInfo>,

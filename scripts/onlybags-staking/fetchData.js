@@ -44,14 +44,12 @@ const main = async () => {
     protocolFee: poolInfoData.protocolFee.toString(),
   })
 
-
-  const userInfo = accounts.userInfo(state, user.publicKey, poolInfoData.rewardToken, program.programId);
+  const userInfo = accounts.userInfo(state, user.publicKey, poolInfoData.rewardToken, program.programId)[0];
   const userInfoData = await program.account.userInfo.fetch(userInfo);
 
   console.log("userInfo: ", {
-    staked_amount: userInfoData.staked_amount.toString(),
-    reward_debt: userInfoData.reward_debt.toString(),
-    endTs: userInfoData.endTs.toString(),
+    stakedAmount: userInfoData.stakedAmount.toString(),
+    rewardDebt: userInfoData.rewardDebt.toString(),
     totalClaimed: userInfoData.totalClaimed.toString(),
     initialized: userInfoData.initialized.toString(),
   })

@@ -25,10 +25,10 @@ const main = async () => {
   const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(rewardToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
   const stakingToken = new PublicKey(config.stakingToken)
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
-  const userInfo = accounts.userInfo(stakingState, user.publicKey, userInfo, stakingProgram.programId);
+  const userInfo = accounts.userInfo(stakingState, user.publicKey, rewardToken, stakingProgram.programId);
   const userStakingAta =  await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const userRewardAta =  await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const withdrawAmount = new BN(web3.toBase("0", 6));
+  const withdrawAmount = new BN(web3.toBase("100", 6));
 
   const ix = await stakingProgram.methods
   .withdraw(withdrawAmount)
