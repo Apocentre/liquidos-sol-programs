@@ -68,17 +68,12 @@ pub struct Deposit<'info> {
   pub staking_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
-    init_if_needed,
-    payer = user,
-    space = UserInfo::MAX_SIZE,
     seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), staking_token.key().as_ref()],
     bump
   )]
   pub user_info: Box<Account<'info, UserInfo>>,
 
   #[account(
-    init_if_needed,
-    payer = user,
     associated_token::mint = staking_token,
     associated_token::authority = user,
     associated_token::token_program = token_2022,
@@ -86,8 +81,6 @@ pub struct Deposit<'info> {
   pub user_staking_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
-    init_if_needed,
-    payer = user,
     associated_token::mint = reward_token,
     associated_token::authority = user,
     associated_token::token_program = token_2022,
