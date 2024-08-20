@@ -94,5 +94,13 @@ pub mod onlybags_staking {
   /// * `total_rewards` - The amount to withdraw
   pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
     processors::withdraw::exec(ctx, amount)
-  }  
+  }
+
+  /// View function that returns the pending rewards for the given account
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `account` - The account pending rewards will be calculated for
+  pub fn pending_rewards(_ctx: Context<CpiReturn>, account: Pubkey) -> Result<u64> {}
 }
