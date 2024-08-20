@@ -29,5 +29,5 @@ pub enum ErrorCode {
   #[msg("Wrong staking program")]
   WrontStakingProgram,
   #[msg("Wrong staking program state")]
-  WrontStakingProgramState,
+  WrongStakingProgramState,
 }

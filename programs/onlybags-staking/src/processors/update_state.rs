@@ -7,9 +7,9 @@ pub fn exec(
   staking_duration: i64,
   protocol_fee: u16,
 ) -> Result<()> {
-  let state = &mut ctx.accounts.state;
+  let state = &mut ctx.accounts.state.load_mut()?;
   state.staking_duration = staking_duration;
-  state.staking_token = Some(staking_token);
+  state.staking_token = staking_token;
   state.protocol_fee = protocol_fee;
 
   Ok(())

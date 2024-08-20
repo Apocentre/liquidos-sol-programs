@@ -35,7 +35,7 @@ pub struct CreateStakingPool<'info> {
   /// CHECK: The staking program state. Checks will take place in Staking program
   #[account(
     mut,
-    constraint = staking_state.key() == state.staking_program_state.unwrap() @ ErrorCode::WrontStakingProgramState,
+    constraint = staking_state.key() == state.staking_program_state.unwrap() @ ErrorCode::WrongStakingProgramState,
   )]
   pub staking_state: AccountInfo<'info>,
   /// CHECK: The pool info. Checks will take place in Staking program

@@ -23,7 +23,7 @@ fn unlock_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
   let seeds: &[&[u8]] = &[
     b"pool_authority",
     state_key.as_ref(),
-    &[ctx.accounts.state.pool_authority_bump],
+    &[ctx.accounts.state.load()?.pool_authority_bump],
   ];
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
@@ -43,16 +43,18 @@ fn unlock_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
 }
 
 pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
-  let pool_info = &mut ctx.accounts.pool_info;
+  let mut pool_info = ctx.accounts.pool_info.load_mut()?;
+  let mut state = ctx.accounts.state.load_mut()?;
   let user_info = &ctx.accounts.user_info;
   
   require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount,);
 
-  update_pool(pool_info)?;
+  update_pool(&mut *pool_info)?;
   let claimed = release_pending(&mut AccountContainer {
-    state: &mut ctx.accounts.state,
+    state: &mut *state,
+    state_key: ctx.accounts.state.key(),
     user_info: &mut ctx.accounts.user_info,
-    pool_info,
+    pool_info: &mut *pool_info,
     reward_token: &ctx.accounts.reward_token,
     reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
     pool_authority: &ctx.accounts.pool_authority,
@@ -62,7 +64,6 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
   })?;
 
   if amount > 0 {
-    let pool_info =  &mut ctx.accounts.pool_info;
     let user_info = &mut ctx.accounts.user_info;
 
     pool_info.total_staked = pool_info.total_staked.safe_sub(amount)?;
@@ -71,7 +72,6 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
     unlock_stake(&ctx, amount)?;
   }
 
-  let pool_info = &ctx.accounts.pool_info;
   let acc_reward_per_share = pool_info.acc_reward_per_share;
   let reward_token = pool_info.reward_token;
   let user_info = &mut ctx.accounts.user_info;
