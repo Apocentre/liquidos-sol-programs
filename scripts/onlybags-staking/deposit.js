@@ -25,10 +25,10 @@ const main = async () => {
   const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(rewardToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
   const stakingToken = new PublicKey(config.stakingToken)
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
-  const userInfo = accounts.userInfo(stakingState, user.publicKey, rewardToken, stakingProgram.programId);
+  const userInfo = accounts.userInfo(stakingState, user.publicKey, rewardToken, stakingProgram.programId)[0];
 
-  const userStakingAta =  await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const userRewardAta =  await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const userStakingAta = await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const userRewardAta = await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const depositAmount = new BN(web3.toBase("100", 6));
 
   const initUserInfoIx = await stakingProgram.methods
@@ -70,12 +70,26 @@ const main = async () => {
   .instruction();
 
   const priorityFeeIx = web3.setComputeUnitPrice(20000);
-  await createAndSendV0Tx(
-    provider,
-    [priorityFeeIx, initUserInfoIx, ix],
-    user.publicKey,
-    [user]
-  );
+
+  try {
+    const userInfoAccount = await provider.connection.getAccountInfo(userInfo)
+    let instructions = [];
+
+    if(!userInfoAccount) {
+      instructions = [priorityFeeIx, initUserInfoIx, ix];
+    } else {
+      instructions = [priorityFeeIx, ix];
+    }
+
+    await createAndSendV0Tx(
+      provider,
+      instructions,
+      user.publicKey,
+      [user]
+    );
+  } catch(error) {
+    console.log("Error", error)
+  }
 }
 
 main()
