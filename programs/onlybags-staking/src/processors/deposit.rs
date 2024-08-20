@@ -36,14 +36,14 @@ fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
 
 pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
   let mut pool_info = ctx.accounts.pool_info.load_mut()?;
-  let mut state = ctx.accounts.state.load_mut()?;
+  let state = ctx.accounts.state.load()?;
 
   let now = Clock::get().unwrap().unix_timestamp;
   require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
   update_pool(&mut *pool_info)?;
   let claimed = release_pending(&mut AccountContainer {
-    state: &mut *state,
+    state: &*state,
     state_key: ctx.accounts.state.key(),
     user_info: &mut ctx.accounts.user_info,
     pool_info: &mut *pool_info,

@@ -28,26 +28,10 @@ const main = async () => {
   const userInfo = accounts.userInfo(stakingState, user.publicKey, stakingToken, stakingProgram.programId);
   const userStakingAta =  await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const userRewardAta =  await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const depositAmount = new BN(web3.toBase("100", 6));
-
-  const initUserInfoIx = await stakingProgram.methods
-  .initUserInfo()
-  .accounts({
-    state: stakingState,
-    rewardToken,
-    stakingToken,
-    userInfo,
-    userStakingAta,
-    userRewardAta,
-    user: user.publicKey,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  })
-  .instruction();
+  const withdrawAmount = new BN(web3.toBase("100", 6));
 
   const ix = await stakingProgram.methods
-  .deposit(depositAmount)
+  .withdraw(withdrawAmount)
   .accounts({
     state: stakingState,
     poolInfo,
@@ -71,7 +55,7 @@ const main = async () => {
   const priorityFeeIx = web3.setComputeUnitPrice(20000);
   await createAndSendV0Tx(
     provider,
-    [priorityFeeIx, initUserInfoIx, ix],
+    [priorityFeeIx, ix],
     user.publicKey,
     [user]
   );

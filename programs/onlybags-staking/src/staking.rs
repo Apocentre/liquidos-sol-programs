@@ -9,7 +9,7 @@ pub const NORMALIZATION_FACTOR: u64 = 1_000_000;
 pub const TOKEN_DECIMALS: u8 = 6;
 
 pub struct AccountContainer<'a, 'info> {
-  pub state: &'a mut State,
+  pub state: &'a State,
   pub state_key: Pubkey,
   pub user_info: &'a mut Box<Account<'info, UserInfo>>,
   pub pool_info: &'a mut PoolInfo,

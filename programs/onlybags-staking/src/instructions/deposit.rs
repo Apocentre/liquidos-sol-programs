@@ -13,6 +13,7 @@ pub struct Deposit<'info> {
   pub state: AccountLoader<'info, State>,
 
   #[account(
+    mut,
     seeds = [b"staking_pool", state.key().as_ref(), reward_token.key().as_ref()],
     bump,
   )]
@@ -23,6 +24,7 @@ pub struct Deposit<'info> {
 
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
+    mut,
     seeds = [b"pool_authority", state.key().as_ref()],
     bump = state.load()?.pool_authority_bump,
   )]
@@ -46,6 +48,7 @@ pub struct Deposit<'info> {
 
   /// ATA that will store the reward tokens
   #[account(
+    mut,
     associated_token::mint = reward_token,
     associated_token::authority = pool_authority,
     associated_token::token_program = token_2022,
@@ -53,7 +56,6 @@ pub struct Deposit<'info> {
   pub reward_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
-    mut,
     constraint = state.load()?.staking_token != Pubkey::default() @ ErrorCode::StakingTokenNotSet,
     constraint = staking_token.key() == state.load()?.staking_token @ ErrorCode::InvalidStakingToken,
   )]
@@ -61,6 +63,7 @@ pub struct Deposit<'info> {
 
   /// ATA that will store the staking tokens for all pools
   #[account(
+    mut,
     associated_token::mint = staking_token,
     associated_token::authority = pool_authority,
     associated_token::token_program = token_2022,
@@ -68,12 +71,14 @@ pub struct Deposit<'info> {
   pub staking_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
+    mut,
     seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), staking_token.key().as_ref()],
     bump
   )]
   pub user_info: Box<Account<'info, UserInfo>>,
 
   #[account(
+    mut,
     associated_token::mint = staking_token,
     associated_token::authority = user,
     associated_token::token_program = token_2022,
@@ -81,6 +86,7 @@ pub struct Deposit<'info> {
   pub user_staking_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
+    mut,
     associated_token::mint = reward_token,
     associated_token::authority = user,
     associated_token::token_program = token_2022,

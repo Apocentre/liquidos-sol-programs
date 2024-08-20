@@ -44,14 +44,14 @@ fn unlock_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
 
 pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
   let mut pool_info = ctx.accounts.pool_info.load_mut()?;
-  let mut state = ctx.accounts.state.load_mut()?;
+  let state = ctx.accounts.state.load()?;
   let user_info = &ctx.accounts.user_info;
   
   require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount,);
 
   update_pool(&mut *pool_info)?;
   let claimed = release_pending(&mut AccountContainer {
-    state: &mut *state,
+    state: &*state,
     state_key: ctx.accounts.state.key(),
     user_info: &mut ctx.accounts.user_info,
     pool_info: &mut *pool_info,
