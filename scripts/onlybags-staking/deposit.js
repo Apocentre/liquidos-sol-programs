@@ -17,7 +17,7 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
 
-  const rewardToken = new PublicKey("D56UshW9oJbuyoxDyFUfSHD8GcCN7cJQUHzvRiYWCpMt");
+  const rewardToken = new PublicKey(config.rewardToken);
   const treasury = new PublicKey(config.treasury);
   const treasuryAta = await web3.getAssociatedTokenAddress(rewardToken, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
   const poolInfo = accounts.poolInfo(stakingState, rewardToken, stakingProgram.programId)[0];

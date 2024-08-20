@@ -89,5 +89,5 @@ ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/
 7. create bonding curve
 
 ```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/createToken.js
+ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/createToken.js
 ```

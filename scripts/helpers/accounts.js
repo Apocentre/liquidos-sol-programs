@@ -50,7 +50,7 @@ export const poolInfo = (state, rewardToken, programId) => PublicKey.findProgram
   programId
 )
 
-export const userInfo = (state, user, stakingToken, programId) => PublicKey.findProgramAddressSync(
-  [utf8.encode("user_info"), user.toBuffer(), state.toBuffer(), stakingToken.toBuffer()],
+export const userInfo = (state, user, rewardToken, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("user_info"), user.toBuffer(), state.toBuffer(), rewardToken.toBuffer()],
   programId
 )

@@ -26,7 +26,7 @@ pub struct InitUserInfo<'info> {
     init_if_needed,
     payer = user,
     space = UserInfo::MAX_SIZE,
-    seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), staking_token.key().as_ref()],
+    seeds = [b"user_info", user.key().as_ref(), state.key().as_ref(), reward_token.key().as_ref()],
     bump
   )]
   pub user_info: Box<Account<'info, UserInfo>>,

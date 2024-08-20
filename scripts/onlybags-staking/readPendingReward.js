@@ -12,10 +12,10 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
 
-  const rewardToken = new PublicKey("D56UshW9oJbuyoxDyFUfSHD8GcCN7cJQUHzvRiYWCpMt");
+  const rewardToken = new PublicKey(config.rewardToken);
   const poolInfo = accounts.poolInfo(stakingState, rewardToken, stakingProgram.programId)[0];
   const stakingToken = new PublicKey(config.stakingToken)
-  const userInfo = accounts.userInfo(stakingState, user.publicKey, stakingToken, stakingProgram.programId);
+  const userInfo = accounts.userInfo(stakingState, user.publicKey, rewardToken, stakingProgram.programId);
 
 
   const rewards = await stakingProgram.methods
