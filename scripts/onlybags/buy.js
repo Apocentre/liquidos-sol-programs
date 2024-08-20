@@ -98,23 +98,6 @@ const main = async () => {
   })
   .instruction();
 
-  console.log({
-    buyer: buyer.publicKey,
-    state,
-    bondingCurve,
-    token,
-    stakingState,
-    poolInfo,
-    poolAuthority,
-    rewardTokenVaultAta,
-    stakingProgram: stakingProgram.programId,
-    ammConfig,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    tokenProgram: spl.TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  })
-
   const createStakingPoolIx = await program.methods
   .createStakingPool()
   .accounts({

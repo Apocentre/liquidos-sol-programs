@@ -8,20 +8,6 @@ use crate::account_data::{pool_info::PoolInfo, state::State, user_info::UserInfo
 pub const NORMALIZATION_FACTOR: u64 = 1_000_000;
 pub const TOKEN_DECIMALS: u8 = 6;
 
-pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
-  let now = Clock::get().unwrap().unix_timestamp;
-
-  if now > pool_info.last_reward_ts {
-    if pool_info.total_staked > 0 {
-      pool_info.acc_reward_per_share = calc_acc_reward_per_share(pool_info, now)?;
-    }
-
-    pool_info.last_reward_ts = now;
-  }
-
-  Ok(())
-}
-
 pub struct AccountContainer<'a, 'info> {
   pub state: &'a Box<Account<'info, State>>,
   pub user_info: &'a mut Box<Account<'info, UserInfo>>,
@@ -32,6 +18,22 @@ pub struct AccountContainer<'a, 'info> {
   pub user_reward_ata: &'a Box<InterfaceAccount<'info, TokenAccount>>,
   pub treasury_ata: &'a Box<InterfaceAccount<'info, TokenAccount>>,
   pub token_2022: &'a Interface<'info, TokenInterface>,
+}
+
+pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
+  let now = Clock::get().unwrap().unix_timestamp;
+
+  if now <= pool_info.last_reward_ts {
+    return Ok(())
+  }
+
+  if pool_info.total_staked > 0 {
+    pool_info.acc_reward_per_share = calc_acc_reward_per_share(pool_info, now)?;
+  }
+
+  pool_info.last_reward_ts = now.min(pool_info.end_ts);
+
+  Ok(())
 }
 
 pub fn release_pending(accounts: &mut AccountContainer) -> Result<()>{
@@ -60,16 +62,16 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<()>{
   Ok(())
 } 
 
-fn calc_reward(pool_info: &PoolInfo, now: i64) -> Result<u64> {
-  let time_elapsed = (now - pool_info.last_reward_ts) as u64;
+fn calc_pending_reward(pool_info: &PoolInfo, now: i64) -> Result<u64> {
+  let time_elapsed = (now.min(pool_info.end_ts) - pool_info.last_reward_ts) as u64;
   let reward = time_elapsed.safe_mul(pool_info.reward_per_sec)?;
 
   Ok(reward as u64)
 }
 
 fn calc_acc_reward_per_share(pool_info: &PoolInfo, now: i64) -> Result<u64> {
-  let reward = calc_reward(pool_info, now)?;
-  let acc_reward_per_share = reward
+  let pending_reward = calc_pending_reward(pool_info, now)?;
+  let acc_reward_per_share = pending_reward
   .safe_mul(NORMALIZATION_FACTOR)?
   .safe_div(pool_info.total_staked as u64)?;
 
