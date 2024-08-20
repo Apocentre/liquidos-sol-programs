@@ -68,6 +68,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
 
     if pending > 0 {
       user_info.total_claimed = user_info.total_claimed.safe_add(user_amount)?;
+      pool_info.total_claimed = pool_info.total_claimed.safe_add(user_amount)?;
       
       transfer_rewards(
         accounts, 

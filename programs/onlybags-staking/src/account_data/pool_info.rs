@@ -11,6 +11,8 @@ pub struct PoolInfo {
   pub end_ts: i64,
   /// Total amount of rewards in reward_token
   pub total_reward: u64,
+  /// Total amount of rewards in reward_token
+  pub total_claimed: u64,
   /// Total amount of BAGS currently staked in this pool
   pub total_staked: u64,
   /// Rewards earned per seconds
@@ -41,6 +43,7 @@ impl PoolInfo {
       end_ts,
       total_staked: 0,
       total_reward,
+      total_claimed: 0,
       reward_token,
       reward_per_sec,
       protocol_fee,
