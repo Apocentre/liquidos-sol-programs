@@ -31,7 +31,7 @@ fn unlock_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
     from: ctx.accounts.staking_token_vault_ata.to_account_info(),
     mint: ctx.accounts.staking_token.to_account_info(),
     to: ctx.accounts.user_staking_ata.to_account_info(),
-    authority: ctx.accounts.user.to_account_info(),
+    authority: ctx.accounts.pool_authority.to_account_info(),
   };
 
   let cpi_program = ctx.accounts.token_2022.to_account_info();
