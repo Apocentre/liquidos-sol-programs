@@ -26,15 +26,6 @@ We found it using the js library. More specifically:
   const mintLen = spl.getMintLen(extensions);
 ```
 
-### Close Program Account
-
-```bash
-solana program close 7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4 --recipient DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw --keypair ./wallets/deployer.json --bypass-warning
-```
-
-> NOTE! Once you delete a program account you can't resuse the same account again! i.e. you can't redeploy the program under the same address.
-
-
 ## Recover After Failed Deployment or Upgrade
 
 The deployment (or upgrade) might not be fully finished for various reasons e.g. ctl+c. This result in multiple intemediate accounts being created which are not closed. Thus quite a bit of SOL will be locked in those account. To restore that balance we need to close the account. There is a command in the cli to do so.
@@ -71,3 +62,12 @@ Error: Error processing Instruction 2: account data too small for instruction
 2. resume
 
 ``
+
+### Close Program Account
+
+```bash
+solana program close 7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4 --recipient DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw --keypair ./wallets/deployer.json --bypass-warning
+```
+
+> NOTE! Once you delete a program account you can't resuse the same account again! i.e. you can't redeploy the program under the same address.
+
