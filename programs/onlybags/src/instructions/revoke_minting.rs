@@ -19,6 +19,7 @@ pub struct RevokeMinting<'info> {
   pub bonding_curve: Box<Account<'info, BondingCurve>>,
 
   #[account(
+    mut,
     constraint = token.key() == bonding_curve.token @ ErrorCode::InvalidCurveToken,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
