@@ -29,7 +29,7 @@ We found it using the js library. More specifically:
 ### Close Program Account
 
 ```bash
-solana program close bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz --recipient 85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X --keypair ./wallets/deployer.json --bypass-warning
+solana program close 7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4 --recipient DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw --keypair ./wallets/deployer.json --bypass-warning
 ```
 
 > NOTE! Once you delete a program account you can't resuse the same account again! i.e. you can't redeploy the program under the same address.
@@ -44,4 +44,30 @@ The deployment (or upgrade) might not be fully finished for various reasons e.g.
 
 ## Extend program account size
 
-solana program extend bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz  1000 -u devnet --keypair ./wallets/deployer.json
+solana program extend 7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4  1000 -u devnet --keypair ./wallets/deployer.json
+
+
+## Revocer deployemnt
+
+```
+=========================================================================
+Recover the intermediate account's ephemeral keypair file with
+`solana-keygen recover` and the following 12-word seed phrase:
+=========================================================================
+blast surprise pluck country ramp milk blue ranch permit wash wave entire
+=========================================================================
+To resume a deploy, pass the recovered keypair as the
+[BUFFER_SIGNER] to `solana program deploy` or `solana program write-buffer'.
+Or to recover the account's lamports, pass it as the
+[BUFFER_ACCOUNT_ADDRESS] argument to `solana program close`.
+=========================================================================
+Error: Error processing Instruction 2: account data too small for instruction
+```
+
+1. Revover priv key
+
+`solana-keygen recover --outfile ./temp.json`
+
+2. resume
+
+``

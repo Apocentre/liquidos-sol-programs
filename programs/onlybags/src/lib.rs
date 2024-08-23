@@ -12,7 +12,7 @@ use crate::instructions::{
   revoke_minting::*,
 };
 
-declare_id!("bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz");
+declare_id!("7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4");
 
 #[program]
 pub mod onlybags {
