@@ -9,6 +9,7 @@ pub mod curve_formulas;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
+  revoke_minting::*,
 };
 
 declare_id!("bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz");
@@ -134,5 +135,18 @@ pub mod onlybags {
     min_sol_amount_out: u64,
   ) -> Result<()> {
     processors::sell::exec(ctx, token_amount, min_sol_amount_out)
+  }
+
+
+  /// RevokeMInting
+  ///
+  /// Revoke minting. This is used for the tokens that moved to Raydium before we added the 
+  /// revoke minting logic to the `move_liquidity` function
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn revoke_minting(ctx: Context<RevokeMinting>) -> Result<()> {
+    processors::revoke_minting::exec(ctx)
   }
 }

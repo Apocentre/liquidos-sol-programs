@@ -10,7 +10,7 @@ use anchor_spl::{
   token_interface::TokenAccount,
 };
 use crate::{
-  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity,
+  instructions::move_liquidity::MoveLiquidity,
   raydium::{self, AmmConfig},
 };
 use super::common::deser;
@@ -181,7 +181,7 @@ fn revoke_mint_authority(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]
     account_or_mint: ctx.accounts.token.to_account_info(),
   };
 
-  let cpi_program = ctx.accounts.token_program.to_account_info();
+  let cpi_program = ctx.accounts.token_2022.to_account_info();
   let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
 
   set_authority(cpi_ctx, AuthorityType::MintTokens, None)

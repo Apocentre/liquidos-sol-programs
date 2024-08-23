@@ -4,3 +4,4 @@ pub mod create_tax_token;
 pub mod buy;
 pub mod sell;
 pub mod move_liquidity;
+pub mod revoke_minting;
