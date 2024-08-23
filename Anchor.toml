@@ -7,10 +7,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-onlybags = "bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz"
+onlybags = "7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4"
 
 [programs.mainnet]
-onlybags = "bagsSgT7P6uuszt91RPRvPZgQUwxt35fWHrh9asbgPz"
+onlybags = "7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4"
 
 [registry]
 url = "https://api.apr.dev"
