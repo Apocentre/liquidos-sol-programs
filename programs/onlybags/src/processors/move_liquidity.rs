@@ -202,7 +202,6 @@ pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
       &[curve.bump],
     ];
     let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-
     
     sync_buyer_wsol_ata(&ctx, signer_seeds)?;
     move_liquidity(&ctx)?;
