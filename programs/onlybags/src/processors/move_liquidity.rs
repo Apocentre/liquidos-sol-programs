@@ -6,8 +6,8 @@ use anchor_lang::{
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::{
-  token::{burn, set_authority, spl_token::instruction::AuthorityType, sync_native, Burn, SetAuthority, SyncNative},
-  token_interface::TokenAccount,
+  token::{burn, sync_native, Burn, SyncNative}, token_interface::TokenAccount,
+  token_2022::{set_authority, spl_token_2022::instruction::AuthorityType, SetAuthority},
 };
 use crate::{
   instructions::move_liquidity::MoveLiquidity,
