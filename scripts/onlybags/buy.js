@@ -122,7 +122,7 @@ const main = async () => {
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, buyIx, moveLiquidityIx, createStakingPoolIx],
+    [cbIx, priorityFeeIx, buyIx, createStakingPoolIx, moveLiquidityIx],
     buyer.publicKey,
     [buyer],
     [],
