@@ -6,11 +6,11 @@ use anchor_lang::{
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::{
-  token::{burn, sync_native, Burn, SyncNative},
-  token_interface::TokenAccount,
+  token::{burn, sync_native, Burn, SyncNative}, token_interface::TokenAccount,
+  token_2022::{set_authority, spl_token_2022::instruction::AuthorityType, SetAuthority},
 };
 use crate::{
-  account_data::bonding_curve::BondingCurve, instructions::move_liquidity::MoveLiquidity,
+  instructions::move_liquidity::MoveLiquidity,
   raydium::{self, AmmConfig},
 };
 use super::common::deser;
@@ -134,18 +134,7 @@ fn move_liquidity(ctx: &Context<MoveLiquidity>) -> Result<()> {
 /// sync_native the SOL that was sent in the last Buy transaction. We can't manipulate directly the account
 /// through `transfer_from_pda` which directly manipulates accounts and then have a CPI 
 /// For move info here https://stackoverflow.com/a/77591006/512783
-fn sync_buyer_wsol_ata(ctx: &Context<MoveLiquidity>, curve: &BondingCurve) -> Result<()> {
-  let token = &ctx.accounts.token.key();
-  let state_key = &ctx.accounts.state.key();
-  let seeds: &[&[u8]] = &[
-    b"bonding_curve",
-    state_key.as_ref(),
-    token.as_ref(),
-    &[curve.bump],
-  ];
-  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
-
-
+fn sync_buyer_wsol_ata(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let cpi_accounts = SyncNative {
     account: ctx.accounts.buyer_wsol_ata.to_account_info(),
   };
@@ -186,15 +175,38 @@ fn burn_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
   burn(cpi_ctx, lp_balance)
 }
 
+fn revoke_mint_authority(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
+  let cpi_accounts = SetAuthority {
+    current_authority: ctx.accounts.bonding_curve.to_account_info(),
+    account_or_mint: ctx.accounts.token.to_account_info(),
+  };
+
+  let cpi_program = ctx.accounts.token_2022.to_account_info();
+  let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
+
+  set_authority(cpi_ctx, AuthorityType::MintTokens, None)
+}
+
 pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
   
   // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.
   // We want to act upon only if the curce is completed
   if curve.closed == 1 {
-    sync_buyer_wsol_ata(&ctx, &curve)?;
+    let state_key = &ctx.accounts.state.key();
+    let token = &ctx.accounts.token.key();
+    let seeds: &[&[u8]] = &[
+      b"bonding_curve",
+      state_key.as_ref(),
+      token.as_ref(),
+      &[curve.bump],
+    ];
+    let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+    
+    sync_buyer_wsol_ata(&ctx, signer_seeds)?;
     move_liquidity(&ctx)?;
     burn_lp(&ctx)?;
+    revoke_mint_authority(&ctx, signer_seeds)?;
   }
 
   Ok(())
