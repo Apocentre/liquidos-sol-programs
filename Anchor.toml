@@ -10,7 +10,7 @@ skip-lint = false
 onlybags = "7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4"
 
 [programs.mainnet]
-onlybags = "7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4"
+onlybags = "Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY"
 
 [registry]
 url = "https://api.apr.dev"
