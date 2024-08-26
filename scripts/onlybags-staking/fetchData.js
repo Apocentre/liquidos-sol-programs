@@ -23,7 +23,7 @@ const main = async () => {
   const poolInfoData = await program.account.poolInfo.fetch(poolInfo);
 
   console.log("state: ", {
-    owner: stateData.owner.toString(),
+  owner: stateData.owner.toString(),
     onlybagsState: stateData.onlybagsState.toString(),
     treasury: stateData.treasury.toString(),
     stakingDuration: stateData.stakingDuration.toString(),
