@@ -15,7 +15,7 @@ onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
 onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
 
 [programs.mainnet]
-onlybags = "7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4"
+onlybags = "Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY"
 
 [registry]
 url = "https://api.apr.dev"
