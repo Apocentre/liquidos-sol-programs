@@ -41,13 +41,13 @@ Config.json
 1. deploy onlybags program
 
 ```bash
-solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://api.devnet.solana.com --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/onlybags_v2.json target/deploy/onlybags.so
+solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://blue-little-patina.solana-devnet.quiknode.pro/038172a7b63d22443ce416822a3cc5ed55d9dc8c/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/onlybags_v2.json target/deploy/onlybags.so
 ```
 
 2. deploy staking program
 
 ```bash
-solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://api.devnet.solana.com --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/staking.json target/deploy/onlybags_staking.so
+solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://blue-little-patina.solana-devnet.quiknode.pro/038172a7b63d22443ce416822a3cc5ed55d9dc8c/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/staking.json target/deploy/onlybags_staking.so
 ```
 
 3. initialize onlybags program

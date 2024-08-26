@@ -1,5 +1,6 @@
 {
-  "state": "G5M4aCmU4KFRqppB2hJAwvKFJyUioZB1WaFeZoV6C3cz",
+  "onlyBagsState": "2HQKJFA8MmrkB1VY8z3Kr99WbJAvmwPDPXbdenhKNfAm",
+  "stakingState": "8Xoyg5HAWm3gEQ2a7EdDaKFkTN3e8RxS6V8cpq3WzEN8",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
   "protocolFee": 0,
   "creatorFee": 100000000,
@@ -7,7 +8,6 @@
   "stakingAllocationBps": 500,
   "totalTokenSupply": 1000000000000000,
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
-  "stakingState": "C8HETwGvMe3v5wAgScTupnYZccjNVtQjNxkZhQEimZSm",
   "stakingToken": "5FxCfNYzW1jdsLpZEuHsMjinFCgqVPaspiS7rtNA3W3m",
   "stakingDuration": 86400,
   "stakingProtocolFee": 100,
