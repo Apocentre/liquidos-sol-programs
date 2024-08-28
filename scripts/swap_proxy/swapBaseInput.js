@@ -30,16 +30,17 @@ const main = async () => {
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
 
-  // Sell TOKEN for SOL 
+  // Sell TOKEN for SOL. Swap the following values if you want a reverse. Note! use TOKEN_2022_PROGRAM_ID
+  // where needed
   const inputTokenMint = token;
   const outputTokenMint = wsol;
-  const inputTokenProgram = spl.TOKEN_PROGRAM_ID;
-  const outputTokenProgram = spl.TOKEN_2022_PROGRAM_ID;
-
+  const inputTokenProgram = spl.TOKEN_2022_PROGRAM_ID;
+  const outputTokenProgram = spl.TOKEN_PROGRAM_ID;
   const treasuryInputAta = await web3.getAssociatedTokenAddress(inputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
   const treasuryOutputAta = await web3.getAssociatedTokenAddress(outputTokenMint, treasury);
   const inputTokenAccount = await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const outputTokenAccount = await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey);
+  
   const inputVault = accounts.raydiumTokenVault(poolState, inputTokenMint, raydiumProgram)[0];
   const outputVault = accounts.raydiumTokenVault(poolState, outputTokenMint, raydiumProgram)[0];
 
