@@ -11,7 +11,7 @@ pub struct State {
   /// The treasury account that receives fees
   pub treasury: Pubkey,
   /// Current protocol fees i.e. fees collected on each swap
-  pub protocol_fee: u64,
+  pub protocol_fee_bps: u64,
 }
 
 impl State {
@@ -21,12 +21,12 @@ impl State {
   pub fn new(
     owner: Pubkey,
     treasury: Pubkey,
-    protocol_fee: u64,
+    protocol_fee_bps: u64,
   ) -> Self {
     Self {
       owner,
       treasury,
-      protocol_fee,
+      protocol_fee_bps,
     }
   }
 }

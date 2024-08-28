@@ -17,6 +17,10 @@ pub fn amm_config() -> Pubkey {
   return Pubkey::from_str("9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6").unwrap();
 }
 
+pub fn is_wsol(other: &Pubkey) -> Result<bool> {
+  let wsol = Pubkey::from_str("So11111111111111111111111111111111111111112").unwrap();
+  Ok(other.eq(&wsol))
+}
 
 #[derive(BorshSerialize)]
 pub struct SwapBaseInputIx {

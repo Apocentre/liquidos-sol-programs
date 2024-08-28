@@ -10,7 +10,7 @@ use crate::{
 #[derive(Accounts)]
 pub struct Swap<'info> {
   #[account(mut)]
-  pub user: Signer<'info>,
+  pub payer: Signer<'info>,
 
   /// The state account of each instance of this program
   #[account()]
@@ -19,18 +19,18 @@ pub struct Swap<'info> {
   /// The treasury input mint ata
   #[account(
     init_if_needed,
-    payer = user,
+    payer = payer,
     associated_token::mint = input_token_mint,
-    associated_token::authority = user,
+    associated_token::authority = payer,
   )]
   pub treasury_input_ata: Box<InterfaceAccount<'info, TokenAccount>>,
   
   /// The treasury output mint ata
   #[account(
     init_if_needed,
-    payer = user,
+    payer = payer,
     associated_token::mint = output_token_mint,
-    associated_token::authority = user,
+    associated_token::authority = payer,
   )]
   pub treasury_output_ata: Box<InterfaceAccount<'info, TokenAccount>>,
     
@@ -55,7 +55,7 @@ pub struct Swap<'info> {
 
   /// CHECK: The user token account for output token. Checks will take place in CP swap program
   #[account(mut)]
-  pub output_token_account: AccountInfo<'info>,
+  pub output_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
   /// CHECK: The vault token account for input token. Checks will take place in CP swap program
   #[account(mut)]
@@ -65,12 +65,20 @@ pub struct Swap<'info> {
   #[account(mut)]
   pub output_vault: AccountInfo<'info>,
 
+  /// CHECK: SPL program for input token transfers. Checks will take place in CP swap program
+  #[account()]
+  pub output_token_program: AccountInfo<'info>,
+
+  /// CHECK: SPL program for output token transfers. Checks will take place in CP swap program
+  #[account()]
+  pub input_token_program: AccountInfo<'info>,
+
   /// CHECK: The mint of input token. Checks will take place in CP swap program
-  #[account(mut)]
+  #[account()]
   pub input_token_mint: AccountInfo<'info>,
 
   /// CHECK: The mint of output token. Checks will take place in CP swap program
-  #[account(mut)]
+  #[account()]
   pub output_token_mint: AccountInfo<'info>,
 
   /// CHECK: an account to store oracle observations. Checks will take place in CP swap program

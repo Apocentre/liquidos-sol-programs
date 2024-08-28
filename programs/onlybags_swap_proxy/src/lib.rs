@@ -24,12 +24,12 @@ pub mod onlybags_swap_proxy {
   pub fn initialize(
     ctx: Context<Initialize>,
     treasury: Pubkey,
-    protocol_fee: u64,
+    protocol_fee_bps: u64,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
       treasury,
-      protocol_fee,
+      protocol_fee_bps,
     )
   }
 }
