@@ -7,8 +7,7 @@ use anchor_lang::{
 use anchor_safe_math::SafeMath;
 use anchor_spl::{token::{self, Transfer}, token_2022::{self, TransferChecked}};
 use crate::{instructions::swap::Swap, raydium::{self, is_wsol}};
-
-const TOKEN_DECIMALS: u8 = 6;
+use super::swap_base_input::TOKEN_DECIMALS;
 
 fn swap(ctx: &Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) -> Result<()> {
   let accounts = vec![
