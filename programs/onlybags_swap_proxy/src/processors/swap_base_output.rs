@@ -10,7 +10,7 @@ use crate::{instructions::swap::Swap, raydium::{self, is_wsol}};
 
 const TOKEN_DECIMALS: u8 = 6;
 
-fn swap(ctx: &Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
+fn swap(ctx: &Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) -> Result<()> {
   let accounts = vec![
     AccountMeta::new(ctx.accounts.payer.key(), true),
     AccountMeta::new_readonly(ctx.accounts.raydium_authority.key(), false),
@@ -28,9 +28,9 @@ fn swap(ctx: &Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<
   ];
 
   // add the ix_discriminator so Raydium's Anchor program can identity the instruction
-  let mut data: Vec<u8> = vec![143, 190, 90, 218, 196, 30, 51, 222];
+  let mut data: Vec<u8> = vec![55, 217, 98, 86, 163, 74, 180, 173];
   let mut ix_data: Vec<u8> = Vec::new();
-  raydium::SwapBaseInputIx {amount_in, minimum_amount_out}.serialize(&mut ix_data)?;
+  raydium::SwapBaseOutputIx {max_amount_in, amount_out_less_fee}.serialize(&mut ix_data)?;
 
   data.extend(&ix_data);
   let ix = Instruction {
@@ -63,13 +63,13 @@ fn swap(ctx: &Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<
 
 fn collect_fees(ctx: &Context<Swap>, token_amount_received: u64) -> Result<()> {
   let state = &ctx.accounts.state;
-  let output_token_mint = &ctx.accounts.output_token_mint;
+  let input_token_mint = &ctx.accounts.input_token_mint;
   let fees = token_amount_received.safe_mul(state.protocol_fee_bps)?.safe_div(10_000)?;
 
-  if is_wsol(&output_token_mint.key())? {
+  if is_wsol(&input_token_mint.key())? {
     let cpi_accounts = Transfer {
-      from: ctx.accounts.output_token_account.to_account_info(),
-      to: ctx.accounts.treasury_output_ata.to_account_info(),
+      from: ctx.accounts.input_token_account.to_account_info(),
+      to: ctx.accounts.treasury_input_ata.to_account_info(),
       authority: ctx.accounts.payer.to_account_info(),
     };
   
@@ -79,9 +79,9 @@ fn collect_fees(ctx: &Context<Swap>, token_amount_received: u64) -> Result<()> {
     token::transfer(cpi_ctx, fees)?;
   } else {
     let cpi_accounts = TransferChecked {
-      from: ctx.accounts.output_token_account.to_account_info(),
-      mint: ctx.accounts.output_token_mint.to_account_info(),
-      to: ctx.accounts.treasury_output_ata.to_account_info(),
+      from: ctx.accounts.input_token_account.to_account_info(),
+      mint: ctx.accounts.input_token_mint.to_account_info(),
+      to: ctx.accounts.treasury_input_ata.to_account_info(),
       authority: ctx.accounts.payer.to_account_info(),
     };
   
@@ -94,13 +94,13 @@ fn collect_fees(ctx: &Context<Swap>, token_amount_received: u64) -> Result<()> {
   Ok(())
 }
 
-pub fn exec(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
-  let output_token_balance_before = ctx.accounts.output_token_account.amount;
-  swap(&ctx, amount_in, minimum_amount_out)?;
-  ctx.accounts.output_token_account.reload()?;
-  let output_token_balance_after = ctx.accounts.output_token_account.amount;
+pub fn exec(ctx: Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) -> Result<()> {
+  let input_token_balance_before = ctx.accounts.input_token_account.amount;
+  swap(&ctx, max_amount_in, amount_out_less_fee)?;
+  ctx.accounts.input_token_account.reload()?;
+  let input_token_balance_after = ctx.accounts.input_token_account.amount;
 
-  let token_amount_received = output_token_balance_after.safe_sub(output_token_balance_before)?;
+  let token_amount_received = input_token_balance_after.safe_sub(input_token_balance_before)?;
   collect_fees(&ctx, token_amount_received)?;
   Ok(())
 }

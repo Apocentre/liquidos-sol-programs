@@ -51,7 +51,7 @@ pub struct Swap<'info> {
 
   /// CHECK: The user token account for input token. Checks will take place in CP swap program
   #[account(mut)]
-  pub input_token_account: AccountInfo<'info>,
+  pub input_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
 
   /// CHECK: The user token account for output token. Checks will take place in CP swap program
   #[account(mut)]
