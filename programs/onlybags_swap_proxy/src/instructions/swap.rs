@@ -1,11 +1,10 @@
-use std::str::FromStr;
 use anchor_lang::prelude::*;
 use anchor_spl::{
-  token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
+  token::Token, token_interface::{TokenInterface, TokenAccount},
   associated_token::AssociatedToken,
 };
 use crate::{
-  account_data::state::State, raydium, program_error::ErrorCode,
+  account_data::state::State, raydium,
 };
 
 #[derive(Accounts)]
