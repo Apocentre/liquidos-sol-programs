@@ -12,8 +12,7 @@ pub const TOKEN_DECIMALS: u8 = 6;
 
 #[event]
 pub struct SwapBaseInputEvent {
-  pub amount_in: u64,
-  pub minimum_amount_out: u64,
+  pub amount_sold: u64,
   pub amount_received: u64,
   pub user: Pubkey,
   pub input_token: Pubkey,
@@ -114,8 +113,7 @@ pub fn exec(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Resu
   collect_fees(&ctx, amount_received)?;
   
   emit!(SwapBaseInputEvent {
-    amount_in,
-    minimum_amount_out,
+    amount_sold: amount_in,
     amount_received,
     user: ctx.accounts.payer.key(),
     input_token: ctx.accounts.input_token_mint.key(),

@@ -33,6 +33,8 @@ pub mod onlybags_swap_proxy {
   }
 
   /// SwapBaseInput
+  /// 
+  /// Use this when user enters the amount of base tokens he wants so sell
   ///
   /// # Arguments
   ///
@@ -53,11 +55,13 @@ pub mod onlybags_swap_proxy {
 
   /// SwapBaseOutput
   ///
+  /// Use this when user enters the amount of non-base tokens he want to receive
+  /// 
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `max_amount_in` - The max amount of tokens to be sold
-  /// * `amount_out_less_fee` - The amount of tokens user wants to buy
+  /// * `max_amount_in` - The max amount of base tokens to be sold
+  /// * `amount_out_less_fee` - The amount of non-base tokens user wants to buy
   pub fn swap_base_output(
     ctx: Context<Swap>,
     max_amount_in: u64,

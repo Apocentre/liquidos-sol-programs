@@ -9,6 +9,15 @@ use anchor_spl::{token::{self, Transfer}, token_2022::{self, TransferChecked}};
 use crate::{instructions::swap::Swap, raydium::{self, is_wsol}};
 use super::swap_base_input::TOKEN_DECIMALS;
 
+#[event]
+pub struct SwapBaseOutputEvent {
+  pub amount_sold: u64,
+  pub amount_received: u64,
+  pub user: Pubkey,
+  pub input_token: Pubkey,
+  pub output_token: Pubkey,
+}
+
 fn swap(ctx: &Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) -> Result<()> {
   let accounts = vec![
     AccountMeta::new(ctx.accounts.payer.key(), true),
@@ -99,7 +108,17 @@ pub fn exec(ctx: Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) ->
   ctx.accounts.input_token_account.reload()?;
   let input_token_balance_after = ctx.accounts.input_token_account.amount;
 
-  let token_amount_received = input_token_balance_after.safe_sub(input_token_balance_before)?;
-  collect_fees(&ctx, token_amount_received)?;
+  collect_fees(&ctx, amount_out_less_fee)?;
+  
+  let amount_sold = input_token_balance_after.safe_sub(input_token_balance_before)?;
+
+  emit!(SwapBaseOutputEvent {
+    amount_sold,
+    amount_received: amount_out_less_fee,
+    user: ctx.accounts.payer.key(),
+    input_token: ctx.accounts.input_token_mint.key(),
+    output_token: ctx.accounts.output_token_mint.key(),
+  });
+
   Ok(())
 }
