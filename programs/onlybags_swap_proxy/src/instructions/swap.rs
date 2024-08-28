@@ -5,6 +5,7 @@ use anchor_spl::{
 };
 use crate::{
   account_data::state::State, raydium,
+  program_error::ErrorCode,
 };
 
 #[derive(Accounts)]
@@ -16,23 +17,19 @@ pub struct Swap<'info> {
   #[account()]
   pub state: Box<Account<'info, State>>,
 
-  /// The treasury input mint ata
+  /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
-    init_if_needed,
-    payer = payer,
-    associated_token::mint = input_token_mint,
-    associated_token::authority = payer,
+    constraint = treasury.key() == state.treasury @ ErrorCode::WrongTreasury,
   )]
-  pub treasury_input_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+  pub treasury: AccountInfo<'info>,
+
+  /// CHECK: The treasury output mint ata. Will be created in the processor (if_needed)
+  #[account(mut)]
+  pub treasury_input_ata: AccountInfo<'info>,
   
-  /// The treasury output mint ata
-  #[account(
-    init_if_needed,
-    payer = payer,
-    associated_token::mint = output_token_mint,
-    associated_token::authority = payer,
-  )]
-  pub treasury_output_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+  /// CHECK: The treasury output mint ata. Will be created in the processor (if_needed)
+  #[account(mut)]
+  pub treasury_output_ata: AccountInfo<'info>,
     
   // ---------------- Raydium CP swap accounts ----------------
   
@@ -65,13 +62,13 @@ pub struct Swap<'info> {
   #[account(mut)]
   pub output_vault: AccountInfo<'info>,
 
-  /// CHECK: SPL program for input token transfers. Checks will take place in CP swap program
-  #[account()]
-  pub output_token_program: AccountInfo<'info>,
-
   /// CHECK: SPL program for output token transfers. Checks will take place in CP swap program
   #[account()]
   pub input_token_program: AccountInfo<'info>,
+
+  /// CHECK: SPL program for input token transfers. Checks will take place in CP swap program
+  #[account()]
+  pub output_token_program: AccountInfo<'info>,
 
   /// CHECK: The mint of input token. Checks will take place in CP swap program
   #[account()]
