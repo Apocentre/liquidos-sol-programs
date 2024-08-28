@@ -6,7 +6,7 @@ use anchor_lang::{
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::{token::{self, Transfer}, token_2022::{self, TransferChecked}};
-use crate::{instructions::swap::Swap, raydium::{self, is_wsol}};
+use crate::{instructions::swap::Swap, processors::common::create_ata_if_needed, raydium::{self, is_wsol}};
 use super::swap_base_input::TOKEN_DECIMALS;
 
 #[event]
@@ -103,6 +103,31 @@ fn collect_fees(ctx: &Context<Swap>, token_amount_received: u64) -> Result<()> {
 }
 
 pub fn exec(ctx: Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) -> Result<()> {
+  let input_token = &ctx.accounts.input_token_mint;
+  let output_token = &ctx.accounts.output_token_mint;
+
+  // We need to creat this here instead of using Anchor macros bacause we don't know
+  // that token program each tokens belongs to e.g. token_program or token_2022
+  create_ata_if_needed(
+    ctx.accounts.payer.to_account_info(),
+    ctx.accounts.treasury_input_ata.to_account_info(),
+    ctx.accounts.treasury.to_account_info(),
+    input_token.to_account_info(),
+    ctx.accounts.system_program.to_account_info(),
+    if is_wsol(&input_token.key())? {ctx.accounts.token_program.to_account_info()} else {ctx.accounts.token_2022.to_account_info()},
+    ctx.accounts.associated_token_program.to_account_info(),
+  )?;
+
+  create_ata_if_needed(
+    ctx.accounts.payer.to_account_info(),
+    ctx.accounts.treasury_output_ata.to_account_info(),
+    ctx.accounts.treasury.to_account_info(),
+    output_token.to_account_info(),
+    ctx.accounts.system_program.to_account_info(),
+    if is_wsol(&output_token.key())? {ctx.accounts.token_program.to_account_info()} else {ctx.accounts.token_2022.to_account_info()},
+    ctx.accounts.associated_token_program.to_account_info(),
+  )?;
+
   let input_token_balance_before = ctx.accounts.input_token_account.amount;
   swap(&ctx, max_amount_in, amount_out_less_fee)?;
   ctx.accounts.input_token_account.reload()?;
