@@ -8,9 +8,11 @@ skip-lint = false
 
 [programs.localnet]
 onlybags = "7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4"
+onlybags_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
 
 [programs.mainnet]
 onlybags = "Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY"
+onlybags_swap_proxy = "5r8CvW57rPwHJJcyBhALpnJkpK5hMGabfrWpp83nMn7S"
 
 [registry]
 url = "https://api.apr.dev"
