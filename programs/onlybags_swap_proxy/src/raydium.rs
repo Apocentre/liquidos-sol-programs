@@ -17,15 +17,18 @@ pub fn amm_config() -> Pubkey {
   return Pubkey::from_str("9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6").unwrap();
 }
 
-/// The last buyer will have to pay for the rent of the accounts created by the Raydium CP swap program.
-/// This amount will have to come from the curves balance. So last buyer must be funded with this amount.
-pub const RENT_COST: u64 = 50000000;
 
 #[derive(BorshSerialize)]
-pub struct InitializeIx {
-  pub init_amount_0: u64,
-  pub init_amount_1: u64,
-  pub open_time: u64,
+pub struct SwapBaseInputIx {
+  pub amount_in: u64,
+  pub minimum_amount_out: u64,
+}
+
+
+#[derive(BorshSerialize)]
+pub struct SwapBaseOutputIx {
+  pub max_amount_in: u64,
+  pub amount_out_less_fee: u64,
 }
 
 /// Holds the current owner of the factory
