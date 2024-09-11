@@ -11,5 +11,6 @@
   "stakingToken": "GkneeKq48sniEpvozUe5HGT8QXrbsRxbnS6jasodx2wg",
   "stakingDuration": 86400,
   "stakingProtocolFee": 100,
-  "rewardToken": "D222KichKzYurdZuqmeJpeQ4M79B4aJydG4tn4sf51K5"
+  "rewardToken": "D222KichKzYurdZuqmeJpeQ4M79B4aJydG4tn4sf51K5",
+  "buyLUT": "GpZiaAiDCkxPDGyVK4nywm6zABzqBitLL2kc8hABoBxC"
 }
