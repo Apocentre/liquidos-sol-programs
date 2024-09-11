@@ -5,7 +5,7 @@ const getClusterUrl = () => {
     case "dev":
       return "http://localhost:8899"
     case "devnet":
-      return "https://blue-little-patina.solana-devnet.quiknode.pro/038172a7b63d22443ce416822a3cc5ed55d9dc8c/"
+      return "https://cool-capable-putty.solana-devnet.quiknode.pro/7c2a89805eb91da344d802a99e9fce6aa9932647"
     case "mainnet":
       return "https://purple-ultra-silence.solana-mainnet.quiknode.pro/cdaa81c6c9635d407bdbad87774d95750b7818b2"
   }
