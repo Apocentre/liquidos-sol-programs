@@ -1,5 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import {provider} from "../helpers/provider.js";
+import {spl} from "@apocentre/solana-web3";
 import * as constants from "../helpers/constants.js";
 import {createAddressLUT, addAddressesToAddressLUT} from "../helpers/tx.js";
 import config from "../config.json" assert { type: "json" };
