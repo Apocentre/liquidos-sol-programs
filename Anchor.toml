@@ -7,15 +7,19 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-onlybags = "2UQNuB1Mbx5hn6jJ9m3zchw91TdS1yUKhoaFxgoqjfQq"
+onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
 onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
+onlybags_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
 
 [programs.devnet]
-onlybags = "2UQNuB1Mbx5hn6jJ9m3zchw91TdS1yUKhoaFxgoqjfQq"
+onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
 onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
+onlybags_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
 
 [programs.mainnet]
 onlybags = "Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY"
+onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
+onlybags_swap_proxy = "5r8CvW57rPwHJJcyBhALpnJkpK5hMGabfrWpp83nMn7S"
 
 [registry]
 url = "https://api.apr.dev"
