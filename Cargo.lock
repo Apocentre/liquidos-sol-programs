@@ -234,9 +234,9 @@ dependencies = [
 
 [[package]]
 name = "anchor-safe-math"
-version = "0.5.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee17a362b2d34c1dc13a4d1362d53c9a017584b357c756190293515819dc94b4"
+checksum = "06a4544b9f898a73e4bae09be7d7eb65958ae55bca1a33b14eb00d605f622411"
 dependencies = [
  "anchor-lang",
 ]

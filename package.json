@@ -24,7 +24,7 @@
     "fetchData:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_deployer_devnet.json node ./scripts/onlybags/fetchData.js"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.0"
+    "@coral-xyz/anchor": "^0.30.1"
   },
   "devDependencies": {
     "@apocentre/solana-web3": "Apocentre/solana-web3",
