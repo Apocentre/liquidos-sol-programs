@@ -71,13 +71,13 @@ fn swap(ctx: &Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) -> Re
 
 fn collect_fees(ctx: &Context<Swap>, token_amount_received: u64) -> Result<()> {
   let state = &ctx.accounts.state;
-  let input_token_mint = &ctx.accounts.input_token_mint;
+  let output_token_mint = &ctx.accounts.output_token_mint;
   let fees = token_amount_received.safe_mul(state.protocol_fee_bps)?.safe_div(10_000)?;
 
-  if is_wsol(&input_token_mint.key())? {
+  if is_wsol(&output_token_mint.key())? {
     let cpi_accounts = Transfer {
-      from: ctx.accounts.input_token_account.to_account_info(),
-      to: ctx.accounts.treasury_input_ata.to_account_info(),
+      from: ctx.accounts.output_token_account.to_account_info(),
+      to: ctx.accounts.treasury_output_ata.to_account_info(),
       authority: ctx.accounts.payer.to_account_info(),
     };
   
@@ -87,9 +87,9 @@ fn collect_fees(ctx: &Context<Swap>, token_amount_received: u64) -> Result<()> {
     token::transfer(cpi_ctx, fees)?;
   } else {
     let cpi_accounts = TransferChecked {
-      from: ctx.accounts.input_token_account.to_account_info(),
-      mint: ctx.accounts.input_token_mint.to_account_info(),
-      to: ctx.accounts.treasury_input_ata.to_account_info(),
+      from: ctx.accounts.output_token_account.to_account_info(),
+      mint: ctx.accounts.output_token_mint.to_account_info(),
+      to: ctx.accounts.treasury_output_ata.to_account_info(),
       authority: ctx.accounts.payer.to_account_info(),
     };
   
@@ -135,7 +135,7 @@ pub fn exec(ctx: Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) ->
 
   collect_fees(&ctx, amount_out_less_fee)?;
   
-  let amount_sold = input_token_balance_after.safe_sub(input_token_balance_before)?;
+  let amount_sold = input_token_balance_before.safe_sub(input_token_balance_after)?;
 
   emit!(SwapBaseOutputEvent {
     amount_sold,
