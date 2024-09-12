@@ -19,8 +19,8 @@ const main = async () => {
   const onlybagsState = new PublicKey(config.onlyBagsState);
   const swapProxyState = new PublicKey(config.swapProxyState);
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const tokenName = "T_17_CURVE_1";
-  const tokenSymbol= "S_17_CURVE_1";
+  const tokenName = "T_CURVE_2";
+  const tokenSymbol= "S_CURVE_2";
   const token = accounts.curveToken(onlybagsState, tokenName, tokenSymbol, onlyBagsProgram.programId)[0];
   const treasury = new PublicKey(config.treasury);
 
