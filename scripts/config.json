@@ -1,9 +1,18 @@
 {
-  "state": "G5M4aCmU4KFRqppB2hJAwvKFJyUioZB1WaFeZoV6C3cz",
+  "onlyBagsState": "rSk5DscxuhnGEFf7BH1HePao2B25ujBPk7yFx7TmcMT",
+  "stakingState": "5SnHrPQbJZXgrYTz83jmLntTmNSCbaSykU87zozenVYZ",
+  "swapProxyState": "HYdKHECDoXrFZtmsvyzv7z1QXfLEJbYUsDTBzwnFV51L",
+  "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
   "protocolFee": 0,
-  "creatorFee": 2000000000,
+  "creatorFee": 20000000,
   "tradeFeeBps": 100,
+  "stakingAllocationBps": 500,
   "totalTokenSupply": 1000000000000000,
-  "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X"
+  "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
+  "stakingToken": "GkneeKq48sniEpvozUe5HGT8QXrbsRxbnS6jasodx2wg",
+  "stakingDuration": 86400,
+  "stakingProtocolFee": 100,
+  "rewardToken": "D222KichKzYurdZuqmeJpeQ4M79B4aJydG4tn4sf51K5",
+  "buyLUT": "GpZiaAiDCkxPDGyVK4nywm6zABzqBitLL2kc8hABoBxC"
 }

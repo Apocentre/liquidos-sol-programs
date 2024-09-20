@@ -9,6 +9,7 @@ pub mod curve_formulas;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
+  update_state::*, create_staking_pool::*,
 };
 
 declare_id!("Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY");
@@ -27,6 +28,8 @@ pub mod onlybags {
   /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   /// * `creator_fee` - Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
   /// * `total_token_supply` - The total supply of the newly created tokens in the lowest denomination i.e. decimals included
+  /// * `staking_allocation_bps` - Staking allocation (BPS). This percentage of the total allocation will be distributed though
+  ///    the staking program
   pub fn initialize(
     ctx: Context<Initialize>,
     treasury: Pubkey,
@@ -34,6 +37,7 @@ pub mod onlybags {
     trade_fee_bps: u64,
     creator_fee: u64,
     total_token_supply: u64,
+    staking_allocation_bps: u64,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
@@ -42,6 +46,43 @@ pub mod onlybags {
       trade_fee_bps,
       creator_fee,
       total_token_supply,
+      staking_allocation_bps,
+    )
+  }
+
+  /// UpdateState
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `staking_program` - The staking program Id
+  /// * `staking_program_state` - The state of the staking program
+  /// * `protocol_fee` - Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
+  /// * `creator_fee` - Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
+  /// * `total_token_supply` - The total supply of the newly created tokens in the lowest denomination i.e. decimals included
+  /// * `staking_allocation_bps` - Staking allocation (BPS). This percentage of the total allocation will be distributed though
+  ///    the staking program
+  pub fn update_state(
+    ctx: Context<UpdateState>,
+    staking_program: Pubkey,
+    staking_program_state: Pubkey,
+    protocol_fee: u64,
+    trade_fee_bps: u64,
+    creator_fee: u64,
+    total_token_supply: u64,
+    staking_allocation_bps: u64,
+  ) -> Result<()> {
+    processors::update_state::exec(
+      ctx,
+      staking_program,
+      staking_program_state,
+      protocol_fee,
+      trade_fee_bps,
+      creator_fee,
+      total_token_supply,
+      staking_allocation_bps,
+
     )
   }
 
@@ -117,6 +158,17 @@ pub mod onlybags {
   /// * `ctx` - The Anchor context holding the accounts
   pub fn move_liquidity(ctx: Context<MoveLiquidity>) -> Result<()> {
     processors::move_liquidity::exec(ctx)
+  }
+
+  /// CreateStakingPool
+  ///
+  /// Creates a new staking pool
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn create_staking_pool(ctx: Context<CreateStakingPool>) -> Result<()> {
+    processors::create_staking_pool::exec(ctx)
   }
 
   /// Sell

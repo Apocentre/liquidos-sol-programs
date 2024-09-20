@@ -1,57 +1,33 @@
 import * as anchor from "@coral-xyz/anchor";
-import * as accounts from "./helpers/accounts.js";
+import * as accounts from "../helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
-import {provider} from "./helpers/provider.js";
-import {createAndSendV0Tx} from "./helpers/tx.js";
-import * as constants from "./helpers/constants.js";
-import config from "./config.json" assert { type: "json" };
-import buyerKey from "../wallets/deployer.json" assert { type: "json" };
+import {provider} from "../helpers/provider.js";
+import {createAndSendV0Tx} from "../helpers/tx.js";
+import * as constants from "../helpers/constants.js";
+import config from "../config.json" assert { type: "json" };
+import buyerKey from "../../wallets/test/buyer1.json" assert { type: "json" };
 
 const Web3 = Web3Pkg.default;
-const {BN} = anchor.default;
-const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
+const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3;
 
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const tokenName = "T_17_CURVE_1";
-  const tokenSymbol= "S_17_CURVE_1";
-  const amount = new BN(web3.toBase("1", 9));
-  const minAmountOut = new BN(0); // no slippage
+  const tokenName = "TOKEN_3";
+  const tokenSymbol= "SYMBOL_3";
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const state = new PublicKey(config.state);
-  const tokenCreator = new PublicKey(config.tokenCreator);
+  const state = new PublicKey(config.onlyBagsState);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
-  const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
+  
   const wsol = constants.wsol;
-  const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const ammConfig = constants.raydiumAmmConfigDevnet;
-
-  const buy_ix = await program.methods
-  .buy(amount, minAmountOut)
-  .accounts({
-    buyer: buyer.publicKey,
-    state,
-    treasury: new PublicKey(config.treasury),
-    bondingCurve,
-    tokenCreator,
-    token,
-    buyerAta,
-    buyerWsolAta,
-    wsolToken: wsol,
-    ammConfig,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    tokenProgram: spl.TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  })
-  .instruction();
-
   const raydiumProgram = constants.raydiumProgramDevnet;
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
+  const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const [creatorToken0, creatorToken1] = token.toBuffer() < wsol.toBuffer() ? [buyerAta, buyerWsolAta] : [buyerWsolAta, buyerAta];
   const lpMint = accounts.raydiumLpMint(poolState, raydiumProgram)[0];
   const creatorLpToken = await web3.getAssociatedTokenAddress(lpMint, buyer.publicKey);
@@ -61,7 +37,7 @@ const main = async () => {
 
   const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
 
-  const moveLiquidityIx = await program.methods
+  const ix = await program.methods
   .moveLiquidity()
   .accounts({
     buyer: buyer.publicKey,
@@ -84,7 +60,6 @@ const main = async () => {
     token1Vault,
     createPoolFee,
     observationState: accounts.raydiumObservationState(poolState, raydiumProgram)[0],
-    cpSwapProgram: raydiumProgram,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
@@ -93,11 +68,9 @@ const main = async () => {
   })
   .instruction();
 
-  const cbIx = web3.getComputationBudgetIx(750_000);
-  const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, buy_ix, moveLiquidityIx],
+    [ix],
     buyer.publicKey,
     [buyer],
     [],

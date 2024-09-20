@@ -25,7 +25,7 @@ pub struct Buy<'info> {
   )]
   pub treasury: AccountInfo<'info>,
 
-  /// CHECK: The creator of the curve  that collects the creator fees
+  /// CHECK: The creator of the curve that collects the creator fees
   #[account(
     mut,
     constraint = token_creator.key() == bonding_curve.token_creator @ ErrorCode::WrongTokenCreator,
