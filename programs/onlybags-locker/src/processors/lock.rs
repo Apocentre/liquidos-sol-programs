@@ -12,12 +12,12 @@ pub const TOKEN_DECIMALS: u8 = 6;
 #[event]
 pub struct LockEvent {
   user: Pubkey,
-  amount: u64,
+  amount: String,
   token: Pubkey,
   start_ts: i64,
   duration: i64,
-  user_total_lock: u64,
-  token_total_lock: u64,
+  user_total_lock: String,
+  token_total_lock: String,
 }
 
 fn lock_funds(ctx: &Context<Lock>, amount: u64) -> Result<()> {
@@ -85,12 +85,12 @@ pub fn exec(
 
   emit!(LockEvent {
     user: ctx.accounts.user.key(),
-    amount,
+    amount: amount.to_string(),
     token: ctx.accounts.token.key(),
     start_ts: user_lock.start_ts,
     duration: user_lock.duration,
-    user_total_lock: user_lock.total_locked,
-    token_total_lock: token_lock.total_locked,
+    user_total_lock: user_lock.total_locked.to_string(),
+    token_total_lock: token_lock.total_locked.to_string(),
   });
 
   Ok(())

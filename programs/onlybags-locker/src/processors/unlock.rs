@@ -10,9 +10,9 @@ use super::lock::{lock_expired, TOKEN_DECIMALS};
 #[event]
 pub struct UnlockEvent {
   user: Pubkey,
-  amount: u64,
+  amount: String,
   token: Pubkey,
-  token_total_lock: u64,
+  token_total_lock: String,
 }
 
 fn unlock_funds(ctx: &Context<UnLock>, amount: u64) -> Result<()> {
@@ -62,8 +62,8 @@ pub fn exec(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
   emit!(UnlockEvent {
     user: ctx.accounts.user.key(),
     token: ctx.accounts.token.key(),
-    amount: user_lock.total_locked,
-    token_total_lock: token_lock.total_locked,
+    amount: user_lock.total_locked.to_string(),
+    token_total_lock: token_lock.total_locked.to_string(),
   });
 
   Ok(())
