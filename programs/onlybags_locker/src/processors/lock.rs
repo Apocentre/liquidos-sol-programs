@@ -36,7 +36,7 @@ fn lock_funds(ctx: &Context<Lock>, amount: u64) -> Result<()> {
   Ok(())
 }
 
-fn lock_expired(user_lock: &UserLock, now: i64) -> Result<bool> {
+pub fn lock_expired(user_lock: &UserLock, now: i64) -> Result<bool> {
   Ok(now as u64 > (user_lock.start_ts as u64).safe_add(user_lock.duration as u64)?)
 }
 

@@ -3,11 +3,9 @@ use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
   program_error::ErrorCode,
-  account_data::user_lock::UserLock,
   instructions::unlock::UnLock,
 };
-
-pub const TOKEN_DECIMALS: u8 = 6;
+use super::lock::{lock_expired, TOKEN_DECIMALS};
 
 #[event]
 pub struct UnLockEvent {
@@ -40,10 +38,6 @@ fn unlock_funds(ctx: &Context<UnLock>, amount: u64) -> Result<()> {
   token_2022::transfer_checked(cpi_ctx, amount, TOKEN_DECIMALS)?;
 
   Ok(())
-}
-
-fn lock_expired(user_lock: &UserLock, now: i64) -> Result<bool> {
-  Ok(now as u64 > (user_lock.start_ts as u64).safe_add(user_lock.duration as u64)?)
 }
 
 pub fn exec(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
