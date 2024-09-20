@@ -8,7 +8,6 @@ pub fn exec(
   trade_fee_bps: u64,
   creator_fee: u64,
   total_token_supply: u64,
-  staking_allocation_bps: u64,
 ) -> Result<()> {
   let owner = ctx.accounts.owner.key();
   let state = &mut ctx.accounts.state;
@@ -19,7 +18,6 @@ pub fn exec(
     trade_fee_bps,
     creator_fee,
     total_token_supply,
-    staking_allocation_bps,
   );
 
   Ok(())
