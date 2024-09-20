@@ -2,11 +2,23 @@ use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
-  account_data::{user_lock::UserLock, token_lock::TokenLock},
+  program_error::ErrorCode,
+  account_data::{token_lock::TokenLock, user_lock::{self, UserLock}},
   instructions::lock::Lock,
 };
 
 pub const TOKEN_DECIMALS: u8 = 6;
+
+#[event]
+pub struct LockEvent {
+  user: Pubkey,
+  amount: u64,
+  token: Pubkey,
+  start_ts: i64,
+  duration: i64,
+  user_total_lock: u64,
+  token_total_lock: u64,
+}
 
 fn lock_funds(ctx: &Context<Lock>, amount: u64) -> Result<()> {
   let cpi_accounts = TransferChecked {
@@ -22,6 +34,10 @@ fn lock_funds(ctx: &Context<Lock>, amount: u64) -> Result<()> {
   token_2022::transfer_checked(cpi_ctx, amount, TOKEN_DECIMALS)?;
 
   Ok(())
+}
+
+fn lock_expired(user_lock: &UserLock, now: i64) -> Result<bool> {
+  Ok(now as u64 > (user_lock.start_ts as u64).safe_add(user_lock.duration as u64)?)
 }
 
 pub fn exec(
@@ -45,6 +61,18 @@ pub fn exec(
     if !token_lock.initialized {
       **token_lock = TokenLock::new(ctx.bumps.token_lock);
     }
+    
+    // if lock expired and there is still some funds in the escrow then user must unlock that amount first before
+    // creating a new lock
+    if lock_expired(&user_lock, now)? && user_lock.total_locked > 0 {
+      return Err(error!(ErrorCode::LockExpired))
+    }
+
+    // if expired an no amount is locked atm then simply create a new lock period
+    if lock_expired(&user_lock, now)? {
+      user_lock.start_ts = now;
+      user_lock.duration = duration;
+    }
   }
 
   lock_funds(&ctx, amount)?;
@@ -54,6 +82,16 @@ pub fn exec(
   let user_lock = &mut ctx.accounts.user_lock;
   token_lock.total_locked = token_lock.total_locked.safe_add(amount)?;
   user_lock.total_locked = user_lock.total_locked.safe_add(amount)?;
+
+  emit!(LockEvent {
+    user: ctx.accounts.user.key(),
+    amount,
+    token: ctx.accounts.token.key(),
+    start_ts: user_lock.start_ts,
+    duration: user_lock.duration,
+    user_total_lock: user_lock.total_locked,
+    token_total_lock: token_lock.total_locked,
+  });
 
   Ok(())
 }
