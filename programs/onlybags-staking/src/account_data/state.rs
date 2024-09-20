@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 
 #[account(zero_copy)]
 pub struct State {
-  /// The owner that can handle various admin related teasks
+  /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
   /// The onlybags program
   pub onlybags_program: Pubkey,

@@ -20,4 +20,16 @@ pub mod onlybags_locker {
   pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
     processors::initialize::exec(ctx)
   }
+
+  /// Lock
+  /// Allow anyone to lock the provided amount of tokens for the given duration
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `amount` - The amount to lock
+  /// * `duration` - The duration of the lock
+  pub fn lock(ctx: Context<Lock>, amount: u64, duration: i64) -> Result<()> {
+    processors::lock::exec(ctx, amount, duration)
+  }
 }
