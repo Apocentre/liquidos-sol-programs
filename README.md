@@ -56,7 +56,14 @@ solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 100
 solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/swap_proxy.json target/deploy/onlybags_swap_proxy.so
 ```
 
-4. initialize onlybags program
+
+4. deploy locker program
+
+```bash
+solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/locker.json target/deploy/onlybags_locker.so
+```
+
+5. initialize onlybags program
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/initialize.js
@@ -64,15 +71,15 @@ ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/
 
 Set `onlyBagsState` in config.json
 
-5. create test token
+6. create test token
 
 ```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/createToken.js
+ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/createToken.js
 ```
 
 Set `stakingToken` in config.json
 
-6. initialize staking program
+7. initialize staking program
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/initialize.js
@@ -80,19 +87,19 @@ ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-
 
 Set `stakingState` in config.json
 
-7. update staking state
+8. update staking state
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/updateState.js
 ```
 
-8. update onlybags state
+9. update onlybags state
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/updateState.js
 ```
 
-9. initialize swap program
+10. initialize swap program
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/swap-proxy/initialize.js
@@ -100,7 +107,7 @@ ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/swap-prox
 
 Set `stakingState` in config.json
 
-10. create bonding curve
+11. create bonding curve
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/createToken.js

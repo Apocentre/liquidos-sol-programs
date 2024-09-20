@@ -5,7 +5,7 @@ use anchor_lang::prelude::*;
 
 #[account]
 pub struct State {
-  /// The owner that can handle various admin related teasks
+  /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
   /// The treasury account that receives fees
   pub treasury: Pubkey,

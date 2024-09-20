@@ -16,8 +16,8 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
   const stakingProgram = anchor.workspace.OnlybagsStaking;
-  const tokenName = "T_CURVE_2";
-  const tokenSymbol= "S_CURVE_2";
+  const tokenName = "T_CURVE_3";
+  const tokenSymbol= "S_CURVE_3";
   const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))

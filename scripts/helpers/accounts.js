@@ -54,3 +54,18 @@ export const userInfo = (state, user, rewardToken, programId) => PublicKey.findP
   [utf8.encode("user_info"), user.toBuffer(), state.toBuffer(), rewardToken.toBuffer()],
   programId
 )
+
+export const escrow = (state, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("escrow"), state.toBuffer()],
+  programId
+)
+
+export const tokenLock = (state, token, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("token_lock"), state.toBuffer(), token.toBuffer()],
+  programId
+)
+
+export const userLock = (state, token, user, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("user_lock"), state.toBuffer(), token.toBuffer(), user.toBuffer()],
+  programId
+)

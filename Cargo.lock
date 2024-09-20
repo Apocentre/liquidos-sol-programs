@@ -1458,6 +1458,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "onlybags-locker"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-safe-math",
+ "anchor-spl",
+]
+
+[[package]]
 name = "onlybags-staking"
 version = "0.1.0"
 dependencies = [

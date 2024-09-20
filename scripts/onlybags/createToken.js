@@ -10,8 +10,8 @@ const Web3 = Web3Pkg.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
-  const tokenName = "T_CURVE_2";
-  const tokenSymbol= "S_CURVE_2";
+  const tokenName = "T_CURVE_3";
+  const tokenSymbol= "S_CURVE_3";
   const state = new PublicKey(config.onlyBagsState);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
   const program = anchor.workspace.Onlybags;
