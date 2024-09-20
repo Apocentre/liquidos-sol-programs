@@ -9,8 +9,9 @@ crate-type = ["cdylib", "lib"]
 name = "onlybags_locker"
 
 [features]
-default = []
+default = ["localnet"]
 cpi = ["no-entrypoint"]
+localnet = []
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []

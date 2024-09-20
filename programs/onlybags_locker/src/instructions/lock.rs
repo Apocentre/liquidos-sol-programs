@@ -6,7 +6,7 @@ use anchor_spl::{
 use crate::account_data::{state::State, token_lock::TokenLock, user_lock::UserLock};
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct Lock<'info> {
   #[account()]
   pub state: Box<Account<'info, State>>,
 
@@ -14,6 +14,8 @@ pub struct Initialize<'info> {
     init_if_needed,
     payer = user,
     space = TokenLock::MAX_SIZE,
+    seeds = [b"token_lock", state.key().as_ref(), token.key().as_ref()],
+    bump,
   )]
   pub token_lock: Account<'info, TokenLock>,
   
@@ -21,6 +23,8 @@ pub struct Initialize<'info> {
     init_if_needed,
     payer = user,
     space = UserLock::MAX_SIZE,
+    seeds = [b"user_lock", state.key().as_ref(), token.key().as_ref(), user.key().as_ref()],
+    bump,
   )]
   pub user_lock: Account<'info, UserLock>,
 
