@@ -4,4 +4,6 @@ use anchor_lang::prelude::*;
 pub enum ErrorCode {
   #[msg("Lock expired")]
   LockExpired,
+  #[msg("Lock not expired")]
+  LockNotExpired,
 }

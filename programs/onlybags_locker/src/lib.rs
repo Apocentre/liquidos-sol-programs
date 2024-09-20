@@ -4,7 +4,7 @@ pub mod processors;
 pub mod program_error;
 
 use anchor_lang::prelude::*;
-use crate::instructions::{initialize::*, lock::*};
+use crate::instructions::{initialize::*, lock::*, unlock::*};
 
 declare_id!("CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY");
 
@@ -31,5 +31,15 @@ pub mod onlybags_locker {
   /// * `duration` - The duration of the lock
   pub fn lock(ctx: Context<Lock>, amount: u64, duration: i64, _test_ts: i64) -> Result<()> {
     processors::lock::exec(ctx, amount, duration, _test_ts)
+  }
+
+  /// Lock
+  /// Allow anyone to unlock full amount after lock expiration
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn unlock(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
+    processors::unlock::exec(ctx, _test_ts)
   }
 }

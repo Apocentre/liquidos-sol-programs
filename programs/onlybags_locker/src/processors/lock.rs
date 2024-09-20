@@ -3,7 +3,7 @@ use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
   program_error::ErrorCode,
-  account_data::{token_lock::TokenLock, user_lock::{self, UserLock}},
+  account_data::{token_lock::TokenLock, user_lock::UserLock},
   instructions::lock::Lock,
 };
 
