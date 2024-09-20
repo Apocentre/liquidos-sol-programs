@@ -4,6 +4,8 @@ use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use crate::curve_formulas::CurveType;
 
+pub const MAX_OPERATORS: usize = 5;
+
 #[account]
 #[derive(Debug)]
 pub struct BondingCurve {
@@ -25,8 +27,6 @@ pub struct BondingCurve {
   pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
-  /// Staking allocation (BPS). This percentage of the total allocation will be distributed though the staking program
-  pub staking_allocation_bps: u64,
   /// The current price of the curve in lamports
   pub price: u64,
   /// The PDA bump of this account
@@ -47,7 +47,6 @@ impl BondingCurve {
     trade_fee_bps: u64,
     creator_fee: u64,
     total_supply: u64,
-    staking_allocation_bps: u64,
     bump: u8,
   ) -> Result<Self> {
     Ok(Self {
@@ -59,7 +58,6 @@ impl BondingCurve {
       creator_fee,
       circulating_supply: 0,
       total_supply,
-      staking_allocation_bps,
       reserve_token_balance: 0,
       price: 0,
       bump,
@@ -136,20 +134,9 @@ impl BondingCurve {
     Ok(net)
   }
 
-  pub fn calc_staking_allocation(&self) -> Result<u64> {
-    let alloc = self.total_supply
-    .safe_mul(self.staking_allocation_bps)?
-    .safe_div(10_000)?;
-
-    Ok(alloc)
-  }
-
   /// We need enough tokens to fill the total supply set for this curve
   pub fn calc_token_amount_to_mint(&self) -> Result<u64> {
-    let amount = self.total_supply
-    .safe_sub(self.circulating_supply)?
-    .safe_sub(self.calc_staking_allocation()?)?;
-    
+    let amount = self.total_supply.safe_sub(self.circulating_supply)?;
     Ok(amount)
   }
 }
@@ -171,7 +158,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
     let received = curve.process_purchase_return(89800000000).unwrap();
@@ -190,7 +176,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
 
@@ -211,7 +196,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
     
@@ -231,7 +215,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
     let received = curve.process_purchase_return(500000000).unwrap(); // 0.5
@@ -275,7 +258,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
 
@@ -293,7 +275,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
 
@@ -313,7 +294,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
 
@@ -336,7 +316,6 @@ mod tests {
       100,
       100,
       1_000_000_000 * 10e6 as u64,
-      100,
       1,
     ).unwrap();
 
