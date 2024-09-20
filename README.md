@@ -74,7 +74,7 @@ Set `onlyBagsState` in config.json
 6. create test token
 
 ```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/createToken.js
+ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/createToken.js
 ```
 
 Set `stakingToken` in config.json
