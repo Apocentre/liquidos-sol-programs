@@ -8,7 +8,7 @@ use crate::{
 use super::lock::{lock_expired, TOKEN_DECIMALS};
 
 #[event]
-pub struct UnLockEvent {
+pub struct UnlockEvent {
   user: Pubkey,
   amount: u64,
   token: Pubkey,
@@ -59,7 +59,7 @@ pub fn exec(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
   user_lock.total_locked = 0;
   token_lock.total_locked = token_lock.total_locked.safe_sub(user_lock.total_locked)?;
 
-  emit!(UnLockEvent {
+  emit!(UnlockEvent {
     user: ctx.accounts.user.key(),
     token: ctx.accounts.token.key(),
     amount: user_lock.total_locked,
