@@ -1481,6 +1481,8 @@ name = "onlybags_locker"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "anchor-safe-math",
+ "anchor-spl",
 ]
 
 [[package]]
