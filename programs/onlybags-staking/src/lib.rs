@@ -26,7 +26,6 @@ pub mod onlybags_staking {
   /// * `treasury` - The treasury that will collect protocol fees
   /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
   /// * `protocol_fee` - The fee in the reward token the protocol receives.
-  
   pub fn initialize(
     ctx: Context<Initialize>,
     onlybags_program: Pubkey,
