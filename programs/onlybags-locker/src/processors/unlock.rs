@@ -56,8 +56,8 @@ pub fn exec(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
   // update state
   let token_lock = &mut ctx.accounts.token_lock;
   let user_lock = &mut ctx.accounts.user_lock;
-  user_lock.total_locked = 0;
   token_lock.total_locked = token_lock.total_locked.safe_sub(user_lock.total_locked)?;
+  user_lock.total_locked = 0;
 
   emit!(UnlockEvent {
     user: ctx.accounts.user.key(),
