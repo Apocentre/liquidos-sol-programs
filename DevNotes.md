@@ -1,3 +1,7 @@
+## Revocer locked funds during failed deployment or upgrade
+
+`solana program close --buffers --keypair ./wallets/deployer.json`
+
 ## Error While Upading
 
 If the size of the original program get bigger than the initial size that was allocated during the initial deployment then the upgrade will fail with this error:

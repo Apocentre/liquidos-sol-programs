@@ -6,7 +6,7 @@ pub mod program_error;
 use anchor_lang::prelude::*;
 use crate::instructions::{initialize::*, lock::*, unlock::*};
 
-declare_id!("CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY");
+declare_id!("7Sntio7WMpXkPWTQMXLVYoH7hqwfLn1i4JP7xUFaDkaK");
 
 #[program]
 pub mod onlybags_locker {

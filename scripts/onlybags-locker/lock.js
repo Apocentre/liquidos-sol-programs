@@ -17,7 +17,7 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const lockAmount = new BN(web3.toBase("1000000", 6));
-  const duration = new BN(600);
+  const duration = new BN(10);
   const testTs = new BN(Number.MAX_SAFE_INTEGER);
   const escrow = accounts.escrow(state, program.programId)[0];
   const token = new PublicKey("DZCmJsjGWgydsDKHMfsAE3m6hUMFPBP5PWgHoryJHAKS");
