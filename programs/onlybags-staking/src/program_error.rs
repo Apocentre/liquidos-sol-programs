@@ -4,6 +4,8 @@ use anchor_lang::prelude::*;
 pub enum ErrorCode {
   #[msg("Only owner")]
   OnlyOwner,
+  #[msg("UserInfo initialized")]
+  UserInfoInitialized,
   #[msg("Invalid staking token")]
   InvalidStakingToken,
   #[msg("Invalid treasury account")]

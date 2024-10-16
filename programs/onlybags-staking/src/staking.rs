@@ -55,6 +55,7 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
 pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
   let user_info = &mut accounts.user_info;
   let pool_info =  &mut accounts.pool_info;
+  let now = Clock::get().unwrap().unix_timestamp;
   let mut amount = 0;
 
   if user_info.staked_amount > 0 {
@@ -62,7 +63,8 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
     .safe_mul(pool_info.acc_reward_per_share)?
     .safe_div(NORMALIZATION_FACTOR)?
     .safe_sub(user_info.reward_debt)?;
-
+    let total_pending = pending.safe_add(user_info.acc_claim as u128)?;
+    
     let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, pending)?;
     amount = user_amount;
 
