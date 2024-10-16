@@ -26,6 +26,8 @@ const main = async () => {
     new PublicKey(config.onlyBagsState),
     new PublicKey(config.treasury),
     new BN(config.stakingDuration),
+    new BN(config.stakingDelay),
+    new BN(config.claimDelay),
     new BN(config.stakingProtocolFee),
   )
   .accounts({
