@@ -1,6 +1,26 @@
 ## Revoce locked funds during failed deployment or upgrade
 
-`solana program close --buffers --keypair ./wallets/deployer.json`
+To view all buffer accounts that are currently open
+
+```bash
+solana program show --buffer-authority DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw --buffers --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/
+```
+
+Similarly you can view all to the program accounts for the given authority.
+
+```bash
+solana program show --buffer-authority DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw --programs --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/
+```
+
+To close all the buffer accounts associated with the current authority:
+
+```bash
+`solana program close --buffers --keypair ./wallets/deployer.json --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/
+```
+
+More on this here 
+
+https://docs.solanalabs.com/cli/examples/deploy-a-program#closing-program-and-buffer-accounts-and-reclaiming-their-lamports
 
 ## Error While Upading
 
