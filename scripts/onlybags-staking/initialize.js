@@ -26,6 +26,7 @@ const main = async () => {
     new BN(config.stakingDuration),
     new BN(config.stakingDelay),
     new BN(config.claimDelay),
+    new BN(config.withdrawDelay),
     new BN(config.stakingProtocolFee),
   )
   .accounts({
