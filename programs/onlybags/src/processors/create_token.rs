@@ -1,8 +1,16 @@
-use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instruction::transfer}};
+use anchor_lang::{
+  prelude::{borsh::BorshSerialize, *},
+  solana_program::{
+    program::invoke, system_instruction::transfer,
+    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
+  },
+  Discriminator,
+};
 use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
 use crate::{
   account_data::bonding_curve::BondingCurve,
-  instructions::create_token::CreateToken,
+  instructions::create_token::CreateToken, program_error::ErrorCode, ID,
+  instruction::CreateStakingPool,
 };
 
 #[event]
@@ -71,6 +79,20 @@ fn create_metadata(
   Ok(())
 }
 
+/// When buying a token, the buyer will send two ixs: the CreateToken and CreateStakingPool
+/// The later two will be executed but do nothing if the curve is not closed.
+/// This is important so we know that user never skips the CreateStakingPool IX
+fn instrospect_next_ix(ctx: &Context<CreateToken>) -> Result<()> {
+  let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+
+  // check CreateStakingPool
+  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+  require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+  let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+  require!(discriminator.eq(&CreateStakingPool::DISCRIMINATOR), ErrorCode::ExpectedCreateStakingPoolIx);
+  Ok(())
+}
+
 pub fn exec(
   ctx: Context<CreateToken>,
   name: String,
@@ -78,6 +100,8 @@ pub fn exec(
   uri: String,
   curve_type: u8,
 ) -> Result<()> {
+  instrospect_next_ix(&ctx)?;
+
   let state = &ctx.accounts.state;
   let token_creator = ctx.accounts.token_creator.key();
   let curve_key = ctx.accounts.bonding_curve.key();

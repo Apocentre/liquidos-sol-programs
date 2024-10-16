@@ -8,7 +8,7 @@ use anchor_lang::{
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
-  instruction::{MoveLiquidity, CreateStakingPool}, instructions::buy::Buy,
+  instruction::MoveLiquidity, instructions::buy::Buy,
   processors::common::transfer_from_pda,
   program_error::ErrorCode, raydium::{self, AmmConfig}, ID,
 };
@@ -143,21 +143,15 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   Ok(())
 }
 
-/// When buying a token, the buyer will send three ixs: the Buy, CreateStakingPool and MoveLiquidity
-/// The later two will be executed but do nothing if the curve is not closed.
+/// When buying a token, the buyer will send two ixs: the Buy, and MoveLiquidity
+/// The later will be executed but do nothing if the curve is not closed.
 /// This is important so we know that once the SOL is sent to the buyer_wsol_ata he atomically
-/// moves_liquidity and creates staking pool
+/// moves_liquidity
 fn instrospect_next_ix(ctx: &Context<Buy>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
 
-  // check CreateStakingPool
-  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
-  require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
-  let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
-  require!(discriminator.eq(&CreateStakingPool::DISCRIMINATOR), ErrorCode::ExpectedCreateStakingPoolIx);
-
   // check MoveLiquidity
-  let current_ix = load_instruction_at_checked((current_index + 2) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
   require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
   let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
   require!(discriminator.eq(&MoveLiquidity::DISCRIMINATOR), ErrorCode::ExpectedMoveLiquidityIx);

@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::sysvar};
 use anchor_spl::{
   associated_token::AssociatedToken, token_interface::{Mint, TokenInterface, TokenAccount},
 };
@@ -53,4 +53,7 @@ pub struct CreateToken<'info> {
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
+  /// CHECK: custom constrain to check the correctness of the account address
+  #[account(address = sysvar::instructions::id())]
+  pub ix_sysvar: UncheckedAccount<'info>,
 }
