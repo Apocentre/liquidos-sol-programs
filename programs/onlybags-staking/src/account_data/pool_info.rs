@@ -11,8 +11,10 @@ pub struct PoolInfo {
   pub start_ts: i64,
   /// The timestamp when the pool is closed so no more deposits are allowed
   pub end_ts: i64,
-    /// The ts when user can claim rewards
+  /// The ts when user can claim rewards
   pub timelock_ts: i64,
+  /// The ts when user can withdraw his stake
+  pub withdraw_lock_ts: i64,
   /// Total amount of rewards in reward_token
   pub total_reward: u64,
   /// Total amount of rewards in reward_token
@@ -41,6 +43,7 @@ impl PoolInfo {
     start_ts: i64,
     end_ts: i64,
     timelock_ts: i64,
+    withdraw_lock_ts: i64,
     total_reward: u64,
     staking_token: Pubkey,
     reward_token: Pubkey,
@@ -52,6 +55,7 @@ impl PoolInfo {
       start_ts,
       end_ts,
       timelock_ts,
+      withdraw_lock_ts,
       total_staked: 0,
       total_reward,
       total_claimed: 0,
