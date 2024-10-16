@@ -25,7 +25,7 @@ const main = async () => {
     tradeFeeBps: stateData.tradeFeeBps.toString(),
     creatorFee: stateData.creatorFee.toString(),
     totalTokenSupply: stateData.totalTokenSupply.toString(),
-    stakingAllocationBps: stateData.stakingAllocationBps.toString(),
+    stakingAllocation: stateData.stakingAllocation.toString(),
   });
 
   console.log("bondingCurve: ", {

@@ -14,12 +14,12 @@ const main = async () => {
   const program = anchor.workspace.OnlybagsStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const stakingToken = new PublicKey(config.stakingToken)
 
   const ix = await program.methods
   .updateState(
-    stakingToken,
     new BN(config.stakingDuration),
+    new BN(config.stakingDelay),
+    new BN(config.claimDelay),
     new BN(config.stakingProtocolFee),
   )
   .accounts({

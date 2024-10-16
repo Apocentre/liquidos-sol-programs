@@ -17,8 +17,6 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
 
   const poolAuthority = accounts.poolAuthority(state.publicKey, program.programId)[0];
-  const stakingToken = new PublicKey(config.stakingToken)
-  const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
   const ix = await program.methods
   .initialize(
@@ -33,11 +31,7 @@ const main = async () => {
   .accounts({
     state: state.publicKey,
     poolAuthority,
-    stakingToken,
-    stakingTokenVaultAta,
     owner: deployer.publicKey,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
   })
   .instruction();

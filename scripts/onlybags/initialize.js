@@ -22,7 +22,7 @@ const main = async () => {
     new BN(config.tradeFeeBps),
     new BN(config.creatorFee),
     new BN(config.totalTokenSupply),
-    new BN(config.stakingAllocationBps),
+    new BN(config.stakingAllocation),
   )
   .accounts({
     state: state.publicKey,
