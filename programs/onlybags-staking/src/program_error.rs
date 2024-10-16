@@ -8,6 +8,8 @@ pub enum ErrorCode {
   InvalidStakingToken,
   #[msg("Invalid treasury account")]
   InvalidTreasury,
+  #[msg("Pool has not started")]
+  PoolNotStarted,
   #[msg("Pool ended")]
   PoolEnded,
   #[msg("Insufficient withdraw amount")]

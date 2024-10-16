@@ -39,6 +39,7 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
   let state = ctx.accounts.state.load()?;
 
   let now = Clock::get().unwrap().unix_timestamp;
+  require!(now >= pool_info.start_ts, ErrorCode::PoolNotStarted);
   require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
   update_pool(&mut *pool_info)?;

@@ -47,7 +47,7 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
   let state = ctx.accounts.state.load()?;
   let user_info = &ctx.accounts.user_info;
   
-  require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount,);
+  require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount);
 
   update_pool(&mut *pool_info)?;
   let claimed = release_pending(&mut AccountContainer {
