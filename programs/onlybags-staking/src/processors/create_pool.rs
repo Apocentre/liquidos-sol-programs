@@ -17,7 +17,7 @@ pub fn exec(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
 
   **pool_info = PoolInfo::new(
     reward_per_sec,
-    now,
+    start_ts,
     start_ts,
     end_ts,
     timelock_ts,

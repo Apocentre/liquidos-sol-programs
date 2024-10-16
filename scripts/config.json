@@ -1,6 +1,6 @@
 {
-  "onlyBagsState": "6bNxtvNc3vnPpaD6Caf3xj1qEcRG3sZx5VfGbSssXmop",
-  "stakingState": "4rmjizQqFEfaNSeqBojtzVL5E5TzmVP5mDLhfAoxzSRA",
+  "onlyBagsState": "GWPdqQnaPvGFJn74DyvkAAKF88TkxtA6tjCrTSpEiMJA",
+  "stakingState": "8WcHCC3vhbJkMs17DGKRSuqsWkY5HNDQRPGntuWCgX42",
   "swapProxyState": "HYdKHECDoXrFZtmsvyzv7z1QXfLEJbYUsDTBzwnFV51L",
   "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
@@ -10,10 +10,10 @@
   "stakingAllocation": 5000000000000,
   "totalTokenSupply": 1000000000000000,
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
-  "stakingToken": "2pS51Wo9LW3rMS7XAaxRC81NmSNR6JscNZhdeZqiKgRJ",
-  "rewardToken": "2pS51Wo9LW3rMS7XAaxRC81NmSNR6JscNZhdeZqiKgRJ",
+  "stakingToken": "DvfwYq36zAMdK57y4YR7UHtPPnsPZFsRE2qW5WwAuuZJ",
+  "rewardToken": "DvfwYq36zAMdK57y4YR7UHtPPnsPZFsRE2qW5WwAuuZJ",
   "stakingDuration": 300,
-  "stakingDelay": 60,
+  "stakingDelay": 0,
   "claimDelay": 120,
   "stakingProtocolFee": 100
 }
