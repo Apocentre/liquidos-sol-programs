@@ -50,7 +50,7 @@ const main = async () => {
   const createStakingPoolIx = await program.methods
   .createStakingPool()
   .accounts({
-    buyer: buyer.publicKey,
+    payer: tokenCreator.publicKey,
     state,
     bondingCurve,
     token,

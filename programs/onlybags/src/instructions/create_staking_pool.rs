@@ -11,7 +11,7 @@ use crate::{
 #[derive(Accounts)]
 pub struct CreateStakingPool<'info> {
   #[account(mut)]
-  pub buyer: Signer<'info>,
+  pub payer: Signer<'info>,
 
   /// The state account of each instance of this program
   #[account()]
