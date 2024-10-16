@@ -15,8 +15,8 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const tokenName = "T_CURVE_3";
-  const tokenSymbol= "S_CURVE_3";
+  const tokenName = "T_CURVE";
+  const tokenSymbol= "S_CURVE";
   const amount = new BN(web3.toBase("1", 4));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
