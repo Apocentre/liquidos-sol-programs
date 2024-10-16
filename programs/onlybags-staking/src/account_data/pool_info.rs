@@ -17,6 +17,8 @@ pub struct PoolInfo {
   pub total_staked: u64,
   /// Rewards earned per seconds
   pub reward_per_sec: u64,
+  /// The staking token of this pool
+  pub staking_token: Pubkey,
   /// The reward token of this pool
   pub reward_token: Pubkey,
   /// The fee in the reward token the protocol receives
@@ -34,6 +36,7 @@ impl PoolInfo {
     last_reward_ts: i64,
     end_ts: i64,
     total_reward: u64,
+    staking_token: Pubkey,
     reward_token: Pubkey,
     protocol_fee: u16,
   ) -> Self {
@@ -44,6 +47,7 @@ impl PoolInfo {
       total_staked: 0,
       total_reward,
       total_claimed: 0,
+      staking_token,
       reward_token,
       reward_per_sec,
       protocol_fee,

@@ -19,7 +19,9 @@ fn create_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&[u8]]]) -> R
   let accounts = vec![
     AccountMeta::new(ctx.accounts.staking_state.key(), false),
     AccountMeta::new(ctx.accounts.pool_info.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.token.key(), false),
+    AccountMeta::new_readonly(ctx.accounts.token.key(), false), // staking token
+    AccountMeta::new_readonly(ctx.accounts.staking_token_vault_ata.key(), false),
+    AccountMeta::new_readonly(ctx.accounts.token.key(), false), // reward token
     AccountMeta::new_readonly(ctx.accounts.pool_authority.key(), false),
     AccountMeta::new(ctx.accounts.reward_token_vault_ata.key(), false),
     AccountMeta::new(ctx.accounts.bonding_curve.key(), true),

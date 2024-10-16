@@ -18,6 +18,7 @@ pub fn exec(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
     now,
     end_ts,
     total_rewards,
+    ctx.accounts.staking_token.key(),
     ctx.accounts.reward_token.key(),
     state.protocol_fee,
   );

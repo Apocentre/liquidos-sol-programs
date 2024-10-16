@@ -44,6 +44,12 @@ pub struct CreateStakingPool<'info> {
   /// CHECK: The pool authority. Checks will take place in Staking program
   #[account(mut)]
   pub pool_authority: AccountInfo<'info>,
+  /// CHECK: The staking token of this pool. Checks will take place in Staking program
+  #[account()]
+  pub staking_token: AccountInfo<'info>,
+  /// ATA that will store the staking tokens for this pool
+  #[account(mut)]
+  pub staking_token_vault_ata: AccountInfo<'info>,
   /// CHECK: The pool PDA ata that will hold the tokens. Checks will take place in Staking program
   #[account(mut)]
   pub reward_token_vault_ata: AccountInfo<'info>,

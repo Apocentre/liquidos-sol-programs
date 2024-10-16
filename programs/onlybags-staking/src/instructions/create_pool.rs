@@ -18,6 +18,19 @@ pub struct CreatePool<'info> {
   pub pool_info: AccountLoader<'info, PoolInfo>,
 
   #[account()]
+  pub staking_token: InterfaceAccount<'info, Mint>,
+
+  /// ATA that will store the staking tokens for this pool
+  #[account(
+    init,
+    payer = payer,
+    associated_token::mint = staking_token,
+    associated_token::authority = pool_authority,
+    associated_token::token_program = token_2022,
+  )]
+  pub staking_token_vault_ata: InterfaceAccount<'info, TokenAccount>,
+
+  #[account()]
   pub reward_token: InterfaceAccount<'info, Mint>,
 
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
