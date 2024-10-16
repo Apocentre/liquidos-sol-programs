@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::sysvar};
 use anchor_spl::{
   associated_token::AssociatedToken, token_interface::TokenInterface,
 };
@@ -43,4 +43,7 @@ pub struct CreateTaxToken<'info> {
   pub token_2022: Interface<'info, TokenInterface>,
   pub system_program: Program<'info, System>,
   pub rent: Sysvar<'info, Rent>,
+  /// CHECK: custom constrain to check the correctness of the account address
+  #[account(address = sysvar::instructions::id())]
+  pub ix_sysvar: UncheckedAccount<'info>,
 }
