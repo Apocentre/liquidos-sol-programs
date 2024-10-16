@@ -86,23 +86,18 @@ fn tranfer_rewards_to_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&
 
 pub fn exec(ctx: Context<CreateStakingPool>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
-  
-  // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.
-  // We want to act upon only if the curce is completed
-  if curve.closed == 1 {
-    let state_key = &ctx.accounts.state.key();
-    let token_key = &ctx.accounts.token.key();
-    let seeds: &[&[u8]] = &[
-      b"bonding_curve",
-      state_key.as_ref(),
-      token_key.as_ref(),
-      &[curve.bump],
-    ];
-    let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+  let state_key = &ctx.accounts.state.key();
+  let token_key = &ctx.accounts.token.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token_key.as_ref(),
+    &[curve.bump],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-    create_pool(&ctx, signer_seeds)?;
-    tranfer_rewards_to_pool(&ctx, signer_seeds)?;
-  }
+  create_pool(&ctx, signer_seeds)?;
+  tranfer_rewards_to_pool(&ctx, signer_seeds)?;
 
   Ok(())
 }
