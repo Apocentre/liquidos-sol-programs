@@ -1,4 +1,4 @@
-## Revocer locked funds during failed deployment or upgrade
+## Revoce locked funds during failed deployment or upgrade
 
 `solana program close --buffers --keypair ./wallets/deployer.json`
 
@@ -67,7 +67,7 @@ Error: Error processing Instruction 2: account data too small for instruction
 
 ``
 
-### Close Program Account
+### Close Program Account (DANGEROUS!!!)
 
 ```bash
 solana program close 7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4 --recipient DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw --keypair ./wallets/deployer.json --bypass-warning
