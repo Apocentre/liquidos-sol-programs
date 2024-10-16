@@ -10,7 +10,7 @@ use crate::{
 pub struct WithdrawEvent {
   staking_token: Pubkey,
   reward_token: Pubkey,
-  buyer: Pubkey,
+  user: Pubkey,
   amount: String,
   claimed: String,
   user_total_staked: String,
@@ -86,7 +86,7 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
   emit!(WithdrawEvent {
     reward_token,
     staking_token: pool_info.staking_token,
-    buyer: ctx.accounts.user.key(),
+    user: ctx.accounts.user.key(),
     amount: amount.to_string(),
     claimed: claimed.to_string(),
     user_total_staked: user_info.staked_amount.to_string(),
