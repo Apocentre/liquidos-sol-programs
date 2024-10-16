@@ -6,8 +6,6 @@ pub enum ErrorCode {
   OnlyOwner,
   #[msg("Invalid staking token")]
   InvalidStakingToken,
-  #[msg("Staking token not set yet")]
-  StakingTokenNotSet,
   #[msg("Invalid treasury account")]
   InvalidTreasury,
   #[msg("Pool ended")]
