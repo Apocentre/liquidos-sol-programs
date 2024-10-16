@@ -9,8 +9,8 @@ const {Keypair, PublicKey} = anchor.web3;
 const getTokenAccount = () => {
   const program = anchor.workspace.Onlybags;
   const state = new PublicKey(config.onlyBagsState);
-  const tokenName = "T_CURVE_2";
-  const tokenSymbol= "S_CURVE_2";
+  const tokenName = "T_CURVE";
+  const tokenSymbol= "S_CURVE";
   return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
 }
 
@@ -27,7 +27,6 @@ const main = async () => {
     onlybagsState: stateData.onlybagsState.toString(),
     treasury: stateData.treasury.toString(),
     stakingDuration: stateData.stakingDuration.toString(),
-    stakingToken: stateData.stakingToken.toString(),
     poolCount: stateData.poolCount.toString(),
     protocolFee: stateData.protocolFee.toString(),
   });
@@ -52,6 +51,7 @@ const main = async () => {
     rewardDebt: userInfoData.rewardDebt.toString(),
     totalClaimed: userInfoData.totalClaimed.toString(),
     initialized: userInfoData.initialized.toString(),
+    accClaim: userInfoData.accClaim.toString(),
   })
 }
 

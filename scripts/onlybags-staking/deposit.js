@@ -35,6 +35,7 @@ const main = async () => {
   .initUserInfo()
   .accounts({
     state: stakingState,
+    poolInfo,
     rewardToken,
     stakingToken,
     userInfo,

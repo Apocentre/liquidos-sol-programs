@@ -25,7 +25,7 @@ const main = async () => {
   const userStakingAta =  await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const userRewardAta =  await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   
-  console.log("userInfo: ", {
+  console.log("Tokens Balances: ", {
     rewardTokenVaultAta: (await web3.getTokenAccountBalance(rewardTokenVaultAta)),
     stakingTokenVaultAta: (await web3.getTokenAccountBalance(stakingTokenVaultAta)),
     userStakingAta: (await web3.getTokenAccountBalance(userStakingAta)),

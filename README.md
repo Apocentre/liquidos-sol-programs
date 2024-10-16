@@ -22,93 +22,24 @@ Config.json
 
 ```json
 {
-  "onlyBagsState": "3SC4Mj5p1EJhZxg6UQp2212WJKdgeGynSCXxTpyV9KsP",
-  "treasury": "2Xp8fgVPP8WWVZLSZU9peMN2vZLPgvzxMVzdvHTRZugz",
+  "onlyBagsState": "rSk5DscxuhnGEFf7BH1HePao2B25ujBPk7yFx7TmcMT",
+  "stakingState": "5SnHrPQbJZXgrYTz83jmLntTmNSCbaSykU87zozenVYZ",
+  "swapProxyState": "HYdKHECDoXrFZtmsvyzv7z1QXfLEJbYUsDTBzwnFV51L",
+  "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
+  "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
   "protocolFee": 0,
-  "creatorFee": 100000000,
+  "creatorFee": 20000000,
   "tradeFeeBps": 100,
-  "stakingAllocationBps": 500,
+  "stakingAllocation": 50000000000000,
   "totalTokenSupply": 1000000000000000,
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
-  "stakingToken": "5FxCfNYzW1jdsLpZEuHsMjinFCgqVPaspiS7rtNA3W3m",
-  "stakingState": "GbLj2LJWiBqm6ydDKGyixwtC6k42LLE4DNt8Xz2daPs8",
-  "stakingDuration": 86400,
-  "stakingProtocolFee": 100
+  "stakingToken": "",
+  "stakingDuration": 300,
+  "stakingDelay": 60,
+  "claimDelay": 120,
+  "stakingProtocolFee": 100,
+  "rewardToken": "D222KichKzYurdZuqmeJpeQ4M79B4aJydG4tn4sf51K5",
+  "buyLUT": "GpZiaAiDCkxPDGyVK4nywm6zABzqBitLL2kc8hABoBxC"
 }
-```
 
-
-1. deploy onlybags program
-
-```bash
-solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/onlybags_v2.json target/deploy/onlybags.so
-```
-
-2. deploy staking program
-
-```bash
-solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/staking.json target/deploy/onlybags_staking.so
-```
-
-3. deploy swap program
-
-```bash
-solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/swap_proxy.json target/deploy/onlybags_swap_proxy.so
-```
-
-
-4. deploy locker program
-
-```bash
-solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/ --keypair ./wallets/deployer_devnet.json --upgrade-authority ./wallets/deployer_devnet.json --program-id ./wallets/test/locker.json target/deploy/onlybags_locker.so
-```
-
-5. initialize onlybags program
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/initialize.js
-```
-
-Set `onlyBagsState` in config.json
-
-6. create test token
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/createToken.js
-```
-
-Set `stakingToken` in config.json
-
-7. initialize staking program
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/initialize.js
-```
-
-Set `stakingState` in config.json
-
-8. update staking state
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/updateState.js
-```
-
-9. update onlybags state
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/updateState.js
-```
-
-10. initialize swap program
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/swap-proxy/initialize.js
-```
-
-Set `stakingState` in config.json
-
-11. create bonding curve
-
-```bash
-ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/createToken.js
 ```

@@ -25,6 +25,10 @@ pub mod onlybags_staking {
   /// * `onlybags_state` - The state of the main Onlybags program
   /// * `treasury` - The treasury that will collect protocol fees
   /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
+  /// * `staking_delay` - How much the staking will be delayed for (in secs) from the moment the pool is created
+  /// * `claim_delay` - How long reward claims willbe delayed for from the start of the pool. i.e. seconds from the start of the pool
+  ///                  that stakers can start claiming rewards
+  /// * `withdraw_delay` - Defines the seconds from the start of the pool that users will be able to withdraw their stake
   /// * `protocol_fee` - The fee in the reward token the protocol receives.
   pub fn initialize(
     ctx: Context<Initialize>,
@@ -32,6 +36,9 @@ pub mod onlybags_staking {
     onlybags_state: Pubkey,
     treasury: Pubkey,
     staking_duration: i64,
+    staking_delay: i64,
+    claim_delay: i64,
+    withdraw_delay: i64,
     protocol_fee: u16,
   ) -> Result<()> {
     processors::initialize::exec(
@@ -40,6 +47,9 @@ pub mod onlybags_staking {
       onlybags_state,
       treasury,
       staking_duration,
+      staking_delay,
+      claim_delay,
+      withdraw_delay,
       protocol_fee,
     )
   }
@@ -51,16 +61,28 @@ pub mod onlybags_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `staking_token` - The mint account of the staking token. This will be Onlybag's token ($BAGS)
   /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
+  /// * `staking_delay` - How much the staking will be delayed for  (in secs) from the moment the pool is created
+  /// * `claim_delay` - How long reward claims willbe delayed for from the start of the pool. i.e. seconds from the start of the pool
+  ///                  that stakers can start claiming rewards
+  /// * `withdraw_delay` - Defines the seconds from the start of the pool that users will be able to withdraw their stake
   /// * `protocol_fee` - The fee in the reward token the protocol receives.
   pub fn update_state(
     ctx: Context<UpdateState>,
-    staking_token: Pubkey,
     staking_duration: i64,
+    staking_delay: i64,
+    claim_delay: i64,
+    withdraw_delay: i64,
     protocol_fee: u16,
   ) -> Result<()> {
-    processors::update_state::exec(ctx, staking_token, staking_duration, protocol_fee)
+    processors::update_state::exec(
+      ctx,
+      staking_duration,
+      staking_delay,
+      claim_delay,
+      withdraw_delay,
+      protocol_fee,
+    )
   }
 
   /// CreatePool

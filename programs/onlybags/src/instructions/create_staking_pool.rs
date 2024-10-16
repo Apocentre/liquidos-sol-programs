@@ -11,7 +11,7 @@ use crate::{
 #[derive(Accounts)]
 pub struct CreateStakingPool<'info> {
   #[account(mut)]
-  pub buyer: Signer<'info>,
+  pub payer: Signer<'info>,
 
   /// The state account of each instance of this program
   #[account()]
@@ -44,6 +44,12 @@ pub struct CreateStakingPool<'info> {
   /// CHECK: The pool authority. Checks will take place in Staking program
   #[account(mut)]
   pub pool_authority: AccountInfo<'info>,
+  /// CHECK: The staking token of this pool. Checks will take place in Staking program
+  #[account()]
+  pub staking_token: AccountInfo<'info>,
+  /// CHECK: ATA that will store the staking tokens for this pool. Checks will take place in Staking program
+  #[account(mut)]
+  pub staking_token_vault_ata: AccountInfo<'info>,
   /// CHECK: The pool PDA ata that will hold the tokens. Checks will take place in Staking program
   #[account(mut)]
   pub reward_token_vault_ata: AccountInfo<'info>,

@@ -7,7 +7,7 @@ const getClusterUrl = () => {
     case "devnet":
       return "https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/"
     case "mainnet":
-      return "https://purple-ultra-silence.solana-mainnet.quiknode.pro/cdaa81c6c9635d407bdbad87774d95750b7818b2"
+      return "https://patient-tiniest-shadow.solana-mainnet.quiknode.pro/9029d4502623bd7390578c2c811a62516ef4a826"
   }
 }
 

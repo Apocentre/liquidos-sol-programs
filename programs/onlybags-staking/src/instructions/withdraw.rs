@@ -55,8 +55,7 @@ pub struct Withdraw<'info> {
   pub reward_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
   #[account(
-    constraint = state.load()?.staking_token != Pubkey::default() @ ErrorCode::StakingTokenNotSet,
-    constraint = staking_token.key() == state.load()?.staking_token @ ErrorCode::InvalidStakingToken,
+    constraint = staking_token.key() == pool_info.load()?.staking_token @ ErrorCode::InvalidStakingToken,
   )]
   pub staking_token: Box<InterfaceAccount<'info, Mint>>,
 

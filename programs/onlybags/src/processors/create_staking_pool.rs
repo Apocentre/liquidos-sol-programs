@@ -19,11 +19,13 @@ fn create_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&[u8]]]) -> R
   let accounts = vec![
     AccountMeta::new(ctx.accounts.staking_state.key(), false),
     AccountMeta::new(ctx.accounts.pool_info.key(), false),
-    AccountMeta::new_readonly(ctx.accounts.token.key(), false),
+    AccountMeta::new_readonly(ctx.accounts.token.key(), false), // staking token
+    AccountMeta::new_readonly(ctx.accounts.staking_token_vault_ata.key(), false),
+    AccountMeta::new_readonly(ctx.accounts.token.key(), false), // reward token
     AccountMeta::new_readonly(ctx.accounts.pool_authority.key(), false),
     AccountMeta::new(ctx.accounts.reward_token_vault_ata.key(), false),
     AccountMeta::new(ctx.accounts.bonding_curve.key(), true),
-    AccountMeta::new(ctx.accounts.buyer.key(), true),
+    AccountMeta::new(ctx.accounts.payer.key(), true),
     AccountMeta::new_readonly(ctx.accounts.token_2022.key(), false),
     AccountMeta::new_readonly(ctx.accounts.associated_token_program.key(), false),
     AccountMeta::new_readonly(ctx.accounts.system_program.key(), false),
@@ -53,7 +55,7 @@ fn create_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&[u8]]]) -> R
       ctx.accounts.pool_authority.to_account_info(),
       ctx.accounts.reward_token_vault_ata.to_account_info(),
       ctx.accounts.bonding_curve.to_account_info(),
-      ctx.accounts.buyer.to_account_info(),
+      ctx.accounts.payer.to_account_info(),
       ctx.accounts.token_2022.to_account_info(),
       ctx.accounts.associated_token_program.to_account_info(),
       ctx.accounts.system_program.to_account_info(),
@@ -84,23 +86,18 @@ fn tranfer_rewards_to_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&
 
 pub fn exec(ctx: Context<CreateStakingPool>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
-  
-  // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.
-  // We want to act upon only if the curce is completed
-  if curve.closed == 1 {
-    let state_key = &ctx.accounts.state.key();
-    let token_key = &ctx.accounts.token.key();
-    let seeds: &[&[u8]] = &[
-      b"bonding_curve",
-      state_key.as_ref(),
-      token_key.as_ref(),
-      &[curve.bump],
-    ];
-    let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+  let state_key = &ctx.accounts.state.key();
+  let token_key = &ctx.accounts.token.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token_key.as_ref(),
+    &[curve.bump],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
-    create_pool(&ctx, signer_seeds)?;
-    tranfer_rewards_to_pool(&ctx, signer_seeds)?;
-  }
+  create_pool(&ctx, signer_seeds)?;
+  tranfer_rewards_to_pool(&ctx, signer_seeds)?;
 
   Ok(())
 }

@@ -4,7 +4,7 @@ use anchor_spl::{
   token_interface::{Mint, TokenAccount, TokenInterface}
 };
 use crate::{
-  account_data::{state::State, user_info::UserInfo}, program_error::ErrorCode
+  account_data::{pool_info::PoolInfo, state::State, user_info::UserInfo}, program_error::ErrorCode
 };
 
 #[derive(Accounts)]
@@ -12,13 +12,18 @@ pub struct InitUserInfo<'info> {
   #[account()]
   pub state: AccountLoader<'info, State>,
 
+  #[account(
+    seeds = [b"staking_pool", state.key().as_ref(), reward_token.key().as_ref()],
+    bump,
+  )]
+  pub pool_info: AccountLoader<'info, PoolInfo>,
+
   #[account()]
   pub reward_token: Box<InterfaceAccount<'info, Mint>>,
 
   #[account(
     mut,
-    constraint = state.load()?.staking_token != Pubkey::default() @ ErrorCode::StakingTokenNotSet,
-    constraint = staking_token.key() == state.load()?.staking_token @ ErrorCode::InvalidStakingToken,
+    constraint = staking_token.key() == pool_info.load()?.staking_token @ ErrorCode::InvalidStakingToken,
   )]
   pub staking_token: Box<InterfaceAccount<'info, Mint>>,
 

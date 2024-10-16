@@ -25,13 +25,18 @@ pub fn get_pending_rewards<'info>(
   pool_info: &PoolInfo,
   user_info: &Account<'info, UserInfo>,
 ) -> Result<u64> {  
+  if user_info.staked_amount == 0 {
+    return Ok(user_info.acc_claim)
+  }
+
   let now = Clock::get().unwrap().unix_timestamp;
   let acc_reward_per_share = calc_acc_reward_per_share(pool_info, now)?;
 
   let pending = user_info.staked_amount
   .safe_mul(acc_reward_per_share)?
   .safe_div(NORMALIZATION_FACTOR)?
-  .safe_sub(user_info.reward_debt)?;
+  .safe_sub(user_info.reward_debt)?
+  .safe_add(user_info.acc_claim)?;
 
   Ok(pending)
 }
@@ -55,6 +60,7 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
 pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
   let user_info = &mut accounts.user_info;
   let pool_info =  &mut accounts.pool_info;
+  let now = Clock::get().unwrap().unix_timestamp;
   let mut amount = 0;
 
   if user_info.staked_amount > 0 {
@@ -62,20 +68,38 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
     .safe_mul(pool_info.acc_reward_per_share)?
     .safe_div(NORMALIZATION_FACTOR)?
     .safe_sub(user_info.reward_debt)?;
+    let total_pending = pending.safe_add(user_info.acc_claim)?;
+    
+    if now > pool_info.timelock_ts && total_pending > 0 {
+      let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, total_pending)?;
 
-    let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, pending)?;
-    amount = user_amount;
-
-    if pending > 0 {
+      amount = user_amount;
+      user_info.acc_claim = 0;
       user_info.total_claimed = user_info.total_claimed.safe_add(user_amount)?;
       pool_info.total_claimed = pool_info.total_claimed.safe_add(user_amount)?;
-      
+
       transfer_rewards(
         accounts, 
         user_amount,
         treasury_amount,
       )?;
+    } else if pending > 0 {
+      user_info.acc_claim = total_pending;
     }
+  } else if now > pool_info.timelock_ts && user_info.acc_claim > 0 {
+    let acc_claim = user_info.acc_claim;
+    user_info.acc_claim = 0;
+
+    let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, acc_claim)?;
+    amount = user_amount;
+    user_info.total_claimed = user_info.total_claimed.safe_add(user_amount)?;
+    pool_info.total_claimed = pool_info.total_claimed.safe_add(user_amount)?;
+
+    transfer_rewards(
+      accounts, 
+      user_amount,
+      treasury_amount,
+    )?;
   }
 
   Ok(amount)

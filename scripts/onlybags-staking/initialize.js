@@ -17,8 +17,6 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
 
   const poolAuthority = accounts.poolAuthority(state.publicKey, program.programId)[0];
-  const stakingToken = new PublicKey(config.stakingToken)
-  const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
 
   const ix = await program.methods
   .initialize(
@@ -26,16 +24,15 @@ const main = async () => {
     new PublicKey(config.onlyBagsState),
     new PublicKey(config.treasury),
     new BN(config.stakingDuration),
+    new BN(config.stakingDelay),
+    new BN(config.claimDelay),
+    new BN(config.withdrawDelay),
     new BN(config.stakingProtocolFee),
   )
   .accounts({
     state: state.publicKey,
     poolAuthority,
-    stakingToken,
-    stakingTokenVaultAta,
     owner: deployer.publicKey,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
   })
   .instruction();

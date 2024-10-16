@@ -18,7 +18,20 @@ pub struct CreatePool<'info> {
   pub pool_info: AccountLoader<'info, PoolInfo>,
 
   #[account()]
-  pub reward_token: InterfaceAccount<'info, Mint>,
+  pub staking_token: Box<InterfaceAccount<'info, Mint>>,
+
+  /// ATA that will store the staking tokens for this pool
+  #[account(
+    init,
+    payer = payer,
+    associated_token::mint = staking_token,
+    associated_token::authority = pool_authority,
+    associated_token::token_program = token_2022,
+  )]
+  pub staking_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+
+  #[account()]
+  pub reward_token: Box<InterfaceAccount<'info, Mint>>,
 
   /// CHECK: This is the authority of all the ATA that will store the staked tokens
   #[account(
@@ -49,7 +62,7 @@ pub struct CreatePool<'info> {
   /// for the rent for the above created accounts
   #[account(mut)]
   pub payer: Signer<'info>,
-  pub token_2022: Interface<'info, TokenInterface>, 
+  pub token_2022: Interface<'info, TokenInterface>,
   associated_token_program: Program<'info, AssociatedToken>,
   pub system_program: Program<'info, System>,
 }

@@ -15,14 +15,12 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const stakingProgram = anchor.workspace.OnlybagsStaking;
-  const tokenName = "T_CURVE_3";
-  const tokenSymbol= "S_CURVE_3";
+  const tokenName = "T_CURVE";
+  const tokenSymbol= "S_CURVE";
   const amount = new BN(web3.toBase("1", 4));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.onlyBagsState);
-  const stakingState = new PublicKey(config.stakingState);
   const tokenCreator = new PublicKey(config.tokenCreator);
   const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
@@ -30,9 +28,7 @@ const main = async () => {
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const ammConfig = constants.raydiumAmmConfigDevnet;
-  const poolAuthority = accounts.poolAuthority(stakingState, stakingProgram.programId)[0];
-  const poolInfo = accounts.poolInfo(stakingState, token, stakingProgram.programId)[0];
-  const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(token, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
+
 
   const buyIx = await program.methods
   .buy(amount, minAmountOut)
@@ -98,31 +94,11 @@ const main = async () => {
   })
   .instruction();
 
-  const createStakingPoolIx = await program.methods
-  .createStakingPool()
-  .accounts({
-    buyer: buyer.publicKey,
-    state,
-    bondingCurve,
-    token,
-    stakingState,
-    poolInfo,
-    poolAuthority,
-    rewardTokenVaultAta,
-    stakingProgram: stakingProgram.programId,
-    ammConfig,
-    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    tokenProgram: spl.TOKEN_PROGRAM_ID,
-    token2022: spl.TOKEN_2022_PROGRAM_ID,
-    systemProgram: SystemProgram.programId,
-  })
-  .instruction();
-
   const cbIx = web3.getComputationBudgetIx(750_000);
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, buyIx, createStakingPoolIx, moveLiquidityIx],
+    [cbIx, priorityFeeIx, buyIx, moveLiquidityIx],
     buyer.publicKey,
     [buyer],
     [],

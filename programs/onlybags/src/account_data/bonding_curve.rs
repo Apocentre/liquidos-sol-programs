@@ -25,8 +25,8 @@ pub struct BondingCurve {
   pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
-  /// Staking allocation (BPS). This percentage of the total allocation will be distributed though the staking program
-  pub staking_allocation_bps: u64,
+  /// Staking allocation. The exact amount that will be distributed though the staking program
+  pub staking_allocation: u64,
   /// The current price of the curve in lamports
   pub price: u64,
   /// The PDA bump of this account
@@ -47,7 +47,7 @@ impl BondingCurve {
     trade_fee_bps: u64,
     creator_fee: u64,
     total_supply: u64,
-    staking_allocation_bps: u64,
+    staking_allocation: u64,
     bump: u8,
   ) -> Result<Self> {
     Ok(Self {
@@ -59,7 +59,7 @@ impl BondingCurve {
       creator_fee,
       circulating_supply: 0,
       total_supply,
-      staking_allocation_bps,
+      staking_allocation,
       reserve_token_balance: 0,
       price: 0,
       bump,
@@ -137,11 +137,7 @@ impl BondingCurve {
   }
 
   pub fn calc_staking_allocation(&self) -> Result<u64> {
-    let alloc = self.total_supply
-    .safe_mul(self.staking_allocation_bps)?
-    .safe_div(10_000)?;
-
-    Ok(alloc)
+    Ok(self.staking_allocation)
   }
 
   /// We need enough tokens to fill the total supply set for this curve
