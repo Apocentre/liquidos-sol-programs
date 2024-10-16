@@ -31,7 +31,8 @@ pub fn get_pending_rewards<'info>(
   let pending = user_info.staked_amount
   .safe_mul(acc_reward_per_share)?
   .safe_div(NORMALIZATION_FACTOR)?
-  .safe_sub(user_info.reward_debt)?;
+  .safe_sub(user_info.reward_debt)?
+  .safe_add(user_info.acc_claim)?;
 
   Ok(pending)
 }
