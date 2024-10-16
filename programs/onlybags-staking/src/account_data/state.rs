@@ -11,11 +11,11 @@ pub struct State {
   pub onlybags_state: Pubkey,
   /// The treasury that will collect protocol fees
   pub treasury: Pubkey,
-  /// The total duration of each staking pool i.e. for how long users can stake and earn rewards.
+  /// The total duration of each staking pool (in secs) i.e. for how long users can stake and earn rewards.
   /// This value also decides what the rewards per second will be
   pub staking_duration: i64,
-  /// The mint account of the staking token. This will be Onlybag's token ($BAGS)
-  pub staking_token: Pubkey,
+  /// How much the staking will be delayed for  (in secs) from the moment the pool is created
+  pub staking_delay: i64,
   /// Total number of pools created
   pub pool_count: u16,
   /// The fee in the reward token the protocol receives
@@ -36,6 +36,7 @@ impl State {
     onlybags_state: Pubkey,
     treasury: Pubkey,
     staking_duration: i64,
+    staking_delay: i64,
     protocol_fee: u16,
     pool_authority_bump: u8,
   ) -> Self {
@@ -45,7 +46,7 @@ impl State {
       onlybags_state,
       treasury,
       staking_duration,
-      staking_token: Pubkey::default(),
+      staking_delay,
       pool_count: 0,
       protocol_fee,
       pool_authority_bump,
