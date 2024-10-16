@@ -190,7 +190,7 @@ pub fn exec(
     state.trade_fee_bps,
     state.creator_fee,
     state.total_token_supply,
-    state.staking_allocation_bps,
+    state.staking_allocation,
     ctx.bumps.bonding_curve,
   )?;
 
