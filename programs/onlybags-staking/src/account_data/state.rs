@@ -19,6 +19,8 @@ pub struct State {
   /// How long reward claims willbe delayed for from the start of the pool. i.e. seconds from the start of the pool
   /// that stakers can start claiming rewards
   pub claim_delay: i64,
+  /// Defines the seconds from the start of the pool that users will be able to withdraw their stake
+  pub withdraw_delay: i64,
   /// Total number of pools created
   pub pool_count: u16,
   /// The fee in the reward token the protocol receives
@@ -41,6 +43,7 @@ impl State {
     staking_duration: i64,
     staking_delay: i64,
     claim_delay: i64,
+    withdraw_delay: i64,
     protocol_fee: u16,
     pool_authority_bump: u8,
   ) -> Self {
@@ -52,6 +55,7 @@ impl State {
       staking_duration,
       staking_delay,
       claim_delay,
+      withdraw_delay,
       pool_count: 0,
       protocol_fee,
       pool_authority_bump,
