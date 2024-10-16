@@ -9,6 +9,7 @@ use crate::{
 #[event]
 pub struct DepositEvent {
   reward_token: Pubkey,
+  staking_token: Pubkey,
   buyer: Pubkey,
   amount: String,
   claimed: String,
@@ -75,6 +76,7 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
 
   emit!(DepositEvent {
     reward_token,
+    staking_token: pool_info.staking_token,
     buyer: ctx.accounts.user.key(),
     amount: amount.to_string(),
     claimed: claimed.to_string(),
