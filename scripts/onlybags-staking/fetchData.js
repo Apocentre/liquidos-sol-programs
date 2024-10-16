@@ -52,6 +52,7 @@ const main = async () => {
     rewardDebt: userInfoData.rewardDebt.toString(),
     totalClaimed: userInfoData.totalClaimed.toString(),
     initialized: userInfoData.initialized.toString(),
+    accClaim: userInfoData.accClaim.toString(),
   })
 }
 

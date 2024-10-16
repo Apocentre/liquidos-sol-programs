@@ -46,7 +46,6 @@ const main = async () => {
   })
   .instruction();
 
-
   const createStakingPoolIx = await program.methods
   .createStakingPool()
   .accounts({
