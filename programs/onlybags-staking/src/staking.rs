@@ -25,6 +25,10 @@ pub fn get_pending_rewards<'info>(
   pool_info: &PoolInfo,
   user_info: &Account<'info, UserInfo>,
 ) -> Result<u64> {  
+  if user_info.staked_amount == 0 {
+    return Ok(user_info.acc_claim)
+  }
+
   let now = Clock::get().unwrap().unix_timestamp;
   let acc_reward_per_share = calc_acc_reward_per_share(pool_info, now)?;
 

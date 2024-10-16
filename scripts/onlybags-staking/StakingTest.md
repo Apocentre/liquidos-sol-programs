@@ -57,7 +57,7 @@ ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-
 ```
 
 
-9. read pedning rewards
+9. read pending rewards
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/readPendingReward.js
@@ -67,4 +67,10 @@ ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-
 
 ```bash
 ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/fetchData.js
+```
+
+11. unstake
+
+```bash
+ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags-staking/withdraw.js
 ```
