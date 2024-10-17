@@ -16,7 +16,7 @@ pub struct DepositEvent {
   user_total_staked: String,
   user_total_claimed: String,
   pool_total_staked: String,
-  pool_total_reward: String,
+  pool_total_claimed: String,
 }
 
 fn lock_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
@@ -83,7 +83,7 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     user_total_staked: user_info.staked_amount.to_string(),
     user_total_claimed: user_info.total_claimed.to_string(),
     pool_total_staked: pool_info.total_staked.to_string(),
-    pool_total_reward: pool_info.total_reward.to_string(),
+    pool_total_claimed: pool_info.total_claimed.to_string(),
   });
 
   Ok(())
