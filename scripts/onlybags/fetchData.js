@@ -1,14 +1,12 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "../helpers/accounts.js";
-import * as provider from "../helpers/provider.js";
+import * as constants from "../helpers/constants.js";
 import config from "../config.json" assert { type: "json" };
 
 const {PublicKey} = anchor.web3;
 
 const getTokenAccount = (state, program) => {
-  const tokenName = "T_CURVE";
-  const tokenSymbol= "S_CURVE";
-  return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
+  return accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
 }
 
 const main = async () => {
