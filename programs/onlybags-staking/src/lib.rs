@@ -86,8 +86,6 @@ pub mod onlybags_staking {
   }
 
   /// CreatePool
-  ///
-  /// Allows admit to update the state
   /// 
   /// # Arguments
   ///

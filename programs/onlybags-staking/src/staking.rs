@@ -75,8 +75,8 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
 
       amount = user_amount;
       user_info.acc_claim = 0;
-      user_info.total_claimed = user_info.total_claimed.safe_add(user_amount)?;
-      pool_info.total_claimed = pool_info.total_claimed.safe_add(user_amount)?;
+      user_info.total_claimed = user_info.total_claimed.safe_add(total_pending)?;
+      pool_info.total_claimed = pool_info.total_claimed.safe_add(total_pending)?;
 
       transfer_rewards(
         accounts, 
@@ -92,8 +92,8 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
 
     let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, acc_claim)?;
     amount = user_amount;
-    user_info.total_claimed = user_info.total_claimed.safe_add(user_amount)?;
-    pool_info.total_claimed = pool_info.total_claimed.safe_add(user_amount)?;
+    user_info.total_claimed = user_info.total_claimed.safe_add(acc_claim)?;
+    pool_info.total_claimed = pool_info.total_claimed.safe_add(acc_claim)?;
 
     transfer_rewards(
       accounts, 

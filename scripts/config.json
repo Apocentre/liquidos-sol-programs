@@ -1,6 +1,6 @@
 {
   "onlyBagsState": "5LPJxYfczw5mi4U9w1xiRaT6zpFgSLRxsc1GK75JvquA",
-  "stakingState": "Fpm23cdH5rLsHy7ryH4shCx6XLFM4ckLNM2PG9oV3LiT",
+  "stakingState": "7oyMCwYYU2kB2jm5xZHojZECVLwZJnTAaz5N6yX65esi",
   "swapProxyState": "HYdKHECDoXrFZtmsvyzv7z1QXfLEJbYUsDTBzwnFV51L",
   "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
@@ -12,9 +12,9 @@
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
   "stakingToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu",
   "rewardToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu",
-  "stakingDuration": 3600,
-  "stakingDelay": 0,
-  "claimDelay": 0,
-  "withdrawDelay": 0,
+  "stakingDuration": 21600,
+  "stakingDelay": 3600,
+  "claimDelay": 3600,
+  "withdrawDelay": 21600,
   "stakingProtocolFee": 100
 }
