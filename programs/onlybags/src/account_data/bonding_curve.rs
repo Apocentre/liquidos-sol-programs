@@ -317,6 +317,7 @@ mod tests {
     let tokens_received = curve.process_purchase_return(sol_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
     // rounding error of 1 Lamport
+    assert_eq!(tokens_received, 666858670694688);
     assert_eq!(received, 248419999999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 1);
