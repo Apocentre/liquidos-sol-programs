@@ -10,7 +10,7 @@ use crate::instructions::{
   read_pending_reward::*, init_user_info::*,
 };
 
-declare_id!("BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem");
+declare_id!("HxbEKU2EdXw5xK5XnG8XWK2uMNCj1A69N3YkD65CcRcb");
 
 #[program]
 pub mod onlybags_staking {
