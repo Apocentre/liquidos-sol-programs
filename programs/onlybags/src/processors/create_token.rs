@@ -78,8 +78,7 @@ fn create_metadata(
   Ok(())
 }
 
-/// When buying a token, the buyer will send two ixs: the CreateToken and CreateStakingPool
-/// The later two will be executed but do nothing if the curve is not closed.
+/// When creating a token, the buyer will send two ixs: the CreateToken and CreateStakingPool
 /// This is important so we know that user never skips the CreateStakingPool IX
 fn instrospect_next_ix(ctx: &Context<CreateToken>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
