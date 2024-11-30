@@ -15,7 +15,7 @@ solana program show --buffer-authority DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrn
 To close all the buffer accounts associated with the current authority:
 
 ```bash
-`solana program close --buffers --keypair ./wallets/deployer.json --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/
+solana program close --buffers --keypair ./wallets/deployer.json --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/
 ```
 
 More on this here 
@@ -81,11 +81,15 @@ Error: Error processing Instruction 2: account data too small for instruction
 
 1. Revover priv key
 
-`solana-keygen recover --outfile ./temp.json`
+```bash
+solana-keygen recover --outfile ./temp.json
+```
 
 2. resume
 
-``
+```bash
+solana program deploy --buffer ./temp.json --with-compute-unit-price 2500000  --max-sign-attempts 10000 --url https://little-thrilling-forest.solana-mainnet.quiknode.pro/b0f644f4dec0fb4c9c47cadf2eb99cafa7356ca8 --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/staking.json target/deploy/onlybags_staking.so
+```
 
 ### Close Program Account (DANGEROUS!!!)
 
