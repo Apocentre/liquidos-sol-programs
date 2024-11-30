@@ -49,7 +49,12 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
   let user_info = &ctx.accounts.user_info;
   let now = Clock::get().unwrap().unix_timestamp;
 
-  require!(now >= pool_info.withdraw_lock_ts, ErrorCode::WithdrawLock);
+  // amount = 0 is a claim. We don't want to check the withdraw_lock_ts when claiming. User can claim but cannot
+  // withdraw before withdraw_lock_ts
+  if amount > 0 {
+    require!(now >= pool_info.withdraw_lock_ts, ErrorCode::WithdrawLock);
+  }
+
   require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount);
 
   update_pool(&mut *pool_info)?;
