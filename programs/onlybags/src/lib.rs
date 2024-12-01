@@ -192,11 +192,11 @@ pub mod onlybags {
   /// 
   /// # Arguments
   /// 
-  /// * `ctx` - The Anchor context holding the accounts
+  /// * `_ctx` - The Anchor context holding the accounts
   /// * `_size` - The new size of the account. Note! don't pass a smaller size than the current one
   ///             because it will end up is loss of data. Check the size manually on the explorer and pass
   ///             a higher value.
-  pub fn resize_state(_: Context<ResizeState>, _size: u64) -> Result<()> {
+  pub fn resize_state(_ctx: Context<ResizeState>, _size: u64) -> Result<()> {
     Ok(())
   }
 
@@ -206,11 +206,11 @@ pub mod onlybags {
   /// 
   /// # Arguments
   /// 
-  /// * `ctx` - The Anchor context holding the accounts
+  /// * `_ctx` - The Anchor context holding the accounts
   /// * `_size` - The new size of the account. Note! don't pass a smaller size than the current one
   ///             because it will end up is loss of data. Check the size manually on the explorer and pass
   ///             a higher value.
-  pub fn resize_bonding_curve(_: Context<ResizeBondingCurve>, _size: u64) -> Result<()> {
+  pub fn resize_bonding_curve(_ctx: Context<ResizeBondingCurve>, _size: u64) -> Result<()> {
     Ok(())
   }
 }
