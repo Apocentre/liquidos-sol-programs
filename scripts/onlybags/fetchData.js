@@ -24,19 +24,24 @@ const main = async () => {
     tradeFeeBps: stateData.tradeFeeBps.toString(),
     creatorFee: stateData.creatorFee.toString(),
     totalTokenSupply: stateData.totalTokenSupply.toString(),
+    stakingProgram: stateData.stakingProgram,
+    stakingProgramState: stateData.stakingProgramState,
     stakingAllocation: stateData.stakingAllocation.toString(),
   });
 
   console.log("bondingCurve: ", {
-    totalSupply: bondingCurveData.totalSupply.toString(),
+    curveType: bondingCurveData.curveType,
+    tokenCreator: bondingCurveData.tokenCreator.toString(),
+    token: bondingCurveData.token.toString(),
+    protocolFee: bondingCurveData.protocolFee.toString(),
+    tradeFeeBps: bondingCurveData.tradeFeeBps.toString(),
+    creatorFee: bondingCurveData.creatorFee.toString(),
     circulatingSupply: bondingCurveData.circulatingSupply.toString(),
+    totalSupply: bondingCurveData.totalSupply.toString(),
     reserveTokenBalance: bondingCurveData.reserveTokenBalance.toString(),
     price: bondingCurveData.price.toString(),
     closed: bondingCurveData.closed,
-    creatorFee: bondingCurveData.creatorFee.toString(),
-    protocolFee: bondingCurveData.protocolFee.toString(),
-    creatorFee: bondingCurveData.creatorFee.toString(),
-    tradeFeeBps: bondingCurveData.tradeFeeBps.toString(),
+    stakingAllocation: bondingCurveData.stakingAllocation.toString(),
   })
 }
 
