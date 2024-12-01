@@ -9,10 +9,6 @@ pub struct State {
   pub owner: Pubkey,
   /// The treasury account that receives fees
   pub treasury: Pubkey,
-  /// The staking program Id
-  pub staking_program: Option<Pubkey>,
-  /// The state of the staking program
-  pub staking_program_state: Option<Pubkey>,
   /// Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
@@ -21,6 +17,10 @@ pub struct State {
   pub creator_fee: u64,
   /// The total supply of the newly created tokens in the lowest denomination i.e. decimals included
   pub total_token_supply: u64,
+  /// The staking program Id
+  pub staking_program: Option<Pubkey>,
+  /// The state of the staking program
+  pub staking_program_state: Option<Pubkey>,
   /// Staking allocation. The exact amount that will be distributed though the staking program
   pub staking_allocation: u64,
 }
@@ -41,12 +41,12 @@ impl State {
     Self {
       owner,
       treasury,
-      staking_program: None,
-      staking_program_state: None,
       protocol_fee,
       trade_fee_bps,
       creator_fee,
       total_token_supply,
+      staking_program: None,
+      staking_program_state: None,
       staking_allocation,
     }
   }

@@ -1,6 +1,7 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "../helpers/accounts.js";
 import * as constants from "../helpers/constants.js";
+import {provider} from "../helpers/provider.js";
 import config from "../config.json" assert { type: "json" };
 
 const {PublicKey} = anchor.web3;
@@ -11,10 +12,10 @@ const getTokenAccount = (state, program) => {
 
 const main = async () => {
   const program = anchor.workspace.Onlybags;
-  const state = new PublicKey(config.onlyBagsState);
+  const state = new PublicKey("G5M4aCmU4KFRqppB2hJAwvKFJyUioZB1WaFeZoV6C3cz");
   const stateData = await program.account.state.fetch(state);
   const bondingCurve = accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];
-  const bondingCurveData = await program.account.bondingCurve.fetch(bondingCurve);
+  const bondingCurveData = await program.account.bondingCurve.fetch('2AZKPN9xYu84D8jT93w7LWFpno5MpKFzPYnM7hniFkhQ');
 
   console.log("state: ", {
     owner: stateData.owner.toString(),

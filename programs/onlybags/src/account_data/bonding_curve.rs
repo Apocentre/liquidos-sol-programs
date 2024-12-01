@@ -25,14 +25,14 @@ pub struct BondingCurve {
   pub total_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
-  /// Staking allocation. The exact amount that will be distributed though the staking program
-  pub staking_allocation: u64,
   /// The current price of the curve in lamports
   pub price: u64,
   /// The PDA bump of this account
   pub bump: u8,
   /// Is this pool closed? Closed means sol target reached
   pub closed: u8,
+  /// Staking allocation. The exact amount that will be distributed though the staking program
+  pub staking_allocation: u64,
 }
 
 impl BondingCurve {
@@ -59,11 +59,11 @@ impl BondingCurve {
       creator_fee,
       circulating_supply: 0,
       total_supply,
-      staking_allocation,
       reserve_token_balance: 0,
       price: 0,
       bump,
       closed: 0,
+      staking_allocation,
     })
   }
 
