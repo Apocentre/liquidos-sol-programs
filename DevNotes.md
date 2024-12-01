@@ -22,6 +22,35 @@ More on this here
 
 https://docs.solanalabs.com/cli/examples/deploy-a-program#closing-program-and-buffer-accounts-and-reclaiming-their-lamports
 
+## Revocer deployemnt
+
+```
+=========================================================================
+Recover the intermediate account's ephemeral keypair file with
+`solana-keygen recover` and the following 12-word seed phrase:
+=========================================================================
+blast surprise pluck country ramp milk blue ranch permit wash wave entire
+=========================================================================
+To resume a deploy, pass the recovered keypair as the
+[BUFFER_SIGNER] to `solana program deploy` or `solana program write-buffer'.
+Or to recover the account's lamports, pass it as the
+[BUFFER_ACCOUNT_ADDRESS] argument to `solana program close`.
+=========================================================================
+Error: Error processing Instruction 2: account data too small for instruction
+```
+
+1. Revover priv key
+
+```bash
+solana-keygen recover --outfile ./temp.json
+```
+
+2. resume
+
+```bash
+solana program deploy --buffer ./temp.json --with-compute-unit-price 2500000  --max-sign-attempts 10000 --url https://little-thrilling-forest.solana-mainnet.quiknode.pro/b0f644f4dec0fb4c9c47cadf2eb99cafa7356ca8 --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/staking.json target/deploy/onlybags_staking.so
+```
+
 ## Error While Upading
 
 If the size of the original program get bigger than the initial size that was allocated during the initial deployment then the upgrade will fail with this error:
@@ -61,35 +90,6 @@ The deployment (or upgrade) might not be fully finished for various reasons e.g.
 
 solana program extend 7vLXAAhUcPE4YR5HnJtRPf9cumpYuR43fukAh9XjLUD4  1000 -u devnet --keypair ./wallets/deployer.json
 
-
-## Revocer deployemnt
-
-```
-=========================================================================
-Recover the intermediate account's ephemeral keypair file with
-`solana-keygen recover` and the following 12-word seed phrase:
-=========================================================================
-blast surprise pluck country ramp milk blue ranch permit wash wave entire
-=========================================================================
-To resume a deploy, pass the recovered keypair as the
-[BUFFER_SIGNER] to `solana program deploy` or `solana program write-buffer'.
-Or to recover the account's lamports, pass it as the
-[BUFFER_ACCOUNT_ADDRESS] argument to `solana program close`.
-=========================================================================
-Error: Error processing Instruction 2: account data too small for instruction
-```
-
-1. Revover priv key
-
-```bash
-solana-keygen recover --outfile ./temp.json
-```
-
-2. resume
-
-```bash
-solana program deploy --buffer ./temp.json --with-compute-unit-price 2500000  --max-sign-attempts 10000 --url https://little-thrilling-forest.solana-mainnet.quiknode.pro/b0f644f4dec0fb4c9c47cadf2eb99cafa7356ca8 --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/staking.json target/deploy/onlybags_staking.so
-```
 
 ### Close Program Account (DANGEROUS!!!)
 
