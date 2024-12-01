@@ -130,3 +130,22 @@ ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/resize
 ```
 
 Now we can use the old V1 accounts with the new program logic that uses the V2 accounts.
+
+### Issue with the new IDL
+
+The `Migration` uses a generic type which breaks our borsh serialization on the JS side. The workaround is to replace the IDL type definition with the following:
+
+```json
+    {
+      "name": "Migration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "migrated_type",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+```
