@@ -2,7 +2,6 @@
 use std::mem::size_of;
 use anchor_lang::prelude::*;
 
-
 #[account]
 pub struct State {
   /// The owner that can handle various admin related tasks

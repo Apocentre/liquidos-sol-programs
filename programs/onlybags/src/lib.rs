@@ -9,7 +9,7 @@ pub mod curve_formulas;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
-  update_state::*, create_staking_pool::*,
+  update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
 };
 
 declare_id!("Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY");
@@ -184,5 +184,33 @@ pub mod onlybags {
     min_sol_amount_out: u64,
   ) -> Result<()> {
     processors::sell::exec(ctx, token_amount, min_sol_amount_out)
+  }
+
+  /// ResizeState
+  /// 
+  /// Allows admin to resize the size of the state account
+  /// 
+  /// # Arguments
+  /// 
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `_size` - The new size of the account. Note! don't pass a smaller size than the current one
+  ///             because it will end up is loss of data. Check the size manually on the explorer and pass
+  ///             a higher value.
+  pub fn resize_state(_: Context<ResizeState>, _size: u64) -> Result<()> {
+    Ok(())
+  }
+
+  /// ResizeBondingCurve
+  /// 
+  /// Allows admin to resize the size of the bonding_curve account
+  /// 
+  /// # Arguments
+  /// 
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `_size` - The new size of the account. Note! don't pass a smaller size than the current one
+  ///             because it will end up is loss of data. Check the size manually on the explorer and pass
+  ///             a higher value.
+  pub fn resize_bonding_curve(_: Context<ResizeBondingCurve>, _size: u64) -> Result<()> {
+    Ok(())
   }
 }
