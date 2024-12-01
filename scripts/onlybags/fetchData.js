@@ -15,7 +15,7 @@ const main = async () => {
   const state = new PublicKey("G5M4aCmU4KFRqppB2hJAwvKFJyUioZB1WaFeZoV6C3cz");
   const stateData = await program.account.state.fetch(state);
   const bondingCurve = accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];
-  const bondingCurveData = await program.account.bondingCurve.fetch('DpMLSjE9xRqA7WxrQHeP6wRr5Bw3v47PTR6Wpm7bRi5f');
+  const bondingCurveData = await program.account.bondingCurve.fetch('2AZKPN9xYu84D8jT93w7LWFpno5MpKFzPYnM7hniFkhQ');
 
   console.log("state: ", {
     owner: stateData.owner.toString(),
