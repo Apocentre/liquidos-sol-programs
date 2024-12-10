@@ -6,6 +6,8 @@
     "deploy:devnet": "solana program deploy --with-compute-unit-price 1000000  --max-sign-attempts 1000 --url https://api.devnet.solana.com --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/test/onlybags_v2.json target/deploy/onlybags.so",
     "init:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/initialize.js",
     "init:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/initialize.js",
+    "updateState:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/updateState.js",
+    "updateState:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/updateState.js",
     "setupAddressLUT:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/setupAddressLUTForBuy.js",
     "setupAddressLUT:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/onlybags/setupAddressLUTForBuy.js",
     "createToken:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/createToken.js",
