@@ -1,3 +1,4 @@
+#![allow(unexpected_cfgs)]
 pub mod account_data;
 pub mod instructions;
 pub mod processors;
