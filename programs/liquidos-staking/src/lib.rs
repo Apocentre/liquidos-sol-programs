@@ -3,6 +3,7 @@ pub mod account_data;
 pub mod instructions;
 pub mod processors;
 pub mod program_error;
+pub mod constants;
 
 
 use anchor_lang::prelude::*;
