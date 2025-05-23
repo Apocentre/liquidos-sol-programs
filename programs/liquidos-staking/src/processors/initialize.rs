@@ -4,7 +4,7 @@ use crate::{
   instructions::initialize::Initialize,
 };
 
-pub fn exec(ctx: Context<Initialize>) -> Result<()> {
+pub fn exec(ctx: Context<Initialize>, round_duration_secs: i64) -> Result<()> {
   let owner = ctx.accounts.deployer.key();
 
   *ctx.accounts.state = State::new(
@@ -12,6 +12,7 @@ pub fn exec(ctx: Context<Initialize>) -> Result<()> {
   );
   *ctx.accounts.pool_info = PoolInfo::new(
     ctx.accounts.staking_token.key(),
+    round_duration_secs,
     ctx.bumps.pool_info,
   );
 

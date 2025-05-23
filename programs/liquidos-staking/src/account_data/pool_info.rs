@@ -19,6 +19,8 @@ pub struct PoolInfo {
   pub pending_reward: u64,
   /// The timestamp of the end of the current distribution round
   pub round_end_ts: i64,
+  /// The rewards distribution round duration e.g. 1 day in seconds
+  pub round_duration_secs: i64,
   /// The last time reward was calculated
   pub last_harvest_ts: i64,
   /// The staking token of this pool. This is gonna be the native Liquidos token
@@ -29,7 +31,7 @@ pub struct PoolInfo {
 impl PoolInfo {
   pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE + SPACE_MARGIN;
 
-  pub fn new(staking_token: Pubkey, bump: u8) -> Self {
+  pub fn new(staking_token: Pubkey, round_duration_secs: i64, bump: u8) -> Self {
     Self {
       reward_per_sec: 0,
       acc_reward_per_share: 0,
@@ -37,6 +39,7 @@ impl PoolInfo {
       total_staked: 0,
       pending_reward: 0,
       round_end_ts: 0,
+      round_duration_secs,
       last_harvest_ts: 0,
       staking_token,
       bump,

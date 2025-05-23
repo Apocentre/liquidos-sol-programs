@@ -21,8 +21,9 @@ pub mod liquidos_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-    processors::initialize::exec(ctx)
+  /// * `round_duration_secs` - The rewards distribution round duration e.g. 1 day in seconds
+  pub fn initialize(ctx: Context<Initialize>, round_duration_secs: i64) -> Result<()> {
+    processors::initialize::exec(ctx, round_duration_secs)
   }
 
   /// Distribute
