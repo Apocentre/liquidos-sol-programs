@@ -8,21 +8,25 @@ skip-lint = false
 
 [programs.devnet]
 onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
+onlybags_locker = "CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY"
 onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
 onlybags_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
-onlybags_locker = "CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY"
+liquidos_staking = "NBiqeP8VynsHfaUNP5dWru2T8ioBAmzurYxn7UmS7KJ"
 
 [programs.localnet]
+liquidos-staking = "FcxV5qMqAYFbp78bTLsxiDavEAGbYDn89vx7yHBEFRer"
 onlybags = "ADL8VVK6QMFPEZmkgeGSSyQrfnaRD7FHtDzWjh6c4QCX"
+onlybags_locker = "CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY"
 onlybags_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
 onlybags_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
-onlybags_locker = "CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY"
+liquidos_staking = "NBiqeP8VynsHfaUNP5dWru2T8ioBAmzurYxn7UmS7KJ"
 
 [programs.mainnet]
 onlybags = "Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY"
+onlybags_locker = "7Sntio7WMpXkPWTQMXLVYoH7hqwfLn1i4JP7xUFaDkaK"
 onlybags_staking = "HxbEKU2EdXw5xK5XnG8XWK2uMNCj1A69N3YkD65CcRcb"
 onlybags_swap_proxy = "5r8CvW57rPwHJJcyBhALpnJkpK5hMGabfrWpp83nMn7S"
-onlybags_locker = "7Sntio7WMpXkPWTQMXLVYoH7hqwfLn1i4JP7xUFaDkaK"
+liquidos_staking = "NBiqeP8VynsHfaUNP5dWru2T8ioBAmzurYxn7UmS7KJ"
 
 [registry]
 url = "https://api.apr.dev"
