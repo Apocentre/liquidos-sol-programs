@@ -6,18 +6,20 @@ pub mod program_error;
 
 
 use anchor_lang::prelude::*;
+use instructions::initialize::*;
 
 declare_id!("NBiqeP8VynsHfaUNP5dWru2T8ioBAmzurYxn7UmS7KJ");
 
 #[program]
 pub mod liquidos_staking {
-    use super::*;
+  use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Greetings from: {:?}", ctx.program_id);
-        Ok(())
-    }
+  /// Initialize
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    processors::initialize::exec(ctx)
+  }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}
