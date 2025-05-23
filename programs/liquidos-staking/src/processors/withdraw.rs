@@ -2,12 +2,12 @@ use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
 use crate::{
-  instructions::deposit::Deposit,
+  instructions::withdraw::Withdraw, program_error::ErrorCode,
   staking::{release_pending, update_pool, AccountContainer, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
 };
 
 #[event]
-pub struct DepositEvent {
+pub struct WithdrawEvent {
   user: Pubkey,
   amount: String,
   claimed: String,
@@ -17,12 +17,15 @@ pub struct DepositEvent {
   pool_total_claimed: String,
 }
 
-pub fn exec(ctx: Context<Deposit>, amount: u64, _test_ts: i64) -> Result<()> {
+
+pub fn exec(ctx: Context<Withdraw>, amount: u64, _test_ts: i64) -> Result<()> {
   #[cfg(not(feature = "localnet"))]
   let now = Clock::get().unwrap().unix_timestamp;
   #[cfg(feature = "localnet")]
   let now = _test_ts;
 
+  let user_info = &ctx.accounts.user_info;
+  require!(user_info.staked_amount >= amount, ErrorCode::InsufficientWithdrawAmount);
   update_pool(&mut ctx.accounts.pool_info, now)?;
 
   let claimed = release_pending(AccountContainer {
@@ -31,14 +34,16 @@ pub fn exec(ctx: Context<Deposit>, amount: u64, _test_ts: i64) -> Result<()> {
     pool_info: &mut ctx.accounts.pool_info,
   })?;
 
+
+  
   if amount > 0 {
-    let pool_info = &mut ctx.accounts.pool_info;
     let user_info = &mut ctx.accounts.user_info;
+    let pool_info = &mut ctx.accounts.pool_info;
 
-    pool_info.total_staked = pool_info.total_staked.safe_add(amount)?;
-    user_info.staked_amount = user_info.staked_amount.safe_add(amount)?;
+    pool_info.total_staked = pool_info.total_staked.safe_sub(amount)?;
+    user_info.staked_amount = user_info.staked_amount.safe_sub(amount)?;
 
-    deposit_stake(&ctx, amount)?;
+    withdraw_stake(&ctx, amount)?;
   }
 
   let pool_info = &mut ctx.accounts.pool_info;
@@ -49,7 +54,7 @@ pub fn exec(ctx: Context<Deposit>, amount: u64, _test_ts: i64) -> Result<()> {
     .safe_mul(acc_reward_per_share)?
     .safe_div(NORMALIZATION_FACTOR)?;
 
-  emit!(DepositEvent {
+  emit!(WithdrawEvent {
     user: ctx.accounts.user.key(),
     amount: amount.to_string(),
     claimed: claimed.to_string(),
@@ -62,12 +67,12 @@ pub fn exec(ctx: Context<Deposit>, amount: u64, _test_ts: i64) -> Result<()> {
   Ok(())
 }
 
-fn deposit_stake(ctx: &Context<Deposit>, amount: u64) -> Result<()> {
+fn withdraw_stake(ctx: &Context<Withdraw>, amount: u64) -> Result<()> {
   let cpi_accounts = TransferChecked {
-    from: ctx.accounts.user_staking_ata.to_account_info(),
+    from: ctx.accounts.staking_token_vault_ata.to_account_info(),
     mint: ctx.accounts.staking_token.to_account_info(),
-    to: ctx.accounts.staking_token_vault_ata.to_account_info(),
-    authority: ctx.accounts.user.to_account_info(),
+    to: ctx.accounts.user_staking_ata.to_account_info(),
+    authority: ctx.accounts.pool_info.to_account_info(),
   };
 
   let cpi_program = ctx.accounts.token_2022.to_account_info();

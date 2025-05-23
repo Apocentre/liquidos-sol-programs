@@ -7,7 +7,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
-pub struct Deposit<'info> {
+pub struct Withdraw<'info> {
   #[account()]
   pub state: Account<'info, State>,
 
@@ -19,11 +19,8 @@ pub struct Deposit<'info> {
   pub pool_info: Account<'info, PoolInfo>,
 
   #[account(
-    init_if_needed,
-    payer = user,
-    space = UserInfo::MAX_SIZE,
     seeds = [b"user_info", user.key().as_ref(), pool_info.key().as_ref()],
-    bump
+    bump = user_info.bump,
   )]
   pub user_info: Account<'info, UserInfo>,
 
