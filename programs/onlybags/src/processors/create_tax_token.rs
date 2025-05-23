@@ -15,7 +15,7 @@ use crate::{
 };
 use super::create_token::update_account_lamports_to_minimum_balance;
 
-//  We run getMintLen from the `@solana/spl-token` js package to get this value
+// We run getMintLen from the `@solana/spl-token` js package to get this value
 // mint will include two extentions, the metadata pointer and the transfer fee
 pub const MINT_LEN: usize = 346;
 const DECIMALS: u8 = 6;
