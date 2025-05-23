@@ -8,7 +8,7 @@ pub mod staking;
 
 
 use anchor_lang::prelude::*;
-use instructions::{initialize::*, distribute::*};
+use instructions::{initialize::*, distribute::*, deposit::*};
 
 declare_id!("NBiqeP8VynsHfaUNP5dWru2T8ioBAmzurYxn7UmS7KJ");
 
@@ -37,5 +37,17 @@ pub mod liquidos_staking {
   /// * `amount` - Amount to be distributed
   pub fn distribute(ctx: Context<Distribute>, amount: u64, _test_ts: i64) -> Result<()> {
     processors::distribute::exec(ctx, amount, _test_ts)
+  }
+
+  /// Deposit
+  ///
+  /// Allow the anyone to deposit
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `amount` - Amount of tokens to deposit
+  pub fn deposit(ctx: Context<Deposit>, amount: u64, _test_ts: i64) -> Result<()> {
+    processors::deposit::exec(ctx, amount, _test_ts)
   }
 }

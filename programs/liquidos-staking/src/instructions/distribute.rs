@@ -1,9 +1,8 @@
 use anchor_lang::prelude::*;
-use crate::{
-  account_data::{pool_info::PoolInfo, state::State},
-};
+use crate::account_data::{pool_info::PoolInfo, state::State};
 
 #[derive(Accounts)]
+#[event_cpi]
 pub struct Distribute<'info> {
   #[account()]
   pub state: Account<'info, State>,
@@ -15,8 +14,7 @@ pub struct Distribute<'info> {
   )]
   pub pool_info: Account<'info, PoolInfo>,
 
-  
   // TODO: add check to make sure only allowed distributors can call this ix
-  #[account()]
+  #[account(mut)]
   pub distributor: Signer<'info>,
 }
