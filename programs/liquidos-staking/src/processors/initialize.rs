@@ -9,10 +9,10 @@ pub fn exec(ctx: Context<Initialize>) -> Result<()> {
 
   *ctx.accounts.state = State::new(
     owner,
-    ctx.bumps.pool_authority,
   );
   *ctx.accounts.pool_info = PoolInfo::new(
     ctx.accounts.staking_token.key(),
+    ctx.bumps.pool_info,
   );
 
   Ok(())
