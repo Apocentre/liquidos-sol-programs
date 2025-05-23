@@ -2,10 +2,14 @@ use anchor_lang::{prelude::*, solana_program::{program::invoke, system_instructi
 use anchor_safe_math::SafeMath;
 use crate::{instructions::distribute::Distribute, staking::harvest};
 
-pub fn exec(ctx: Context<Distribute>, amount: u64) -> Result<()> {
-  harvest(&mut ctx.accounts.pool_info)?;
-
+pub fn exec(ctx: Context<Distribute>, amount: u64, _test_ts: i64) -> Result<()> {
+  #[cfg(not(feature = "localnet"))]
   let now = Clock::get().unwrap().unix_timestamp;
+  #[cfg(feature = "localnet")]
+  let now = _test_ts;
+
+  harvest(&mut ctx.accounts.pool_info, now)?;
+
   let pool_info = &mut ctx.accounts.pool_info;
   // we need to carry over any pending amount from the previous round to the next one.
   // This will be reflected in the `rewardPerSec` of the next round.

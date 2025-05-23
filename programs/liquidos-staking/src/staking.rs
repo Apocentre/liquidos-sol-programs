@@ -4,9 +4,7 @@ use crate::{
   account_data::pool_info::PoolInfo, program_error::ErrorCode,
 };
 
-pub fn harvest(pool_info: &mut PoolInfo) -> Result<()> {
-  let now = Clock::get().unwrap().unix_timestamp;
-
+pub fn harvest(pool_info: &mut PoolInfo, now: i64) -> Result<()> {
   let last_harvest_ts = pool_info.last_harvest_ts;
   let round_end_ts = pool_info.round_end_ts;
 

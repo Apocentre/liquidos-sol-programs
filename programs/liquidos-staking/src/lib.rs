@@ -35,7 +35,7 @@ pub mod liquidos_staking {
   ///
   /// * `ctx` - The Anchor context holding the accounts
   /// * `amount` - Amount to be distributed
-  pub fn distribute(ctx: Context<Distribute>, amount: u64) -> Result<()> {
-    processors::distribute::exec(ctx, amount)
+  pub fn distribute(ctx: Context<Distribute>, amount: u64, _test_ts: i64) -> Result<()> {
+    processors::distribute::exec(ctx, amount, _test_ts)
   }
 }

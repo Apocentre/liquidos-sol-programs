@@ -9,8 +9,8 @@ crate-type = ["cdylib", "lib"]
 name = "liquidos_staking"
 
 [features]
-default = ["devnet"]
-devnet = []
+default = ["localnet"]
+localnet = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
