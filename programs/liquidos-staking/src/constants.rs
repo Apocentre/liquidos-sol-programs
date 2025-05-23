@@ -1,6 +1,10 @@
 use std::str::FromStr;
 use anchor_lang::prelude::Pubkey;
 
+// We add a bit of margin to each account data. This is helpful if in the future we add new fields to the existing structs.
+// With this additional space we would not need to send `realloc` instructions which are inconvenient.
+pub const SPACE_MARGIN: usize = 1000;
+
 pub fn allowed_deployer() -> Pubkey {
   #[cfg(not(feature = "devnet"))]
   return Pubkey::from_str("DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw").unwrap();

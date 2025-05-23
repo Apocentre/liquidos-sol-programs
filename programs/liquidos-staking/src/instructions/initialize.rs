@@ -36,20 +36,10 @@ pub struct Initialize<'info> {
     init,
     payer = deployer,
     associated_token::mint = staking_token,
-    associated_token::authority = pool_authority,
+    associated_token::authority = pool_info,
     associated_token::token_program = token_2022,
   )]
   pub staking_token_vault_ata: Box<InterfaceAccount<'info, TokenAccount>>,
-
-  /// CHECK: This is the authority that will control the ATA of each pool and execute CPIs
-  #[account(
-    init,
-    space = 0,
-    payer = deployer,
-    seeds = [b"pool_authority", state.key().as_ref()],
-    bump,
-  )]
-  pub pool_authority: AccountInfo<'info>,
   
   #[account(
     mut,

@@ -1,22 +1,19 @@
-use std::mem::size_of;
-
 use anchor_lang::prelude::*;
+use crate::constants::SPACE_MARGIN;
 
 #[account]
+#[derive(InitSpace)]
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
-  /// The PDA bump of this account
-  pub pool_authority_bump: u8,
 }
 
 impl State {
-  pub const MAX_SIZE: usize = 8 + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE + SPACE_MARGIN;
 
-  pub fn new(owner: Pubkey, pool_authority_bump: u8) -> Self {
+  pub fn new(owner: Pubkey) -> Self {
     Self {
       owner,
-      pool_authority_bump,
     }
   }
 }

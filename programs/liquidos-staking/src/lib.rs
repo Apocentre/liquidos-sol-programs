@@ -4,10 +4,11 @@ pub mod instructions;
 pub mod processors;
 pub mod program_error;
 pub mod constants;
+pub mod staking;
 
 
 use anchor_lang::prelude::*;
-use instructions::initialize::*;
+use instructions::{initialize::*, distribute::*};
 
 declare_id!("NBiqeP8VynsHfaUNP5dWru2T8ioBAmzurYxn7UmS7KJ");
 
@@ -22,5 +23,18 @@ pub mod liquidos_staking {
   /// * `ctx` - The Anchor context holding the accounts
   pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
     processors::initialize::exec(ctx)
+  }
+
+  /// Distribute
+  ///
+  /// Allows a distributor to distribute funds. Basically, a distributor will send SOL to the 
+  /// `pool_info` PDA which will then be distibuted amongt the stakers
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `amount` - Amount to be distributed
+  pub fn distribute(ctx: Context<Distribute>, amount: u64) -> Result<()> {
+    processors::distribute::exec(ctx, amount)
   }
 }

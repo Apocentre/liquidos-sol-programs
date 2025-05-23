@@ -10,4 +10,8 @@ pub enum ErrorCode {
   InvalidStakingToken,
   #[msg("Insufficient withdraw amount")]
   InsufficientWithdrawAmount,
+  #[msg("Same block harvest")]
+  SameBlockHarvest,
+  #[msg("Round end")]
+  RoundEnd,
 }

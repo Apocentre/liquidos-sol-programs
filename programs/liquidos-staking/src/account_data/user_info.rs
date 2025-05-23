@@ -1,8 +1,9 @@
-use std::mem::size_of;
-
 use anchor_lang::prelude::*;
 
+use crate::constants::SPACE_MARGIN;
+
 #[account]
+#[derive(InitSpace)]
 pub struct UserInfo {
   pub staked_amount: u64,
   pub reward_debt: u64,
@@ -11,5 +12,5 @@ pub struct UserInfo {
 }
 
 impl UserInfo {
-  pub const MAX_SIZE: usize = 8 + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE + SPACE_MARGIN;
 }
