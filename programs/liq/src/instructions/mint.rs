@@ -57,6 +57,7 @@ pub struct Mint<'info> {
     mut,
     seeds = [b"bonding_curve", state.liquidos_curve_state.key().as_ref(), curve_token.as_ref()],
     bump,
+    seeds::program = state.liquidos_curve_program,
   )]
   pub source_bonding_curve: Signer<'info>,
 

@@ -7,7 +7,7 @@ pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
   /// The address of the main liquidos curve program that will be CPIing into this program
-  liquidos_curve_program: Pubkey,
+  pub liquidos_curve_program: Pubkey,
   /// The state of the main liquidos curve program
   pub liquidos_curve_state: Pubkey
 }

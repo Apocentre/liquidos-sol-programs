@@ -6,7 +6,7 @@ pub mod program_error;
 pub mod constants;
 
 use anchor_lang::prelude::*;
-use instructions::initialize::*;
+use instructions::{initialize::*, mint::*};
 
 declare_id!("Fo5u8WAkf2H2JJe72RjwMV2ob4JeDk2shfm7kfAd3aCM");
 
@@ -35,4 +35,19 @@ pub mod liq {
     processors::initialize::exec(ctx, liquidos_curve_program, liquidos_curve_state, name, symbol, uri)
   }
 
+
+  /// Mint
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `curve_token` - The address of the main liquidos curve program that will be CPIing into this program
+  /// * `amount` - The amount of SOL the buyer purchased in the sourve curve
+  pub fn mint(
+    ctx: Context<Mint>,
+    _curve_token: Pubkey,
+    amount: u64,
+  ) -> Result<()> {
+    processors::mint::exec(ctx, amount)
+  }
 }
