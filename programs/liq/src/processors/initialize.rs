@@ -22,7 +22,7 @@ pub fn exec(
     owner,
     liquidos_curve_program,
   );
-  **ctx.accounts.bonding_curve = BondingCurve::new(ctx.bumps.bonding_curve);
+  **ctx.accounts.bonding_curve = BondingCurve::new(ctx.accounts.liq_token.key(), ctx.bumps.bonding_curve);
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 

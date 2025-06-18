@@ -9,6 +9,8 @@ pub struct BondingCurve {
   pub circulating_supply: u64,
   /// The balance of reserve token i.e. SOL in the lowest denomination (lamport) i.e. decimals included
   pub reserve_token_balance: u64,
+  /// The LIQ mint account
+  pub liq_token: Pubkey,
   /// The PDA bump of this account
   pub bump: u8,
 }
@@ -17,10 +19,11 @@ impl BondingCurve {
   pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE + SPACE_MARGIN;
   pub const MAX_SUPPLY: u64 = 50_000_000_000_000_000; // 50M
 
-  pub fn new(bump: u8) -> Self {
+  pub fn new(liq_token: Pubkey, bump: u8) -> Self {
     Self {
       circulating_supply: 0,
       reserve_token_balance: 0,
+      liq_token,
       bump,
     }
   }

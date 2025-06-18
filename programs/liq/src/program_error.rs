@@ -8,4 +8,6 @@ pub enum ErrorCode {
   WrongDeployer,
   #[msg("Only Liquidos Curve Program")]
   OnlyLiquidosCurveProgram,
+  #[msg("Invalid Liq token account")]
+  InvalidLiqToken,
 }
