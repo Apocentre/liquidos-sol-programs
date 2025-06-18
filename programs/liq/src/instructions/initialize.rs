@@ -3,7 +3,7 @@ use anchor_spl::{
   associated_token::AssociatedToken, token_interface::{Mint, TokenInterface},
 };
 use crate::{
-  account_data::state::State,
+  account_data::{bonding_curve::BondingCurve, state::State},
   constants::allowed_deployer, program_error::ErrorCode,
 };
 
@@ -18,14 +18,24 @@ pub struct Initialize<'info> {
   )]
   pub state: Account<'info, State>,
 
+  /// The state of the bonding curve that will be used during buys and sells
+  #[account(
+    init,
+    payer = deployer,
+    space = BondingCurve::MAX_SIZE,
+    seeds = [b"bonding_curve", state.key().as_ref()],
+    bump,
+  )]
+  pub bonding_curve: Box<Account<'info, BondingCurve>>,
+
   /// The Mint account of the newly created token.
   #[account(
     init,
     payer = deployer,
     mint::decimals = 6,
-    mint::authority = state,
+    mint::authority = bonding_curve,
     mint::token_program = token_2022,
-    extensions::metadata_pointer::authority = state.key(),
+    extensions::metadata_pointer::authority = bonding_curve.key(),
     extensions::metadata_pointer::metadata_address = token.key(),
     seeds = [b"liq_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
     bump,

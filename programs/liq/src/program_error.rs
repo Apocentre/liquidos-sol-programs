@@ -6,4 +6,6 @@ pub enum ErrorCode {
   OnlyOwner,
   #[msg("Wrong deployer")]
   WrongDeployer,
+  #[msg("Only Liquidos Curve Program")]
+  OnlyLiquidosCurveProgram,
 }
