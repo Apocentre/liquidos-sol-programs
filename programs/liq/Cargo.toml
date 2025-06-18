@@ -9,7 +9,8 @@ crate-type = ["cdylib", "lib"]
 name = "liq"
 
 [features]
-default = []
+default = ["localnet"]
+localnet = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
