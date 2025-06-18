@@ -7,6 +7,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
+#[instruction(curve_token: Pubkey)]
 pub struct Mint<'info> {
   /// The state account of each instance of this program
   #[account()]
@@ -18,7 +19,7 @@ pub struct Mint<'info> {
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
     mut,
-    seeds = [b"bonding_curve", state.key().as_ref()],
+    seeds = [b"liq_bonding_curve", state.key().as_ref()],
     bump = bonding_curve.bump,
   )]
   pub bonding_curve: Box<Account<'info, BondingCurve>>,
@@ -49,6 +50,15 @@ pub struct Mint<'info> {
     associated_token::token_program = token_2022,
   )]
   pub curve_creator_liq_ata: Box<InterfaceAccount<'info, TokenAccount>>,
+
+  /// The meme coins bonding curve. It's the PDA that will sign this CPI call
+  /// This acts as an authentication mechanism indicating that only bonding curve PDAs can invoke this ix
+  #[account(
+    mut,
+    seeds = [b"bonding_curve", state.liquidos_curve_state.key().as_ref(), curve_token.as_ref()],
+    bump,
+  )]
+  pub source_bonding_curve: Signer<'info>,
 
   pub token_2022: Interface<'info, TokenInterface>,
   associated_token_program: Program<'info, AssociatedToken>,

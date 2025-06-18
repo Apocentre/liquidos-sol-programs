@@ -23,7 +23,7 @@ pub struct Initialize<'info> {
     init,
     payer = deployer,
     space = BondingCurve::MAX_SIZE,
-    seeds = [b"bonding_curve", state.key().as_ref()],
+    seeds = [b"liq_bonding_curve", state.key().as_ref()],
     bump,
   )]
   pub bonding_curve: Box<Account<'info, BondingCurve>>,

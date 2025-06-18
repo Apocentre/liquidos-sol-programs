@@ -12,6 +12,7 @@ use crate::{
 pub fn exec(
   ctx: Context<Initialize>,
   liquidos_curve_program: Pubkey,
+  liquidos_curve_state: Pubkey,
   name: String,
   symbol: String,
   uri: String,
@@ -21,6 +22,7 @@ pub fn exec(
   *ctx.accounts.state = State::new(
     owner,
     liquidos_curve_program,
+    liquidos_curve_state,
   );
   **ctx.accounts.bonding_curve = BondingCurve::new(ctx.accounts.liq_token.key(), ctx.bumps.bonding_curve);
 
@@ -53,7 +55,7 @@ fn create_metadata(
 ) -> Result<()> {
   let state_key = &ctx.accounts.state.key();
   let seeds: &[&[u8]] = &[
-    b"bonding_curve",
+    b"liq_bonding_curve",
     state_key.as_ref(),
     &[ctx.bumps.bonding_curve],
   ];
@@ -61,8 +63,8 @@ fn create_metadata(
 
   let cpi_accounts = TokenMetadataInitialize {
     token_program_id: ctx.accounts.token_2022.to_account_info(),
-    mint: ctx.accounts.token.to_account_info(),
-    metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
+    mint: ctx.accounts.liq_token.to_account_info(),
+    metadata: ctx.accounts.liq_token.to_account_info(), // metadata account is the mint, since data is stored in mint
     mint_authority: ctx.accounts.bonding_curve.to_account_info(),
     update_authority: ctx.accounts.bonding_curve.to_account_info(),
   };
@@ -73,7 +75,7 @@ fn create_metadata(
   // the new metadata will be stored on the Mint account. However, we have allocated enough space for
   // the MetadataPoint and the Mint data. We need to allocate additional space to fit the metadata.
   update_account_lamports_to_minimum_balance(
-    ctx.accounts.token.to_account_info(),
+    ctx.accounts.liq_token.to_account_info(),
     ctx.accounts.deployer.to_account_info(),
     ctx.accounts.system_program.to_account_info(),
   )?;
