@@ -7,3 +7,4 @@ pub mod move_liquidity;
 pub mod create_tax_token;
 pub mod update_state;
 pub mod create_staking_pool;
+pub mod mint_liq;

@@ -4,6 +4,7 @@ use anchor_spl::{
   token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
+use liq::program::Liq;
 use crate::{
   account_data::{bonding_curve::BondingCurve, state::State},
   program_error::ErrorCode, raydium,

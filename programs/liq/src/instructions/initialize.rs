@@ -15,6 +15,8 @@ pub struct Initialize<'info> {
     init,
     payer = deployer,
     space = State::MAX_SIZE,
+    seeds = [b"liq_state"],
+    bump,
   )]
   pub state: Account<'info, State>,
 

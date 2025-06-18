@@ -8,3 +8,4 @@ pub mod update_state;
 pub mod create_staking_pool;
 pub mod resize_state;
 pub mod resize_bonding_curve;
+pub mod mint_liq;

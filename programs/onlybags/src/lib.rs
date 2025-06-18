@@ -10,7 +10,7 @@ pub mod curve_formulas;
 use anchor_lang::prelude::*;
 use crate::instructions::{
   initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
-  update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
+  update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*, mint_liq::*,
 };
 
 declare_id!("Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY");
@@ -185,6 +185,18 @@ pub mod onlybags {
     min_sol_amount_out: u64,
   ) -> Result<()> {
     processors::sell::exec(ctx, token_amount, min_sol_amount_out)
+  }
+
+  /// MintLiq
+  ///
+  /// Send CPI to the 
+  /// 
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `amount` - Amount of tokens buyer used to buy meme coin in the previous ix
+  pub fn mint_liq(ctx: Context<MintLiq>, amount: u64) -> Result<()> {
+    processors::mint_liq::exec(ctx, amount)
   }
 
   /// ResizeState
