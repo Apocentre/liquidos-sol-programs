@@ -22,6 +22,8 @@ pub enum ErrorCode {
   WrongIxData,
   #[msg("Expected MoveLiquidity ix")]
   ExpectedMoveLiquidityIx,
+  #[msg("Expected MintLiq ix")]
+  ExpectedMintLiqIx,
   #[msg("Expected CreateStakingPool ix")]
   ExpectedCreateStakingPoolIx,
   #[msg("Curve type not supported")]
@@ -32,4 +34,8 @@ pub enum ErrorCode {
   WrongStakingProgramState,
   #[msg("Wrong Liq program")]
   WrongLiqProgram,
+  #[msg("Wrong mint liq amount")]
+  WrongMintLiqAmount,
+  #[msg("Wrong mint liq account")]
+  WrongMintLiqAccount
 }

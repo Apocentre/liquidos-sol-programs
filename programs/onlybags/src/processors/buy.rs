@@ -8,7 +8,7 @@ use anchor_lang::{
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
-  instruction::MoveLiquidity, instructions::buy::Buy,
+  instruction::{MoveLiquidity, MintLiq}, instructions::buy::Buy,
   processors::common::transfer_from_pda,
   program_error::ErrorCode, raydium::{self, AmmConfig}, ID,
 };
@@ -143,18 +143,40 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
   Ok(())
 }
 
-/// When buying a token, the buyer will send two ixs: the Buy, and MoveLiquidity
+/// When buying a token, the buyer will send three ixs: the Buy, MintLiq, and MoveLiquidity
 /// The later will be executed but do nothing if the curve is not closed.
 /// This is important so we know that once the SOL is sent to the buyer_wsol_ata he atomically
 /// moves_liquidity
-fn instrospect_next_ix(ctx: &Context<Buy>) -> Result<()> {
+fn instrospect_next_move_liquidity_ix(ctx: &Context<Buy>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
 
   // check MoveLiquidity
-  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+  let current_ix = load_instruction_at_checked((current_index + 2) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
   require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
   let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
   require!(discriminator.eq(&MoveLiquidity::DISCRIMINATOR), ErrorCode::ExpectedMoveLiquidityIx);
+
+  Ok(())
+}
+
+fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>, net_buy_amount: u64) -> Result<()> {
+  let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+
+  // check MintLiq
+  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+  require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+  let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+  require!(discriminator.eq(&MintLiq::DISCRIMINATOR), ErrorCode::ExpectedMintLiqIx);
+
+  // verify the ix amount
+  let mint_liq_ix =  MintLiq::deserialize(&mut &current_ix.data[..])?;
+  require!(mint_liq_ix.amount == net_buy_amount, ErrorCode::WrongMintLiqAmount);
+
+  // verify ix accounts. We need to make sure that MintLiq does not have the wrong accounts
+  require!(current_ix.accounts[0].pubkey.eq(&ctx.accounts.state.key()), ErrorCode::WrongMintLiqAccount);
+  require!(current_ix.accounts[2].pubkey.eq(&ctx.accounts.token.key()), ErrorCode::WrongMintLiqAccount);
+  require!(current_ix.accounts[4].pubkey.eq(&ctx.accounts.buyer.key()), ErrorCode::WrongMintLiqAccount);
+  require!(current_ix.accounts[8].pubkey.eq(&ctx.accounts.bonding_curve.token_creator), ErrorCode::WrongMintLiqAccount);
 
   Ok(())
 }
@@ -200,6 +222,8 @@ pub fn exec<'info>(
   let curve = &ctx.accounts.bonding_curve;
   let curve_type = (&curve.curve_type).into();
 
+  instrospect_next_mint_liq_ix(&ctx, net_amount)?;
+
   collect_trade_fees(&ctx, trade_fees)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
   send_sol_to_curve(&ctx, net_amount, curve_key, curve_acc_info.clone())?;
@@ -218,7 +242,7 @@ pub fn exec<'info>(
     let curve = &mut ctx.accounts.bonding_curve;
     curve.close_curve();
     
-    instrospect_next_ix(&ctx)?;
+    instrospect_next_move_liquidity_ix(&ctx)?;
   }
   
   {
