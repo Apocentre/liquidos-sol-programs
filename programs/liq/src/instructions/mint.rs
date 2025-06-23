@@ -39,6 +39,7 @@ pub struct Mint<'info> {
   )]
   pub buyer_liq_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
+  /// CHECK: the curve creator
   #[account(mut)]
   pub curve_creator: AccountInfo<'info>,
 
