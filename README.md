@@ -1,5 +1,11 @@
 ## Onlybags Programs
 
+## Build
+
+`RUSTUP_TOOLCHAIN=nightly-2025-04-01 anchor build`
+
+For referece read [here](https://solana.stackexchange.com/a/21556/7239)
+
 ## Production Config
 The following `config.json` was used in production
 

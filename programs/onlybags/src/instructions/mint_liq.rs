@@ -26,7 +26,7 @@ pub struct MintLiq<'info> {
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 
-  /// The state account of each instance of this program
+  /// CHECK: The state account of each instance of this program
   #[account(
     seeds = [b"liq_state"],
     bump,
