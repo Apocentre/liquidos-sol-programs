@@ -59,7 +59,7 @@ pub fn exec(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
   token_lock.total_locked = token_lock.total_locked.safe_sub(user_lock.total_locked)?;
   user_lock.total_locked = 0;
 
-  emit!(UnlockEvent {
+  emit_cpi!(UnlockEvent {
     user: ctx.accounts.user.key(),
     token: ctx.accounts.token.key(),
     amount: user_lock.total_locked.to_string(),

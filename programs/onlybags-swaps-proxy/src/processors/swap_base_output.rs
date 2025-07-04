@@ -137,7 +137,7 @@ pub fn exec(ctx: Context<Swap>, max_amount_in: u64, amount_out_less_fee: u64) ->
   
   let amount_sold = input_token_balance_before.safe_sub(input_token_balance_after)?;
 
-  emit!(SwapBaseOutputEvent {
+  emit_cpi!(SwapBaseOutputEvent {
     amount_sold,
     amount_received: amount_out_less_fee,
     user: ctx.accounts.payer.key(),

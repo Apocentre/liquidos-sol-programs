@@ -137,7 +137,7 @@ pub fn exec(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Resu
   let amount_received = output_token_balance_after.safe_sub(output_token_balance_before)?;
   collect_fees(&ctx, amount_received)?;
   
-  emit!(SwapBaseInputEvent {
+  emit_cpi!(SwapBaseInputEvent {
     amount_sold: amount_in,
     amount_received,
     user: ctx.accounts.payer.key(),

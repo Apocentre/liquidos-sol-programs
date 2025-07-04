@@ -83,7 +83,7 @@ pub fn exec(
   token_lock.total_locked = token_lock.total_locked.safe_add(amount)?;
   user_lock.total_locked = user_lock.total_locked.safe_add(amount)?;
 
-  emit!(LockEvent {
+  emit_cpi!(LockEvent {
     user: ctx.accounts.user.key(),
     amount: amount.to_string(),
     token: ctx.accounts.token.key(),
