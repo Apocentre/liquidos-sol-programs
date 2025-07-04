@@ -222,7 +222,7 @@ pub fn exec<'info>(
   let curve = &ctx.accounts.bonding_curve;
   let curve_type = (&curve.curve_type).into();
 
-  instrospect_next_mint_liq_ix(&ctx, net_amount)?;
+  instrospect_next_mint_liq_ix(&ctx, spendable_amount)?;
 
   collect_trade_fees(&ctx, trade_fees)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;

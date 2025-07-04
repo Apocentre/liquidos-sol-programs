@@ -43,11 +43,11 @@ pub mod liq {
   /// * `ctx` - The Anchor context holding the accounts
   /// * `curve_token` - The address of the main liquidos curve program that will be CPIing into this program
   /// * `amount` - The amount of SOL the buyer purchased in the sourve curve
-  pub fn mint(
-    ctx: Context<Mint>,
-    _curve_token: Pubkey,
+  pub fn mint<'info>(
+    ctx: Context<'_, '_, '_, 'info, Mint<'info>>,
+    curve_token: Pubkey,
     amount: u64,
   ) -> Result<()> {
-    processors::mint::exec(ctx, amount)
+    processors::mint::exec(ctx, curve_token, amount)
   }
 }
