@@ -119,7 +119,7 @@ pub fn exec(
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 
-  emit!(TokenCreatedEvent {
+  emit_cpi!(TokenCreatedEvent {
     curve_type,
     creator: token_creator,
     address: ctx.accounts.token.key(),

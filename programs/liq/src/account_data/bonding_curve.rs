@@ -15,7 +15,7 @@ pub struct BondingCurve {
   pub reserve_token_balance: u64,
   /// The LIQ mint account
   pub liq_token: Pubkey,
-  /// Current creator fees (BPS). Each time tokens are minted creatorFee% will 
+  /// Current creator fees (BPS). Each time tokens are minted creatorFee will 
   /// be sent to the creator and (BPS - creatorFee) to the buyer
   pub creator_fee_bps: u64,
   /// The PDA bump of this account

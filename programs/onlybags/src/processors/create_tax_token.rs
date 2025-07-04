@@ -227,7 +227,7 @@ pub fn exec(
   setup_mint(&ctx, name.clone(), symbol.clone(), uri.clone(), fee_bps, max_fee, signer_seeds)?;
   create_curve_ata(&ctx, signer_seeds)?;
 
-  emit!(TokenCreatedEvent {
+  emit_cpi!(TokenCreatedEvent {
     curve_type,
     creator: token_creator,
     address: ctx.accounts.token.key(),

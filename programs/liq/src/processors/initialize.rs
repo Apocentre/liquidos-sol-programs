@@ -13,6 +13,7 @@ pub fn exec(
   ctx: Context<Initialize>,
   liquidos_curve_program: Pubkey,
   liquidos_curve_state: Pubkey,
+  creator_fee_bps: u64,
   name: String,
   symbol: String,
   uri: String,
@@ -24,7 +25,11 @@ pub fn exec(
     liquidos_curve_program,
     liquidos_curve_state,
   );
-  **ctx.accounts.bonding_curve = BondingCurve::new(ctx.accounts.liq_token.key(), ctx.bumps.bonding_curve);
+  **ctx.accounts.bonding_curve = BondingCurve::new(
+    ctx.accounts.liq_token.key(),
+    creator_fee_bps,
+    ctx.bumps.bonding_curve,
+  );
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 

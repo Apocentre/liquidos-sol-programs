@@ -250,7 +250,7 @@ pub fn exec<'info>(
     ctx.accounts.buyer_ata.reload()?;
     let buyer_balance = ctx.accounts.buyer_ata.amount;
 
-    emit!(BuyEvent {
+    emit_cpi!(BuyEvent {
       curve_type, 
       buyer,
       token: *token,

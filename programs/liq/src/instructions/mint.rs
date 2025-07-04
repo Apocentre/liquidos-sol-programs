@@ -7,6 +7,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
+#[event_cpi]
 #[instruction(curve_token: Pubkey)]
 pub struct Mint<'info> {
   /// The state account of each instance of this program

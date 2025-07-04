@@ -8,6 +8,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
+#[event_cpi]
 pub struct Deposit<'info> {
   #[account()]
   pub state: AccountLoader<'info, State>,

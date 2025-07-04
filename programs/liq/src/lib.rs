@@ -21,6 +21,7 @@ pub mod liq {
   /// * `ctx` - The Anchor context holding the accounts
   /// * `liquidos_curve_program` - The address of the main liquidos curve program that will be CPIing into this program
   /// * `liquidos_curve_state` - The state of the main liquidos curve program
+  /// * `create_fee_bps` - The current creator fees (BPS)
   /// * `name` - The name of the token (used in the metadata account)
   /// * `symbol` - The symbol of the token (used in the metadata account)
   /// * `uri` - The uri of the token (used in the metadata account)
@@ -28,11 +29,20 @@ pub mod liq {
     ctx: Context<Initialize>,
     liquidos_curve_program: Pubkey,
     liquidos_curve_state: Pubkey,
+    creator_fee_bps: u64,
     name: String,
     symbol: String,
     uri: String,
   ) -> Result<()> {
-    processors::initialize::exec(ctx, liquidos_curve_program, liquidos_curve_state, name, symbol, uri)
+    processors::initialize::exec(
+      ctx,
+      liquidos_curve_program,
+      liquidos_curve_state,
+      creator_fee_bps,
+      name,
+      symbol,
+      uri,
+    )
   }
 
 

@@ -78,7 +78,7 @@ pub fn exec(
   ctx.accounts.seller_ata.reload()?;
   let seller_balance = ctx.accounts.seller_ata.amount;
 
-  emit!(SellEvent {
+  emit_cpi!(SellEvent {
     curve_type,
     seller: ctx.accounts.seller.key(),
     token: ctx.accounts.token.key(),

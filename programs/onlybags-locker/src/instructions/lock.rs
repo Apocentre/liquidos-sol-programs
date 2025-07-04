@@ -6,6 +6,7 @@ use anchor_spl::{
 use crate::account_data::{state::State, token_lock::TokenLock, user_lock::UserLock};
 
 #[derive(Accounts)]
+#[event_cpi]
 pub struct Lock<'info> {
   #[account()]
   pub state: Box<Account<'info, State>>,

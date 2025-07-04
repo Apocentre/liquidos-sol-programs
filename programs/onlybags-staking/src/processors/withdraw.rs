@@ -88,7 +88,7 @@ pub fn exec(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
   .safe_mul(acc_reward_per_share)?
   .safe_div(NORMALIZATION_FACTOR)?;
 
-  emit!(WithdrawEvent {
+  emit_cpi!(WithdrawEvent {
     user: ctx.accounts.user.key(),
     reward_token,
     staking_token: pool_info.staking_token,

@@ -56,7 +56,7 @@ pub fn exec<'info>(
     ctx.accounts.curve_creator_liq_ata.reload()?;
     let creator_balance = ctx.accounts.curve_creator_liq_ata.amount;
 
-    emit!(LiqMinted {
+    emit_cpi!(LiqMinted {
       curve_token,
       buyer,
       curve_creator,
