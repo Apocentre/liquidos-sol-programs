@@ -43,19 +43,16 @@ impl CurveFormula for CurveV2 {
   }
 
   fn process_sale_return(token_amount: u64, circulating_supply: u64) -> Result<u64> {
+    let m = dec!(1.777777778).safe_mul(dec!(10).safe_powd(dec!(-15))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let token_amount = Self::normalize_token_amount(token_amount)?;
-    let token_amount_square = token_amount.safe_powd(dec!(2))?;
-    
-    let a = dec!(9.31).safe_mul(dec!(10).safe_powd(dec!(-16))?)?
-    .safe_mul(circulating_supply)?
-    .safe_mul(token_amount)?;
-    
-    let b = dec!(4.655).safe_mul(dec!(10).safe_powd(dec!(-16))?)?.safe_mul(token_amount_square)?;
-    let c = dec!(6.21).safe_mul(dec!(10).safe_powd(dec!(-8))?)?.safe_mul(token_amount)?;
 
-    let reserve_tokens_returned = a.safe_sub(b)?
-    .safe_add(c)?
+    let reserve_tokens_returned = m.safe_mul(token_amount)?
+    .safe_mul(
+      circulating_supply.safe_sub(
+        dec!(0.5).safe_mul(token_amount)?
+      )?
+    )?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 

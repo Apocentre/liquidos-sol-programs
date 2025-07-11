@@ -217,10 +217,15 @@ mod tests {
       1,
     ).unwrap();
     
-    for _ in 0..83 {
+    for _ in 0..82 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
+
+
+    // final 0.891351 SOL SOL sent
+    let received = curve.process_purchase_return(891351000).unwrap();
+    println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
   }
 
   #[test]
@@ -323,8 +328,8 @@ mod tests {
     let tokens_received = curve.process_purchase_return(sol_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
     // rounding error of 1 Lamport
-    assert_eq!(tokens_received, 666858670694688);
-    assert_eq!(received, 248419999999);
+    assert_eq!(tokens_received, 749999999953125);
+    assert_eq!(received, 499999999999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 1);
   }
@@ -344,13 +349,9 @@ mod tests {
     ).unwrap();
 
     println!("received, circulating_supply, reserve_token_balance, price");
-    for _ in 0..248 {
+    for _ in 0..500 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
-
-    // final 0.42 SOL sent
-    let received = curve.process_purchase_return(420000000).unwrap();
-    println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
   }
 }
