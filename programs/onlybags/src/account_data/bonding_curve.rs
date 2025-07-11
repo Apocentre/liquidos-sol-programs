@@ -371,4 +371,25 @@ mod tests {
     curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
     assert_eq!(curve.price, 368);
   }
+
+  #[test]
+  fn curve_3_returns_correct_purchase_amount() {
+    let mut curve = BondingCurve::try_new(
+      3,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      100,
+      1,
+    ).unwrap();
+
+    let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(received, 750000000138936);
+    assert_eq!(curve.circulating_supply, 750000000138936);
+    assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
+  }
+
 }
