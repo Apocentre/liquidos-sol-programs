@@ -392,4 +392,27 @@ mod tests {
     assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
   }
 
+    #[test]
+  fn curve_3_process_sale_return_amount() {
+    let mut curve = BondingCurve::try_new(
+      3,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      100,
+      1,
+    ).unwrap();
+
+    let sol_target = curve.curve_type.sol_target();
+    let tokens_received = curve.process_purchase_return(sol_target).unwrap();
+    let received = curve.process_sale_return(tokens_received).unwrap();
+    assert_eq!(tokens_received, 750000000138936);
+    // rounding error of 1 Lamport
+    assert_eq!(received, 40014854999);
+    assert_eq!(curve.circulating_supply, 0);
+    assert_eq!(curve.reserve_token_balance, 1);
+  }
 }

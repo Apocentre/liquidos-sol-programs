@@ -58,13 +58,13 @@ impl CurveFormula for CurveV3 {
     let token_amount = Self::normalize_token_amount(token_amount)?;
 
     let term_1 = p0.safe_div(a)?;
-    let term_2 =  Decimal::safe_from_f64(E.powf(
+    let term_2 = Decimal::safe_from_f64(
       E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
-    ))?;
+    )?;
     let term_3 = dec!(1).safe_sub(
-      Decimal::safe_from_f64(E.powf(
+      Decimal::safe_from_f64(
         E.powf(a.safe_mul(dec!(-1))?.safe_mul(token_amount)?.safe_to_f64()?)
-      ))?
+      )?
     )?;
 
     let reserve_tokens_returned = term_1
