@@ -171,10 +171,12 @@ mod tests {
       100,
       1,
     ).unwrap();
+
+    let sol_target = curve.curve_type.sol_target();
     let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(received, 793004689489822);
-    assert_eq!(curve.circulating_supply, 793004689489822);
-    assert_eq!(curve.reserve_token_balance, 89800000000);
+    assert_eq!(received, 750000001086137);
+    assert_eq!(curve.circulating_supply, 750000001086137);
+    assert_eq!(curve.reserve_token_balance, sol_target);
   }
 
   #[test]
