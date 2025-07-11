@@ -17,16 +17,25 @@
 "stakingDelay": 60,
 "claimDelay": 120,
 "stakingProtocolFee": 100,
-"rewardToken": "D222KichKzYurdZuqmeJpeQ4M79B4aJydG4tn4sf51K5",
 ```
 
 
 ### v2
 
 ```
-"onlyBagsState": "3E4CLzUBBPHZjpS4Qg7pqpGKYzmjiEo7rhyg3u78WMCq",
-"stakingState": "Gt4GTErJgXTL6yAZpDDskBGnhYFCB7c3b1Mcbr87CSqp",
-"swapProxyState": "",
-"onlybagsLockerState": "",
-"treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
+  "onlyBagsState": "EEsZQBTkfPziXn9pppzTyQyw3vLMEuLXdUDA8LgRjH8e",
+  "stakingState": "9PQPKGJY5XJp1yyARN7UoEmDzTzXjPjfo6JU5hcZxaWp",
+  "swapProxyState": "",
+  "onlybagsLockerState": "",
+  "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
+  "protocolFee": 0,
+  "creatorFee": 2000000000,
+  "tradeFeeBps": 100,
+  "stakingAllocation": 50000000000000,
+  "totalTokenSupply": 1000000000000000,
+  "stakingDuration": 604800,
+  "stakingDelay": 1800,
+  "claimDelay": 86400,
+  "withdrawDelay": 604800,
+  "stakingProtocolFee": 100,
   ```
