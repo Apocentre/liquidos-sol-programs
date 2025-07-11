@@ -26,24 +26,25 @@ impl CurveFormula for CurveV3 {
   }
 
   fn process_purchase_return(reserve_tokens_received: u64, circulating_supply: u64) -> Result<u64> {
+    let p0 = dec!(3.69).safe_mul(dec!(10).safe_powd(dec!(-10))?)?;
+    let a = dec!(9.21).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     // divide by 10e9 to convert lamports to SOL
-    let reserve_tokens_received_sol = Self::normalize_sol_amount(reserve_tokens_received)?;
-
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
+    let reserve_tokens_received = Self::normalize_sol_amount(reserve_tokens_received)?;
     // divide by 10e6 to convert token amount to the highest denomination
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
-    let d = a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?;
-    let e = std::f64::consts::E.powf(d);
-    let e = Decimal::safe_from_f64(e)?;
-    
-    let k = reserve_tokens_received_sol.safe_div(c)?
-    .safe_add(e)?
-    .safe_ln()?
-    .safe_add(b)?
-    .safe_div(a)?
-    .safe_sub(circulating_supply)?
+
+    let term_1 = a.safe_mul(reserve_tokens_received)?;
+    let term_2 = p0.safe_mul(
+      Decimal::safe_from_f64(
+        E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
+      )?
+    )?;
+    let term_1_2 = term_1
+    .safe_div(term_2)?
+    .safe_add(dec!(1))?;
+
+    let k = dec!(1).safe_div(a)?
+    .safe_mul(term_1_2.safe_ln()?)?
     .safe_mul(ONE_TOKEN)?
     .safe_to_u64()?;
     
