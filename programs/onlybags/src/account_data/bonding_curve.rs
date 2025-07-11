@@ -155,6 +155,7 @@ mod tests {
   use anchor_lang::solana_program::pubkey::Pubkey;
   use anchor_spl::token_2022::spl_token_2022::solana_zk_token_sdk::curve25519::scalar::Zeroable;
 
+
   use super::BondingCurve;
 
   #[test]
@@ -170,7 +171,7 @@ mod tests {
       100,
       1,
     ).unwrap();
-    let received = curve.process_purchase_return(89800000000).unwrap();
+    let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
     assert_eq!(received, 793004689489822);
     assert_eq!(curve.circulating_supply, 793004689489822);
     assert_eq!(curve.reserve_token_balance, 89800000000);

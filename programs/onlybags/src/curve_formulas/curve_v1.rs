@@ -10,12 +10,14 @@ pub struct CurveV1;
 impl CurveFormula for CurveV1 {
   fn calc_price(circulating_supply: u64) -> Result<u64> {
     let a = dec!(1.103).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
-    let b = dec!(17.5970429);
-    let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
+    let b = dec!(4.8235).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let circulating_supply = Decimal::safe_from_u64(circulating_supply)?;
+    // let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
 
-    let p = std::f64::consts::E.powf(a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?);
+    let p = std::f64::consts::E.powf(b.safe_mul(circulating_supply)?.safe_to_f64()?);
     let p = Decimal::safe_from_f64(p)?
-    .safe_mul(LAMPORT_IN_SOL)?
+    .safe_mul(a)?
+    // .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 
     Ok(p)

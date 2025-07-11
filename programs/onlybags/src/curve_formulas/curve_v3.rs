@@ -72,8 +72,9 @@ impl CurveFormula for CurveV3 {
 
 #[cfg(test)]
 mod test {
-  use crate::curve_formulas::{curve_formula::CurveFormula, curve_v1::CurveV3};
   use anchor_safe_math::SafeMath;
+
+use crate::curve_formulas::{curve_formula::CurveFormula, curve_v3::CurveV3};
 
   #[test]
   fn process_purchase_return_specific_values() {

@@ -8,6 +8,7 @@ use anchor_lang::prelude::*;
 use curve_formula::CurveFormula;
 use curve_v1::CurveV1;
 use curve_v2::CurveV2;
+use curve_v3::CurveV3;
 use crate::program_error::ErrorCode;
 
 #[derive(Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
