@@ -1,8 +1,8 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "../helpers/accounts.js";
 import {provider} from "../helpers/provider.js";
-import config from "../config.json" assert { type: "json" };
-import userKey from "../../wallets/deployer_devnet.json" assert { type: "json" };
+import config from "../config.v2.json" with { type: "json" };
+import userKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const {Keypair, PublicKey} = anchor.web3
 
