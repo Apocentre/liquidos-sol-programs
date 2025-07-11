@@ -13,7 +13,7 @@ use crate::instructions::{
   update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
 };
 
-declare_id!("Ft6enkagV1983D6udeJJxAExAoRBhRnYBsHhbBqnoUtY");
+declare_id!("HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV");
 
 #[program]
 pub mod onlybags {
