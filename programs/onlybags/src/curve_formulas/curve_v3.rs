@@ -5,9 +5,9 @@ use crate::math::decimal_error::DecimalErrorHandler;
 use super::{constants::{LAMPORT_IN_SOL, ONE_TOKEN}, curve_formula::CurveFormula};
 
 #[derive(Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
-pub struct CurveV1;
+pub struct CurveV3;
 
-impl CurveFormula for CurveV1 {
+impl CurveFormula for CurveV3 {
   fn calc_price(circulating_supply: u64) -> Result<u64> {
     let a = dec!(1.103).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
     let b = dec!(17.5970429);
@@ -72,7 +72,7 @@ impl CurveFormula for CurveV1 {
 
 #[cfg(test)]
 mod test {
-  use crate::curve_formulas::{curve_formula::CurveFormula, curve_v1::CurveV1};
+  use crate::curve_formulas::{curve_formula::CurveFormula, curve_v1::CurveV3};
   use anchor_safe_math::SafeMath;
 
   #[test]
@@ -99,12 +99,12 @@ mod test {
     println!("Net Amount {}", net_amount);
 
     let circulating_supply = 793004666216429;
-    let k = CurveV1::process_purchase_return(net_amount, circulating_supply).unwrap();
+    let k = CurveV3::process_purchase_return(net_amount, circulating_supply).unwrap();
     let circulating_supply = circulating_supply.safe_add(k).unwrap();
     let reserve_token_balance = reserve_token_balance.safe_add(reserve_tokens_received).unwrap();
     println!("reserve_token_balance {}", reserve_token_balance);
 
-    println!("{}", CurveV1::calc_price(circulating_supply).unwrap());
+    println!("{}", CurveV3::calc_price(circulating_supply).unwrap());
   }
 
 }

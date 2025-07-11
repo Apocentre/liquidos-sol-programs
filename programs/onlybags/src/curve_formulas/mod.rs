@@ -1,5 +1,6 @@
 pub mod curve_v1;
 pub mod curve_v2;
+pub mod curve_v3;
 pub mod curve_formula;
 pub mod constants;
 
@@ -13,6 +14,7 @@ use crate::program_error::ErrorCode;
 pub enum CurveType {
   CurveV1,
   CurveV2,
+  CurveV3,
 }
 
 impl From<&CurveType> for u8 {
@@ -20,6 +22,7 @@ impl From<&CurveType> for u8 {
     match value {
       CurveType::CurveV1 => 1,
       CurveType::CurveV2 => 2,
+      CurveType::CurveV3 => 3,
     }
   }
 }
@@ -39,8 +42,9 @@ impl TryFrom<u8> for CurveType {
 impl CurveType {
   pub fn sol_target(&self) -> u64 {
     match self {
-      CurveType::CurveV1 => 89800000000,
-      CurveType::CurveV2 => 248420000000,
+      CurveType::CurveV1 => 82891351000, // 82.891351 SOL
+      CurveType::CurveV2 => 500000000000, // 500 SOL
+      CurveType::CurveV3 => 40014855000, // 40.014855 SOL
     }
   }
 
@@ -48,6 +52,7 @@ impl CurveType {
     match self {
       CurveType::CurveV1 => CurveV1::calc_price(circulating_supply),
       CurveType::CurveV2 => CurveV2::calc_price(circulating_supply),
+      CurveType::CurveV3 => CurveV3::calc_price(circulating_supply),
     }
   }
 
@@ -55,6 +60,7 @@ impl CurveType {
     match self {
       CurveType::CurveV1 => CurveV1::process_purchase_return(reserve_tokens_received, circulating_supply),
       CurveType::CurveV2 => CurveV2::process_purchase_return(reserve_tokens_received, circulating_supply),
+      CurveType::CurveV3 => CurveV3::process_purchase_return(reserve_tokens_received, circulating_supply),
     }
   }
 
@@ -62,6 +68,7 @@ impl CurveType {
     match self {
       CurveType::CurveV1 => CurveV1::process_sale_return(token_amount, circulating_supply),
       CurveType::CurveV2 => CurveV2::process_sale_return(token_amount, circulating_supply),
+      CurveType::CurveV3 => CurveV3::process_sale_return(token_amount, circulating_supply),
     }
   }
 }
