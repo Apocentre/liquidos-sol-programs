@@ -155,7 +155,6 @@ mod tests {
   use anchor_lang::solana_program::pubkey::Pubkey;
   use anchor_spl::token_2022::spl_token_2022::solana_zk_token_sdk::curve25519::scalar::Zeroable;
 
-
   use super::BondingCurve;
 
   #[test]
@@ -353,5 +352,23 @@ mod tests {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
+  }
+
+  #[test]
+  fn curve_3_price() {
+    let mut curve = BondingCurve::try_new(
+      3,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      100,
+      1,
+    ).unwrap();
+
+    curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(curve.price, 1333);
   }
 }

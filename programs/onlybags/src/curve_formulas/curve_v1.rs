@@ -1,5 +1,4 @@
 use std::f64::consts::E;
-
 use anchor_lang::prelude::*;
 use rust_decimal::{Decimal, MathematicalOps};
 use rust_decimal_macros::dec;

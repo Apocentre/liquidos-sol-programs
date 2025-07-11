@@ -1,3 +1,4 @@
+use std::f64::consts::E;
 use anchor_lang::prelude::*;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
@@ -9,12 +10,15 @@ pub struct CurveV3;
 
 impl CurveFormula for CurveV3 {
   fn calc_price(circulating_supply: u64) -> Result<u64> {
-    let a = dec!(1.103).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
-    let b = dec!(17.5970429);
+    let p0 = dec!(3.69).safe_mul(dec!(10).safe_powd(dec!(-10))?)?;
+    let a = dec!(9.21).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
+    let term_exp = Decimal::safe_from_f64(
+      E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
+    )?;
 
-    let p = std::f64::consts::E.powf(a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?);
-    let p = Decimal::safe_from_f64(p)?
+    let p = p0
+    .safe_mul(term_exp)?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 
