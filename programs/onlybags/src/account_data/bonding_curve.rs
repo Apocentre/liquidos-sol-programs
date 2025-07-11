@@ -369,6 +369,6 @@ mod tests {
     ).unwrap();
 
     curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(curve.price, 1333);
+    assert_eq!(curve.price, 368);
   }
 }

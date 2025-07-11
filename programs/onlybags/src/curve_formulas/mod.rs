@@ -35,6 +35,7 @@ impl TryFrom<u8> for CurveType {
     match value {
       1 => Ok(CurveType::CurveV1),
       2 => Ok(CurveType::CurveV2),
+      3 => Ok(CurveType::CurveV3),
       _ => Err(error!(ErrorCode::CurveTypeNotSupported)),
     }
   }
