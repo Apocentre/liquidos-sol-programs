@@ -52,22 +52,24 @@ impl CurveFormula for CurveV3 {
   }
 
   fn process_sale_return(token_amount: u64, circulating_supply: u64) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
+    let p0 = dec!(3.69).safe_mul(dec!(10).safe_powd(dec!(-10))?)?;
+    let a = dec!(9.21).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
-    let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
+    let token_amount = Self::normalize_token_amount(token_amount)?;
 
-    let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
+    let term_1 = p0.safe_div(a)?;
+    let term_2 =  Decimal::safe_from_f64(E.powf(
+      E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
     ))?;
+    let term_3 = dec!(1).safe_sub(
+      Decimal::safe_from_f64(E.powf(
+        E.powf(a.safe_mul(dec!(-1))?.safe_mul(token_amount)?.safe_to_f64()?)
+      ))?
+    )?;
 
-    let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?
-    .safe_mul(dec!(-1))?
+    let reserve_tokens_returned = term_1
+    .safe_mul(term_2)?
+    .safe_mul(term_3)?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 
@@ -79,7 +81,7 @@ impl CurveFormula for CurveV3 {
 mod test {
   use anchor_safe_math::SafeMath;
 
-use crate::curve_formulas::{curve_formula::CurveFormula, curve_v3::CurveV3};
+  use crate::curve_formulas::{curve_formula::CurveFormula, curve_v3::CurveV3};
 
   #[test]
   fn process_purchase_return_specific_values() {
