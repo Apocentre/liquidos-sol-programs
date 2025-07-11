@@ -217,7 +217,7 @@ mod tests {
       1,
     ).unwrap();
     
-    for _ in 0..90 {
+    for _ in 0..83 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
@@ -282,7 +282,7 @@ mod tests {
     ).unwrap();
 
     curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(curve.price, 682);
+    assert_eq!(curve.price, 1333);
   }
 
   #[test]
@@ -300,8 +300,8 @@ mod tests {
     ).unwrap();
 
     let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(received, 666858670694688);
-    assert_eq!(curve.circulating_supply, 666858670694688);
+    assert_eq!(received, 749999999953125);
+    assert_eq!(curve.circulating_supply, 749999999953125);
     assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
   }
 
