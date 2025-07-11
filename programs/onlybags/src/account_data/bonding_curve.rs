@@ -172,11 +172,11 @@ mod tests {
       1,
     ).unwrap();
 
-    let sol_target = curve.curve_type.sol_target();
-    let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    let curve_1_target = curve.curve_type.sol_target();
+    let received = curve.process_purchase_return(curve_1_target).unwrap();
     assert_eq!(received, 750000001086137);
     assert_eq!(curve.circulating_supply, 750000001086137);
-    assert_eq!(curve.reserve_token_balance, sol_target);
+    assert_eq!(curve.reserve_token_balance, curve_1_target);
   }
 
   #[test]
@@ -193,9 +193,12 @@ mod tests {
       1,
     ).unwrap();
 
-    let tokens_received = curve.process_purchase_return(89800000000).unwrap();
+    let curve_1_target = curve.curve_type.sol_target();
+    let tokens_received = curve.process_purchase_return(curve_1_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
-    assert_eq!(received, 89800000000);
+    // rounding error. It's by 1 lamport less that the real target. Less is ok
+    // since tx won't revert.
+    assert_eq!(received, 82891350999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 0);
   }

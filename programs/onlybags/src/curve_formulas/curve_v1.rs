@@ -15,7 +15,10 @@ impl CurveFormula for CurveV1 {
     let k = dec!(4.8235).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
 
-    let p = E.powf(k.safe_mul(circulating_supply)?.safe_to_f64()?);
+    let p = E.powf(
+      k.safe_mul(circulating_supply)?
+      .safe_to_f64()?
+    );
     let p = Decimal::safe_from_f64(p)?
     .safe_mul(p0)?
     .safe_mul(LAMPORT_IN_SOL)?
@@ -34,7 +37,8 @@ impl CurveFormula for CurveV1 {
     // divide by 10e6 to convert token amount to the highest denomination
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let term_exp = Decimal::safe_from_f64(
-      E.powf(k.safe_mul(circulating_supply)?.safe_to_f64()?)
+      E.powf(k.safe_mul(circulating_supply)?
+      .safe_to_f64()?)
     )?;
     let term = k.safe_mul(reserve_tokens_received)?.safe_div(p0.safe_mul(term_exp)?)?;
     let term_2 = dec!(1).safe_add(term)?;
@@ -48,22 +52,24 @@ impl CurveFormula for CurveV1 {
   }
 
   fn process_sale_return(token_amount: u64, circulating_supply: u64) -> Result<u64> {
-    let a = dec!(3.34315523).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
-    let b = dec!(17.5970429);
-    let c = dec!(299215564.8);
+    let p0 = dec!(1.103).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(4.8235).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
-    let token_amount_normalized = Self::normalize_token_amount(token_amount)?;
+    let token_amount = Self::normalize_token_amount(token_amount)?;
 
-    let d = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply.safe_sub(token_amount_normalized)?)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
+    let term_exp =  Decimal::safe_from_f64(
+      E.powf(k.safe_mul(circulating_supply)?
+      .safe_to_f64()?)
+    )?;
+    let term_exp_2 =  Decimal::safe_from_f64(
+      E.powf(
+        k.safe_mul(circulating_supply.safe_sub(token_amount)?)?
+        .safe_to_f64()?
+      )
+    )?;
 
-    let e = Decimal::safe_from_f64(std::f64::consts::E.powf(
-      a.safe_mul(circulating_supply)?.safe_sub(b)?.safe_to_f64()?
-    ))?;
-
-    let reserve_tokens_returned = c.safe_mul(d.safe_sub(e)?)?
-    .safe_mul(dec!(-1))?
+    let reserve_tokens_returned = p0.safe_div(k)?
+    .safe_mul(term_exp.safe_sub(term_exp_2)?)?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 
@@ -76,6 +82,7 @@ mod test {
   use crate::curve_formulas::{curve_formula::CurveFormula, curve_v1::CurveV1};
   use anchor_safe_math::SafeMath;
 
+  // TODO: is this still relevant
   #[test]
   fn process_purchase_return_specific_values() {
     let reserve_tokens_received = 323;
@@ -107,5 +114,4 @@ mod test {
 
     println!("{}", CurveV1::calc_price(circulating_supply).unwrap());
   }
-
 }
