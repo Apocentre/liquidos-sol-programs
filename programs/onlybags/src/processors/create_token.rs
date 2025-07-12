@@ -21,7 +21,7 @@ pub struct TokenCreatedEvent {
   pub uri: String,
   pub curve: Pubkey,
   pub tax: Option<u16>,
-  pub version: u16,
+  pub version: u8,
 }
 
 pub fn update_account_lamports_to_minimum_balance<'info>(

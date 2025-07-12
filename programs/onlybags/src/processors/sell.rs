@@ -17,7 +17,7 @@ pub struct SellEvent {
   circulating_supply: String,
   sol_balance: String,
   seller_balance: String,
-  pub version: u16,
+  version: u8,
 }
 
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {

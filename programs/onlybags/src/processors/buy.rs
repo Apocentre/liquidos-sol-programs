@@ -25,7 +25,7 @@ pub struct BuyEvent {
   circulating_supply: String,
   sol_balance: String,
   buyer_balance: String,
-  pub version: u16,
+  version: u8,
 }
 
 fn mint_tokens(
