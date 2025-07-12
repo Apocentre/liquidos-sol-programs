@@ -9,9 +9,7 @@ use anchor_spl::{associated_token, token_2022::{initialize_mint, InitializeMint}
   MetadataPointerInitialize, TokenMetadataInitialize, TransferFeeInitialize,
 }};
 use crate::{
-  account_data::bonding_curve::BondingCurve, instruction::CreateStakingPool,
-  instructions::create_tax_token::CreateTaxToken, processors::create_token::TokenCreatedEvent,
-  program_error::ErrorCode, ID,
+  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, instruction::CreateStakingPool, instructions::create_tax_token::CreateTaxToken, processors::create_token::TokenCreatedEvent, program_error::ErrorCode, ID
 };
 use super::create_token::update_account_lamports_to_minimum_balance;
 
@@ -236,6 +234,7 @@ pub fn exec(
     uri,
     curve: curve_key,
     tax: Some(fee_bps),
+    version: VERSION,
   });
 
   Ok(())
