@@ -10,11 +10,11 @@ pub struct CurveV3;
 
 impl CurveFormula for CurveV3 {
   fn calc_price(circulating_supply: u64) -> Result<u64> {
-    let p0 = dec!(3.69).safe_mul(dec!(10).safe_powd(dec!(-10))?)?;
-    let a = dec!(9.21).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let p0 = dec!(1.36).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(3.07).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let term_exp = Decimal::safe_from_f64(
-      E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
+      E.powf(k.safe_mul(circulating_supply)?.safe_to_f64()?)
     )?;
 
     let p = p0
@@ -26,24 +26,22 @@ impl CurveFormula for CurveV3 {
   }
 
   fn process_purchase_return(reserve_tokens_received: u64, circulating_supply: u64) -> Result<u64> {
-    let p0 = dec!(3.69).safe_mul(dec!(10).safe_powd(dec!(-10))?)?;
-    let a = dec!(9.21).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let p0 = dec!(1.36).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(3.07).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     // divide by 10e9 to convert lamports to SOL
     let reserve_tokens_received = Self::normalize_sol_amount(reserve_tokens_received)?;
     // divide by 10e6 to convert token amount to the highest denomination
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
 
-    let term_1 = a.safe_mul(reserve_tokens_received)?;
+    let term_1 = k.safe_mul(reserve_tokens_received)?;
     let term_2 = p0.safe_mul(
       Decimal::safe_from_f64(
-        E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
+        E.powf(k.safe_mul(circulating_supply)?.safe_to_f64()?)
       )?
     )?;
-    let term_1_2 = term_1
-    .safe_div(term_2)?
-    .safe_add(dec!(1))?;
+    let term_1_2 = dec!(1).safe_add(term_1.safe_div(term_2)?)?;
 
-    let k = dec!(1).safe_div(a)?
+    let k = dec!(1).safe_div(k)?
     .safe_mul(term_1_2.safe_ln()?)?
     .safe_mul(ONE_TOKEN)?
     .safe_to_u64()?;
@@ -52,24 +50,23 @@ impl CurveFormula for CurveV3 {
   }
 
   fn process_sale_return(token_amount: u64, circulating_supply: u64) -> Result<u64> {
-    let p0 = dec!(3.69).safe_mul(dec!(10).safe_powd(dec!(-10))?)?;
-    let a = dec!(9.21).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let p0 = dec!(1.36).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(3.07).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let token_amount = Self::normalize_token_amount(token_amount)?;
 
-    let term_1 = p0.safe_div(a)?;
-    let term_2 = Decimal::safe_from_f64(
-      E.powf(a.safe_mul(circulating_supply)?.safe_to_f64()?)
+    let term_1 =  Decimal::safe_from_f64(
+      E.powf(k.safe_mul(circulating_supply)?.safe_to_f64()?)
     )?;
-    let term_3 = dec!(1).safe_sub(
-      Decimal::safe_from_f64(
-        E.powf(a.safe_mul(dec!(-1))?.safe_mul(token_amount)?.safe_to_f64()?)
-      )?
+    let term_2 = Decimal::safe_from_f64(
+      E.powf(k.safe_mul(
+        circulating_supply.safe_sub(token_amount)?
+      )?.safe_to_f64()?)
     )?;
 
-    let reserve_tokens_returned = term_1
-    .safe_mul(term_2)?
-    .safe_mul(term_3)?
+    let reserve_tokens_returned = p0
+    .safe_div(k)?
+    .safe_mul(term_1.safe_sub(term_2)?)?
     .safe_mul(LAMPORT_IN_SOL)?
     .safe_to_u64()?;
 
