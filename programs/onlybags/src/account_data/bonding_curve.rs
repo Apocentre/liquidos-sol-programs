@@ -387,8 +387,8 @@ mod tests {
     ).unwrap();
 
     let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(received, 750000019054189);
-    assert_eq!(curve.circulating_supply, 750000019054189);
+    assert_eq!(received, 749999974558813);
+    assert_eq!(curve.circulating_supply, 749999974558813);
     assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
   }
 
@@ -409,9 +409,9 @@ mod tests {
     let sol_target = curve.curve_type.sol_target();
     let tokens_received = curve.process_purchase_return(sol_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
-    assert_eq!(tokens_received, 750000019054189);
+    assert_eq!(tokens_received, 749999974558813);
     // rounding error of 1 Lamport
-    assert_eq!(received, 39865939999);
+    assert_eq!(received, 39973999999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 1);
   }

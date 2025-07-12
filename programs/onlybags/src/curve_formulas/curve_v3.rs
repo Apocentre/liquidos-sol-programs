@@ -10,8 +10,8 @@ pub struct CurveV3;
 
 impl CurveFormula for CurveV3 {
   fn calc_price(circulating_supply: u64) -> Result<u64> {
-    let p0 = dec!(1.36).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
-    let k = dec!(3.07).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let p0 = dec!(1.364148147999999948).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(3.069333333333333488).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let term_exp = Decimal::safe_from_f64(
       E.powf(k.safe_mul(circulating_supply)?.safe_to_f64()?)
@@ -26,8 +26,8 @@ impl CurveFormula for CurveV3 {
   }
 
   fn process_purchase_return(reserve_tokens_received: u64, circulating_supply: u64) -> Result<u64> {
-    let p0 = dec!(1.36).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
-    let k = dec!(3.07).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let p0 = dec!(1.364148147999999948).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(3.069333333333333488).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     // divide by 10e9 to convert lamports to SOL
     let reserve_tokens_received = Self::normalize_sol_amount(reserve_tokens_received)?;
     // divide by 10e6 to convert token amount to the highest denomination
@@ -50,8 +50,8 @@ impl CurveFormula for CurveV3 {
   }
 
   fn process_sale_return(token_amount: u64, circulating_supply: u64) -> Result<u64> {
-    let p0 = dec!(1.36).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
-    let k = dec!(3.07).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
+    let p0 = dec!(1.364148147999999948).safe_mul(dec!(10).safe_powd(dec!(-8))?)?;
+    let k = dec!(3.069333333333333488).safe_mul(dec!(10).safe_powd(dec!(-9))?)?;
     let circulating_supply = Self::normalize_token_amount(circulating_supply)?;
     let token_amount = Self::normalize_token_amount(token_amount)?;
 

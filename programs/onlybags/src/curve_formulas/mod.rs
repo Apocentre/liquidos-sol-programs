@@ -46,7 +46,7 @@ impl CurveType {
     match self {
       CurveType::CurveV1 => 82891351000, // 82.891351 SOL
       CurveType::CurveV2 => 500000000000, // 500 SOL
-      CurveType::CurveV3 => 39865940000, // 39.86594 SOL
+      CurveType::CurveV3 => 39974000000, // 39.974 SOL
     }
   }
 
