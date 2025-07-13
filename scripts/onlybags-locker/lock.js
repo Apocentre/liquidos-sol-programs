@@ -2,9 +2,9 @@ import * as anchor from "@coral-xyz/anchor";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import * as accounts from "../helpers/accounts.js";
-import config from "../config.json" assert { type: "json" };
+import config from "../config.v2.json" with { type: "json" };
 import {createAndSendV0Tx} from "../helpers/tx.js";
-import userKey from "../../wallets/deployer_devnet.json" assert { type: "json" };
+import userKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;

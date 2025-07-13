@@ -170,10 +170,12 @@ mod tests {
       100,
       1,
     ).unwrap();
-    let received = curve.process_purchase_return(89800000000).unwrap();
-    assert_eq!(received, 793004689489822);
-    assert_eq!(curve.circulating_supply, 793004689489822);
-    assert_eq!(curve.reserve_token_balance, 89800000000);
+
+    let curve_1_target = curve.curve_type.sol_target();
+    let received = curve.process_purchase_return(curve_1_target).unwrap();
+    assert_eq!(received, 750000001086137);
+    assert_eq!(curve.circulating_supply, 750000001086137);
+    assert_eq!(curve.reserve_token_balance, curve_1_target);
   }
 
   #[test]
@@ -190,9 +192,12 @@ mod tests {
       1,
     ).unwrap();
 
-    let tokens_received = curve.process_purchase_return(89800000000).unwrap();
+    let curve_1_target = curve.curve_type.sol_target();
+    let tokens_received = curve.process_purchase_return(curve_1_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
-    assert_eq!(received, 89800000000);
+    // rounding error. It's by 1 lamport less that the real target. Less is ok
+    // since tx won't revert.
+    assert_eq!(received, 82891350999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 0);
   }
@@ -211,10 +216,15 @@ mod tests {
       1,
     ).unwrap();
     
-    for _ in 0..90 {
+    for _ in 0..82 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
+
+
+    // final 0.891351 SOL SOL sent
+    let received = curve.process_purchase_return(891351000).unwrap();
+    println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
   }
 
   #[test]
@@ -276,7 +286,7 @@ mod tests {
     ).unwrap();
 
     curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(curve.price, 682);
+    assert_eq!(curve.price, 1333);
   }
 
   #[test]
@@ -294,8 +304,8 @@ mod tests {
     ).unwrap();
 
     let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
-    assert_eq!(received, 666858670694688);
-    assert_eq!(curve.circulating_supply, 666858670694688);
+    assert_eq!(received, 749999999953125);
+    assert_eq!(curve.circulating_supply, 749999999953125);
     assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
   }
 
@@ -317,8 +327,8 @@ mod tests {
     let tokens_received = curve.process_purchase_return(sol_target).unwrap();
     let received = curve.process_sale_return(tokens_received).unwrap();
     // rounding error of 1 Lamport
-    assert_eq!(tokens_received, 666858670694688);
-    assert_eq!(received, 248419999999);
+    assert_eq!(tokens_received, 749999999953125);
+    assert_eq!(received, 499999999999);
     assert_eq!(curve.circulating_supply, 0);
     assert_eq!(curve.reserve_token_balance, 1);
   }
@@ -338,13 +348,71 @@ mod tests {
     ).unwrap();
 
     println!("received, circulating_supply, reserve_token_balance, price");
-    for _ in 0..248 {
+    for _ in 0..500 {
       let received = curve.process_purchase_return(1_000_000_000).unwrap();
       println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
     }
+  }
 
-    // final 0.42 SOL sent
-    let received = curve.process_purchase_return(420000000).unwrap();
-    println!("{:?}", (received, curve.circulating_supply, curve.reserve_token_balance, curve.price));
+  #[test]
+  fn curve_3_price() {
+    let mut curve = BondingCurve::try_new(
+      3,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      100,
+      1,
+    ).unwrap();
+
+    curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(curve.price, 136);
+  }
+
+  #[test]
+  fn curve_3_returns_correct_purchase_amount() {
+    let mut curve = BondingCurve::try_new(
+      3,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      100,
+      1,
+    ).unwrap();
+
+    let received = curve.process_purchase_return(curve.curve_type.sol_target()).unwrap();
+    assert_eq!(received, 749999974558813);
+    assert_eq!(curve.circulating_supply, 749999974558813);
+    assert_eq!(curve.reserve_token_balance, curve.curve_type.sol_target());
+  }
+
+    #[test]
+  fn curve_3_process_sale_return_amount() {
+    let mut curve = BondingCurve::try_new(
+      3,
+      Pubkey::zeroed(),
+      Pubkey::zeroed(),
+      1000,
+      100,
+      100,
+      1_000_000_000 * 10e6 as u64,
+      100,
+      1,
+    ).unwrap();
+
+    let sol_target = curve.curve_type.sol_target();
+    let tokens_received = curve.process_purchase_return(sol_target).unwrap();
+    let received = curve.process_sale_return(tokens_received).unwrap();
+    assert_eq!(tokens_received, 749999974558813);
+    // rounding error of 1 Lamport
+    assert_eq!(received, 39973999999);
+    assert_eq!(curve.circulating_supply, 0);
+    assert_eq!(curve.reserve_token_balance, 1);
   }
 }

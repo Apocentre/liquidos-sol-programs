@@ -1,0 +1,20 @@
+{
+  "onlyBagsState": "EEsZQBTkfPziXn9pppzTyQyw3vLMEuLXdUDA8LgRjH8e",
+  "stakingState": "9PQPKGJY5XJp1yyARN7UoEmDzTzXjPjfo6JU5hcZxaWp",
+  "swapProxyState": "",
+  "onlybagsLockerState": "",
+  "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
+  "protocolFee": 0,
+  "creatorFee": 2000000000,
+  "tradeFeeBps": 100,
+  "stakingAllocation": 50000000000000,
+  "totalTokenSupply": 1000000000000000,
+  "stakingDuration": 604800,
+  "stakingDelay": 1800,
+  "claimDelay": 86400,
+  "withdrawDelay": 604800,
+  "stakingProtocolFee": 100,
+  "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
+  "stakingToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu",
+  "rewardToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu"
+}

@@ -8,9 +8,9 @@ use anchor_lang::{
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
-  instruction::{MoveLiquidity, MintLiq}, instructions::buy::Buy,
-  processors::common::transfer_from_pda,
-  program_error::ErrorCode, raydium::{self, AmmConfig}, ID,
+  curve_formulas::constants::VERSION, instruction::{MintLiq, MoveLiquidity},
+  instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode,
+  raydium::{self, AmmConfig}, ID,
 };
 
 use super::common::deser;
@@ -27,6 +27,7 @@ pub struct BuyEvent {
   circulating_supply: String,
   sol_balance: String,
   buyer_balance: String,
+  version: u8,
 }
 
 fn mint_tokens(
@@ -261,6 +262,7 @@ pub fn exec<'info>(
       circulating_supply: circulating_supply.to_string(),
       sol_balance,
       buyer_balance: buyer_balance.to_string(),
+      version: VERSION,
     });
   }
 
