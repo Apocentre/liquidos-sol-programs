@@ -10,6 +10,7 @@ use crate::{
 };
 
 #[derive(Accounts)]
+#[event_cpi]
 pub struct Buy<'info> {
   #[account(mut)]
   pub buyer: Signer<'info>,

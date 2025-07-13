@@ -6,6 +6,7 @@ use crate::account_data::{bonding_curve::BondingCurve, state::State};
 
 
 #[derive(Accounts)]
+#[event_cpi]
 #[instruction(name: String, symbol: String)]
 pub struct CreateToken<'info> {
   /// The state account of each instance of this program

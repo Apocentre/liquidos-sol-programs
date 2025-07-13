@@ -104,7 +104,7 @@ pub struct ResizeBondingCurve<'info> {
   }
 ```
 
-> Note, if we do not do `_ctx: Context<ResizeBondingCurve>` but instract `_: Context<ResizeBondingCurve>`, anchor will not include this function in the binary nor in the IDL
+> Note, if we do not do `_ctx: Context<ResizeBondingCurve>` but instead `_: Context<ResizeBondingCurve>`, anchor will not include this function in the binary nor in the IDL
 
 
 ## What is the Migration Account

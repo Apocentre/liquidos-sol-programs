@@ -8,8 +8,7 @@ use anchor_lang::{
 };
 use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
 use crate::{
-  account_data::bonding_curve::BondingCurve, instruction::CreateStakingPool,
-  instructions::create_token::CreateToken, program_error::ErrorCode, ID,
+  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, instruction::CreateStakingPool, instructions::create_token::CreateToken, program_error::ErrorCode, ID
 };
 
 #[event]
@@ -22,6 +21,7 @@ pub struct TokenCreatedEvent {
   pub uri: String,
   pub curve: Pubkey,
   pub tax: Option<u16>,
+  pub version: u8,
 }
 
 pub fn update_account_lamports_to_minimum_balance<'info>(
@@ -119,7 +119,7 @@ pub fn exec(
 
   create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
 
-  emit!(TokenCreatedEvent {
+  emit_cpi!(TokenCreatedEvent {
     curve_type,
     creator: token_creator,
     address: ctx.accounts.token.key(),
@@ -128,6 +128,7 @@ pub fn exec(
     uri,
     curve: curve_key,
     tax: None,
+    version: VERSION,
   });
 
   Ok(())

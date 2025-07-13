@@ -3,7 +3,7 @@ use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{burn, Burn};
 use super::common::transfer_from_pda;
 use crate::{
-  instructions::sell::Sell, program_error::ErrorCode
+  curve_formulas::constants::VERSION, instructions::sell::Sell, program_error::ErrorCode
 };
 
 #[event]
@@ -17,6 +17,7 @@ pub struct SellEvent {
   circulating_supply: String,
   sol_balance: String,
   seller_balance: String,
+  version: u8,
 }
 
 fn send_sol_to_seller(ctx: &Context<Sell>, amount: u64) -> Result<()> {
@@ -78,7 +79,7 @@ pub fn exec(
   ctx.accounts.seller_ata.reload()?;
   let seller_balance = ctx.accounts.seller_ata.amount;
 
-  emit!(SellEvent {
+  emit_cpi!(SellEvent {
     curve_type,
     seller: ctx.accounts.seller.key(),
     token: ctx.accounts.token.key(),
@@ -88,6 +89,7 @@ pub fn exec(
     circulating_supply: circulating_supply.to_string(),
     sol_balance,
     seller_balance: seller_balance.to_string(),
+    version: VERSION,
   });
 
   Ok(())

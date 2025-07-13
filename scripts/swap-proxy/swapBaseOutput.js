@@ -4,8 +4,8 @@ import {provider} from "../helpers/provider.js";
 import * as accounts from "../helpers/accounts.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
-import config from "../config.json" assert { type: "json" };
-import buyerKey from "../../wallets/deployer_devnet.json" assert { type: "json" };
+import config from "../config.v2.json" with { type: "json" };
+import buyerKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;

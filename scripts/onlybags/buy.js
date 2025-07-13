@@ -4,8 +4,8 @@ import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
-import config from "../config.json" assert { type: "json" };
-import buyerKey from "../../wallets/deployer_devnet.json" assert { type: "json" };
+import config from "../config.v2.json" with { type: "json" };
+import buyerKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -15,7 +15,7 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const amount = new BN(web3.toBase("1", 4));
+  const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.onlyBagsState);

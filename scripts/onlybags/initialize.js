@@ -3,7 +3,7 @@ import * as accounts from "../helpers/accounts.js";
 import Web3Pkg from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
-import config from "../config.json" assert { type: "json" };
+import config from "../config.v2.json" with { type: "json" }
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
