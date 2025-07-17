@@ -117,7 +117,7 @@ fn init_metadata(
 ) -> Result<()> {
   let token_2022 = &ctx.accounts.token_2022;
   let cpi_accounts = TokenMetadataInitialize {
-    token_program_id: token_2022.to_account_info(),
+    program_id: token_2022.to_account_info(),
     mint: ctx.accounts.token.to_account_info(),
     metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
     mint_authority: ctx.accounts.bonding_curve.to_account_info(),

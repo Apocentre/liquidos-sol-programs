@@ -12,11 +12,7 @@ impl<T> Discriminator for Migration<T>
 where
   T: Discriminator,
 {
-  const DISCRIMINATOR: [u8; 8] = T::DISCRIMINATOR;
-
-  fn discriminator() -> [u8; 8] {
-    Self::DISCRIMINATOR
-  }
+  const DISCRIMINATOR: &'static [u8] = T::DISCRIMINATOR;
 }
 
 impl<T> AccountSerialize for Migration<T> where T: Discriminator {}

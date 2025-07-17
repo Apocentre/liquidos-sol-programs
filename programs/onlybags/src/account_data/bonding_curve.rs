@@ -1,11 +1,9 @@
-
-use std::mem::size_of;
 use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use crate::curve_formulas::CurveType;
 
 #[account]
-#[derive(Debug)]
+#[derive(Debug, InitSpace)]
 pub struct BondingCurve {
   /// The type of the curve. This implement the main logic of the curve i.e. the formulas
   pub curve_type: CurveType,
@@ -36,8 +34,7 @@ pub struct BondingCurve {
 }
 
 impl BondingCurve {
-  pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE;
 
   pub fn try_new(
     curve_type: u8,

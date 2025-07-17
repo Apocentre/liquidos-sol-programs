@@ -3,6 +3,7 @@ use std::mem::size_of;
 use anchor_lang::prelude::*;
 
 #[account]
+#[derive(InitSpace)]
 pub struct UserInfo {
   pub bump: u8,
   pub staked_amount: u64,
@@ -13,6 +14,5 @@ pub struct UserInfo {
 }
 
 impl UserInfo {
-  pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE;
 }
