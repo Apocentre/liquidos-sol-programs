@@ -69,3 +69,8 @@ export const userLock = (state, token, user, programId) => PublicKey.findProgram
   [utf8.encode("user_lock"), state.toBuffer(), token.toBuffer(), user.toBuffer()],
   programId
 )
+
+export const eventAuthority = (programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("__event_authority")],
+  programId,
+)

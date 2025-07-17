@@ -23,6 +23,7 @@ const main = async () => {
   const userLock = accounts.userLock(state, token, user.publicKey, program.programId)[0];
   const userAta = await web3.getAssociatedTokenAddress(token, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const escrowAta = await web3.getAssociatedTokenAddress(token, escrow, true, spl.TOKEN_2022_PROGRAM_ID);
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
 
   const ix = await program.methods
   .unlock(testTs)
@@ -38,6 +39,8 @@ const main = async () => {
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 
