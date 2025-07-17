@@ -150,7 +150,7 @@ impl BondingCurve {
 #[cfg(test)]
 mod tests {
   use anchor_lang::solana_program::pubkey::Pubkey;
-  use anchor_spl::token_2022::spl_token_2022::solana_zk_token_sdk::curve25519::scalar::Zeroable;
+use bytemuck::Zeroable;
 
   use super::BondingCurve;
 
