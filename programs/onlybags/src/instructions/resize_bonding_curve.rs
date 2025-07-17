@@ -10,7 +10,7 @@ use crate::{
 pub struct ResizeBondingCurve<'info> {
   /// The state account of each instance of this program
   #[account()]
-  pub state: Account<'info, Migration<State>>,
+  pub state: Account<'info, Migration::<State>>,
 
   #[account(
     mut,
@@ -18,7 +18,7 @@ pub struct ResizeBondingCurve<'info> {
     realloc::payer = payer,
     realloc::zero = false,
   )]
-  pub bonding_curve: Account<'info, Migration<BondingCurve>>,
+  pub bonding_curve: Account<'info, Migration::<BondingCurve>>,
 
   #[account(
     mut,

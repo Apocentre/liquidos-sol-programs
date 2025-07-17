@@ -13,7 +13,7 @@ pub struct ResizeState<'info> {
     realloc::payer = payer,
     realloc::zero = false,
   )]
-  pub state: Account<'info, Migration<State>>,
+  pub state: Account<'info, Migration::<State>>,
 
   #[account(
     mut,

@@ -1,7 +1,7 @@
-use std::mem::size_of;
 use anchor_lang::prelude::*;
 
 #[account(zero_copy)]
+#[derive(InitSpace)]
 pub struct PoolInfo {
   /// Accumulated reward per share
   pub acc_reward_per_share: u64,
@@ -38,8 +38,7 @@ pub struct PoolInfo {
 }
 
 impl PoolInfo {
-  pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE;
 
   pub fn new(
     reward_per_sec: u64,

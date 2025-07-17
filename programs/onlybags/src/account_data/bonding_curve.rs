@@ -1,11 +1,9 @@
-
-use std::mem::size_of;
 use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use crate::curve_formulas::CurveType;
 
 #[account]
-#[derive(Debug)]
+#[derive(Debug, InitSpace)]
 pub struct BondingCurve {
   /// The type of the curve. This implement the main logic of the curve i.e. the formulas
   pub curve_type: CurveType,
@@ -36,8 +34,7 @@ pub struct BondingCurve {
 }
 
 impl BondingCurve {
-  pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE;
 
   pub fn try_new(
     curve_type: u8,
@@ -153,7 +150,7 @@ impl BondingCurve {
 #[cfg(test)]
 mod tests {
   use anchor_lang::solana_program::pubkey::Pubkey;
-  use anchor_spl::token_2022::spl_token_2022::solana_zk_token_sdk::curve25519::scalar::Zeroable;
+use bytemuck::Zeroable;
 
   use super::BondingCurve;
 

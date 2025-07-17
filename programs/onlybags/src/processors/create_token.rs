@@ -57,7 +57,7 @@ fn create_metadata(
   let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
 
   let cpi_accounts = TokenMetadataInitialize {
-    token_program_id: ctx.accounts.token_2022.to_account_info(),
+    program_id: ctx.accounts.token_2022.to_account_info(),
     mint: ctx.accounts.token.to_account_info(),
     metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
     mint_authority: ctx.accounts.bonding_curve.to_account_info(),

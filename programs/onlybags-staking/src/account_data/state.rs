@@ -1,7 +1,7 @@
-use std::mem::size_of;
 use anchor_lang::prelude::*;
 
 #[account(zero_copy)]
+#[derive(InitSpace)]
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
@@ -32,8 +32,7 @@ pub struct State {
 }
 
 impl State {
-  pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE;
 
   pub fn new(
     owner: Pubkey,
