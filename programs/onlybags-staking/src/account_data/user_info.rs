@@ -1,5 +1,3 @@
-use std::mem::size_of;
-
 use anchor_lang::prelude::*;
 
 #[account]
