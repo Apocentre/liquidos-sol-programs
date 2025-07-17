@@ -30,6 +30,7 @@ const main = async () => {
   const userStakingAta = await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const userRewardAta = await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const depositAmount = new BN(web3.toBase("100", 6));
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
 
   const initUserInfoIx = await stakingProgram.methods
   .initUserInfo()
@@ -67,6 +68,8 @@ const main = async () => {
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 

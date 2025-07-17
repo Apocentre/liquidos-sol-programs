@@ -47,7 +47,7 @@ export const signAndSend = async(provider, tx, signers) => {
   });
 
   if (confirmation.value.err) {
-    throw new Error(`   ❌ - Transaction not confirmed.\nReason: ${confirmation.value.err}`);
+    throw new Error("  ❌ - Transaction not confirmed.\nReason: ", confirmation.value.err);
   }
 }
 

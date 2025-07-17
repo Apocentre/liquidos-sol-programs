@@ -28,7 +28,7 @@ const buy = async (web3, buyer, state, token, bondingCurve, amount) => {
   const [token0Vault, token1Vault] = token.toBuffer() < wsol.toBuffer()
   ? [accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0]] 
   : [accounts.raydiumTokenVault(poolState, wsol, raydiumProgram)[0], accounts.raydiumTokenVault(poolState, token, raydiumProgram)[0]];
-
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
   const createPoolFee = constants.raydiumCreatorPoolFeedDevnet;
   
   const buy_ix = await program.methods
@@ -47,6 +47,8 @@ const buy = async (web3, buyer, state, token, bondingCurve, amount) => {
     tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 
