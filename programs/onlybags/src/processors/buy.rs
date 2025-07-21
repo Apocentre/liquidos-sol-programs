@@ -110,6 +110,13 @@ fn collect_trade_fees(ctx: &Context<Buy>, trade_fees: u64) -> Result<()> {
 
 /// Send WSOL and $TOKEN to the buyer whose purchase triggered the liquidity move.
 /// This buyers is the creator of the Raydium pool so it has to have the funds to do so.
+/// The reason we send it to the token accounts where the buyer is the authority and not
+/// to TAs where a PDA is the authority is that the Raydium smart contract uses the signer 
+/// of the create pool ix as the authority of those TA and the signer is also the payer
+/// for the rent of multiple PDAs it creates. But a PDA is not allowed to pay for rent
+/// and thus we can only have a non-pda account which we choose it to be the buyer.
+/// This is safe since we do a ix introspect so we know for sure that buy will include
+/// the move liquidity ix which will ultimatelly create the raydium pool
 fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
 
