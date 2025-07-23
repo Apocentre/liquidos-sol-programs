@@ -15,7 +15,7 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const amount = new BN(web3.toBase("1", 9));
+  const amount = new BN(web3.toBase("2", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.onlyBagsState);
@@ -26,7 +26,7 @@ const main = async () => {
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const ammConfig = constants.raydiumAmmConfigDevnet;
-
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
 
   const buyIx = await program.methods
   .buy(amount, minAmountOut)
@@ -45,6 +45,8 @@ const main = async () => {
     tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 

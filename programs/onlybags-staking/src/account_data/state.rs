@@ -18,6 +18,7 @@ pub struct State {
   pub staking_delay: i64,
   /// How long reward claims willbe delayed for from the start of the pool. i.e. seconds from the start of the pool
   /// that stakers can start claiming rewards
+  /// DEPRECATED in v2. We keep it for backward compatibility so the share of the account data doesn't change
   pub claim_delay: i64,
   /// Defines the seconds from the start of the pool that users will be able to withdraw their stake
   pub withdraw_delay: i64,
@@ -42,7 +43,6 @@ impl State {
     treasury: Pubkey,
     staking_duration: i64,
     staking_delay: i64,
-    claim_delay: i64,
     withdraw_delay: i64,
     protocol_fee: u16,
     pool_authority_bump: u8,
@@ -54,7 +54,7 @@ impl State {
       treasury,
       staking_duration,
       staking_delay,
-      claim_delay,
+      claim_delay: i64::MAX,
       withdraw_delay,
       pool_count: 0,
       protocol_fee,

@@ -45,6 +45,8 @@ const main = async () => {
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
     rent: SYSVAR_RENT_PUBKEY,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 

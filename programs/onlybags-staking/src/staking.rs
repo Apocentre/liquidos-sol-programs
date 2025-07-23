@@ -5,7 +5,7 @@ use anchor_spl::{
 };
 use crate::account_data::{pool_info::PoolInfo, state::State, user_info::UserInfo};
 
-pub const NORMALIZATION_FACTOR: u64 = 1_000_000;
+pub const NORMALIZATION_FACTOR: u64 = 1000;
 pub const TOKEN_DECIMALS: u8 = 6;
 
 pub struct AccountContainer<'a, 'info> {
@@ -57,10 +57,9 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
   Ok(())
 }
 
-pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
+pub fn release_pending(can_claim: bool, accounts: &mut AccountContainer) -> Result<u64>{
   let user_info = &mut accounts.user_info;
   let pool_info =  &mut accounts.pool_info;
-  let now = Clock::get().unwrap().unix_timestamp;
   let mut amount = 0;
 
   if user_info.staked_amount > 0 {
@@ -70,7 +69,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
     .safe_sub(user_info.reward_debt)?;
     let total_pending = pending.safe_add(user_info.acc_claim)?;
     
-    if now > pool_info.timelock_ts && total_pending > 0 {
+    if can_claim && total_pending > 0 {
       let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, total_pending)?;
 
       amount = user_amount;
@@ -86,7 +85,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
     } else if pending > 0 {
       user_info.acc_claim = total_pending;
     }
-  } else if now > pool_info.timelock_ts && user_info.acc_claim > 0 {
+  } else if can_claim && user_info.acc_claim > 0 {
     let acc_claim = user_info.acc_claim;
     user_info.acc_claim = 0;
 

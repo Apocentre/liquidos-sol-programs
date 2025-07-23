@@ -25,13 +25,14 @@ const main = async () => {
   const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(token, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
   const stakingToken = token;
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
 
   const ix = await program.methods
   .createToken(
     constants.tokenName,
     constants.tokenSymbol,
     "http://onlybags.fun",
-    1,
+    0,
   )
   .accounts({
     state,
@@ -42,6 +43,8 @@ const main = async () => {
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 

@@ -22,6 +22,7 @@ const main = async () => {
   const amount = new BN(14890926316);
   const minAmountOut = new BN(0); // no slippage
   const sellerAta = await web3.getAssociatedTokenAddress(token, seller.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
 
   const sellIx = await program.methods
   .sell(amount, minAmountOut)
@@ -35,6 +36,8 @@ const main = async () => {
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: program.programId,
   })
   .instruction();
 

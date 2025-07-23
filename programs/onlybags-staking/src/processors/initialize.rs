@@ -8,7 +8,6 @@ pub fn exec(
   treasury: Pubkey,
   staking_duration: i64,
   staking_delay: i64,
-  claim_delay: i64,
   withdraw_delay: i64,
   protocol_fee: u16,
 ) -> Result<()> {
@@ -23,7 +22,6 @@ pub fn exec(
     treasury,
     staking_duration,
     staking_delay,
-    claim_delay,
     withdraw_delay,
     protocol_fee,
     ctx.bumps.pool_authority,

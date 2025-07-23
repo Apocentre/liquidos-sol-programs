@@ -12,10 +12,10 @@ const getTokenAccount = (state, program) => {
 
 const main = async () => {
   const program = anchor.workspace.Onlybags;
-  const state = new PublicKey("3E4CLzUBBPHZjpS4Qg7pqpGKYzmjiEo7rhyg3u78WMCq");
+  const state = new PublicKey("DALeEtZ2oebontPwba2hB3JD5KE4wzpwTaJW3ThxxAuv");
   const stateData = await program.account.state.fetch(state);
   const bondingCurve = accounts.bondingCurve(state, getTokenAccount(state, program), program.programId)[0];
-  const bondingCurveData = await program.account.bondingCurve.fetch('9yzyJDjGseX2rvEZ2BnMVZFwnwZGmcoZb9nQMsCbDg72');
+  const bondingCurveData = await program.account.bondingCurve.fetch(bondingCurve);
 
   console.log("state: ", {
     owner: stateData.owner.toString(),

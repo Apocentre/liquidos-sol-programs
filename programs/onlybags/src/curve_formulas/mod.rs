@@ -21,9 +21,9 @@ pub enum CurveType {
 impl From<&CurveType> for u8 {
   fn from(value: &CurveType) -> Self {
     match value {
-      CurveType::CurveV1 => 1,
-      CurveType::CurveV2 => 2,
-      CurveType::CurveV3 => 3,
+      CurveType::CurveV1 => 0,
+      CurveType::CurveV2 => 1,
+      CurveType::CurveV3 => 2,
     }
   }
 }
@@ -33,9 +33,9 @@ impl TryFrom<u8> for CurveType {
 
   fn try_from(value: u8) -> std::result::Result<Self, Self::Error> {
     match value {
-      1 => Ok(CurveType::CurveV1),
-      2 => Ok(CurveType::CurveV2),
-      3 => Ok(CurveType::CurveV3),
+      0 => Ok(CurveType::CurveV1),
+      1 => Ok(CurveType::CurveV2),
+      2 => Ok(CurveType::CurveV3),
       _ => Err(error!(ErrorCode::CurveTypeNotSupported)),
     }
   }
