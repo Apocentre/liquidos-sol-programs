@@ -1474,6 +1474,7 @@ dependencies = [
  "anchor-safe-math",
  "anchor-spl",
  "bytemuck",
+ "onlybags",
 ]
 
 [[package]]

@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
+use onlybags::{account_data::bonding_curve::BondingCurve, processors::common::deser};
 use crate::{
   instructions::deposit::Deposit, program_error::ErrorCode,
   staking::{release_pending, update_pool, AccountContainer, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
@@ -50,18 +51,23 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
   require!(now <= pool_info.end_ts, ErrorCode::PoolEnded);
 
   update_pool(&mut *pool_info)?;
-  let claimed = release_pending(&mut AccountContainer {
-    state: &*state,
-    state_key: ctx.accounts.state.key(),
-    user_info: &mut ctx.accounts.user_info,
-    pool_info: &mut *pool_info,
-    reward_token: &ctx.accounts.reward_token,
-    reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
-    pool_authority: &ctx.accounts.pool_authority,
-    user_reward_ata: &ctx.accounts.user_reward_ata,
-    treasury_ata: &ctx.accounts.treasury_ata,
-    token_2022: &ctx.accounts.token_2022,
-  })?;
+  let bonding_curve: BondingCurve = deser(ctx.accounts.bonding_curve.clone())?;
+
+  let claimed = release_pending(
+    bonding_curve.closed == 1,
+    &mut AccountContainer {
+      state: &*state,
+      state_key: ctx.accounts.state.key(),
+      user_info: &mut ctx.accounts.user_info,
+      pool_info: &mut *pool_info,
+      reward_token: &ctx.accounts.reward_token,
+      reward_token_vault_ata: &ctx.accounts.reward_token_vault_ata,
+      pool_authority: &ctx.accounts.pool_authority,
+      user_reward_ata: &ctx.accounts.user_reward_ata,
+      treasury_ata: &ctx.accounts.treasury_ata,
+      token_2022: &ctx.accounts.token_2022,
+    },
+  )?;
   
   if amount > 0 {
     let user_info = &mut ctx.accounts.user_info;

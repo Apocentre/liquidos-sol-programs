@@ -9,5 +9,5 @@ export const raydiumProgramDevnet = new PublicKey("CPMDWBwJDtYax9qW7AyRuVC19Cc4L
 export const raydiumProgramMainnet = new PublicKey("CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C");
 export const raydiumCreatorPoolFeedDevnet = new PublicKey("G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2");
 export const raydiumCreatorPoolFeedMainnet = new PublicKey("DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8");
-export const tokenName = "T_CURV_8";
-export const tokenSymbol= "S_CURVE_8";
+export const tokenName = "T_CURV_13";
+export const tokenSymbol= "S_CURVE_13";

@@ -15,12 +15,12 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.Onlybags;
-  const amount = new BN(web3.toBase("1", 5));
+  const amount = new BN(web3.toBase("2", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.onlyBagsState);
   const tokenCreator = new PublicKey(config.tokenCreator);
-  const token = new PublicKey("GftJvKx19exNkUEzoHrVTuBiorVxwZW5DTxNNHKhawxD");
+  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;

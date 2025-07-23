@@ -93,6 +93,16 @@ pub struct Deposit<'info> {
   )]
   pub user_reward_ata: Box<InterfaceAccount<'info, TokenAccount>>,
   
+  /// CHECK: The state of the bonding curve. We don't need to check explicitely that the owner of the
+  /// the account is `onlybags_program` since this is already baked into the PDA computation below. 
+  #[account(
+    mut,
+    seeds = [b"bonding_curve", state.load()?.onlybags_state.as_ref(), reward_token.key().as_ref()],
+    seeds::program = state.load()?.onlybags_program,
+    bump,
+  )]
+  pub bonding_curve: AccountInfo<'info>,
+
   #[account(mut)]
   pub user: Signer<'info>,
   pub token_2022: Interface<'info, TokenInterface>, 

@@ -82,7 +82,6 @@ fn collect_protocol_fees(ctx: &Context<Buy>, curve_acc_info: &AccountInfo<'_>) -
 /// Collects fees from the SOL accumulated in the pool and sends to the bonding curve creator acount
 fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
-
   transfer_from_pda(
     &mut curve_acc_info,
     &mut ctx.accounts.token_creator.to_account_info(),

@@ -9,8 +9,8 @@ const {Keypair, PublicKey} = anchor.web3;
 const getTokenAccount = () => {
   const program = anchor.workspace.Onlybags;
   const state = new PublicKey(config.onlyBagsState);
-  const tokenName = "T_CURVE";
-  const tokenSymbol= "S_CURVE";
+  const tokenName = "T_CURV_13";
+  const tokenSymbol= "S_CURVE_13";
   return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
 }
 
