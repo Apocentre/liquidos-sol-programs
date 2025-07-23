@@ -93,6 +93,15 @@ pub struct Deposit<'info> {
   )]
   pub user_reward_ata: Box<InterfaceAccount<'info, TokenAccount>>,
   
+  /// The state of the bonding curve that will be used during buys and sells
+  #[account(
+    mut,
+    seeds = [b"bonding_curve", state.load()?.onlybags_state.as_ref(), reward_token.key().as_ref()],
+    seeds::program = state.load()?.onlybags_program,
+    bump,
+  )]
+  pub bonding_curve: AccountInfo<'info>,
+
   #[account(mut)]
   pub user: Signer<'info>,
   pub token_2022: Interface<'info, TokenInterface>, 

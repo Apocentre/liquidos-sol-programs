@@ -21,3 +21,4 @@ anchor-lang = { version = "0.30.1", features = ["init-if-needed", "event-cpi"] }
 anchor-spl = { version = "0.30.1", features = ["metadata"] }
 anchor-safe-math = "0.5.1"
 bytemuck = { version = "1.4.0", features = ["derive", "min_const_generics"] }
+onlybags = { path = "../onlybags" }

@@ -57,7 +57,7 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
   Ok(())
 }
 
-pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
+pub fn release_pending(can_claim: bool, accounts: &mut AccountContainer) -> Result<u64>{
   let user_info = &mut accounts.user_info;
   let pool_info =  &mut accounts.pool_info;
   let now = Clock::get().unwrap().unix_timestamp;
@@ -70,7 +70,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
     .safe_sub(user_info.reward_debt)?;
     let total_pending = pending.safe_add(user_info.acc_claim)?;
     
-    if now > pool_info.timelock_ts && total_pending > 0 {
+    if can_claim && total_pending > 0 {
       let (user_amount, treasury_amount) = split_rewards(pool_info.protocol_fee, total_pending)?;
 
       amount = user_amount;
@@ -86,7 +86,7 @@ pub fn release_pending(accounts: &mut AccountContainer) -> Result<u64>{
     } else if pending > 0 {
       user_info.acc_claim = total_pending;
     }
-  } else if now > pool_info.timelock_ts && user_info.acc_claim > 0 {
+  } else if can_claim && user_info.acc_claim > 0 {
     let acc_claim = user_info.acc_claim;
     user_info.acc_claim = 0;
 
