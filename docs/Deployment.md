@@ -5,11 +5,11 @@
 1. Deploy the onlybags and onlybags-staking programs:
 
 ```bash
-solana program deploy --with-compute-unit-price 2500000  --max-sign-attempts 10000 --url https://little-thrilling-forest.solana-mainnet.quiknode.pro/b0f644f4dec0fb4c9c47cadf2eb99cafa7356ca8 --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/staking.json target/deploy/onlybags_staking.so
+solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 10000 --url https://patient-tiniest-shadow.solana-mainnet.quiknode.pro/9029d4502623bd7390578c2c811a62516ef4a826/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/staking.json target/deploy/onlybags_staking.so
 ```
 
 ```bash
-solana program deploy --with-compute-unit-price 1100000  --max-sign-attempts 10000 --url https://intensive-alien-wish.solana-mainnet.quiknode.pro/77ca2cba4139e49efe0c0a891d16b2cfa31735bc/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/onlybags_v2.json target/deploy/onlybags.so
+solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 10000 --url https://patient-tiniest-shadow.solana-mainnet.quiknode.pro/9029d4502623bd7390578c2c811a62516ef4a826/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/v2/onlybags.json target/deploy/onlybags.so
 ```
 
 2. initialize onlybags program
