@@ -5,7 +5,7 @@ use anchor_spl::{
 };
 use crate::account_data::{pool_info::PoolInfo, state::State, user_info::UserInfo};
 
-pub const NORMALIZATION_FACTOR: u64 = 1_000_000;
+pub const NORMALIZATION_FACTOR: u64 = 1000;
 pub const TOKEN_DECIMALS: u8 = 6;
 
 pub struct AccountContainer<'a, 'info> {
@@ -48,6 +48,7 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
     return Ok(())
   }
 
+  msg!("total_staked >>>>>>>>>>>>> {}", pool_info.total_staked);
   if pool_info.total_staked > 0 {
     pool_info.acc_reward_per_share = calc_acc_reward_per_share(pool_info, now)?;
   }
@@ -113,9 +114,12 @@ fn calc_pending_reward(pool_info: &PoolInfo, now: i64) -> Result<u64> {
 
 fn calc_acc_reward_per_share(pool_info: &PoolInfo, now: i64) -> Result<u64> {
   let pending_reward = calc_pending_reward(pool_info, now)?;
+  msg!("pending_reward >>>>>>>>>>>>> {}", pending_reward);
   let acc_reward_per_share = pending_reward
   .safe_mul(NORMALIZATION_FACTOR)?
   .safe_div(pool_info.total_staked as u64)?;
+
+  msg!("acc_reward_per_share >>>>>>>>>>>>> {}", acc_reward_per_share);
 
   let new_acc_reward_per_share = pool_info.acc_reward_per_share.safe_add(acc_reward_per_share)?;
 

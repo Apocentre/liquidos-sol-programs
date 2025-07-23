@@ -11,8 +11,10 @@ const {BN} = anchor.default;
 const {SystemProgram, Keypair, PublicKey} = anchor.web3
 
 const main = async () => {
+  const onlybagsState = new PublicKey(config.onlyBagsState);
   const stakingState = new PublicKey(config.stakingState);
   const stakingProgram = anchor.workspace.OnlybagsStaking;
+  const onlybagsProgram = anchor.workspace.Onlybags;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
@@ -26,11 +28,11 @@ const main = async () => {
   const stakingToken = new PublicKey(config.stakingToken)
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
   const userInfo = accounts.userInfo(stakingState, user.publicKey, rewardToken, stakingProgram.programId)[0];
-
   const userStakingAta = await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const userRewardAta = await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const bondingCurve = accounts.bondingCurve(onlybagsState, rewardToken, onlybagsProgram.programId)[0];
   const depositAmount = new BN(web3.toBase("100", 6));
-  const eventAuthority = accounts.eventAuthority(program.programId)[0];
+  const eventAuthority = accounts.eventAuthority(stakingProgram.programId)[0];
 
   const initUserInfoIx = await stakingProgram.methods
   .initUserInfo()
@@ -64,12 +66,13 @@ const main = async () => {
     userInfo,
     userStakingAta,
     userRewardAta,
+    bondingCurve,
     user: user.publicKey,
     associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
     eventAuthority,
-    program: program.programId,
+    program: stakingProgram.programId,
   })
   .instruction();
 

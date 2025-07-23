@@ -32,7 +32,7 @@ const main = async () => {
     constants.tokenName,
     constants.tokenSymbol,
     "http://onlybags.fun",
-    1,
+    0,
   )
   .accounts({
     state,

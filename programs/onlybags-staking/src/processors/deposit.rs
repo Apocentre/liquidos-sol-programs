@@ -54,7 +54,7 @@ pub fn exec(ctx: Context<Deposit>, amount: u64) -> Result<()> {
   let bonding_curve: BondingCurve = deser(ctx.accounts.bonding_curve.clone())?;
 
   let claimed = release_pending(
-    bonding_curve.is_complete(),
+    bonding_curve.closed == 1,
     &mut AccountContainer {
       state: &*state,
       state_key: ctx.accounts.state.key(),

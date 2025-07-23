@@ -16,6 +16,7 @@ pub struct PoolInfo {
   /// The ts of the first stake. We store this value to make sure that all rewards are distributed
   pub first_stake_ts: i64,
   /// The ts when user can claim rewards
+  /// DEPRECATED in v2. We keep it for backward compatibility so the share of the account data doesn't change
   pub timelock_ts: i64,
   /// The ts when user can withdraw his stake
   pub withdraw_lock_ts: i64,
