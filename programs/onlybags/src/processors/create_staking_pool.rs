@@ -52,6 +52,7 @@ fn create_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&[u8]]]) -> R
       ctx.accounts.staking_state.to_account_info(),
       ctx.accounts.pool_info.to_account_info(),
       ctx.accounts.token.to_account_info(),
+      ctx.accounts.staking_token_vault_ata.to_account_info(),
       ctx.accounts.pool_authority.to_account_info(),
       ctx.accounts.reward_token_vault_ata.to_account_info(),
       ctx.accounts.bonding_curve.to_account_info(),

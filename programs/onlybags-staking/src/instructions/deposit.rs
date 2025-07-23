@@ -93,7 +93,8 @@ pub struct Deposit<'info> {
   )]
   pub user_reward_ata: Box<InterfaceAccount<'info, TokenAccount>>,
   
-  /// The state of the bonding curve that will be used during buys and sells
+  /// CHECK: The state of the bonding curve. We don't need to check explicitely that the owner of the
+  /// the account is `onlybags_program` since this is already baked into the PDA computation below. 
   #[account(
     mut,
     seeds = [b"bonding_curve", state.load()?.onlybags_state.as_ref(), reward_token.key().as_ref()],

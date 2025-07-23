@@ -60,7 +60,6 @@ pub fn update_pool(pool_info: &mut PoolInfo) -> Result<()> {
 pub fn release_pending(can_claim: bool, accounts: &mut AccountContainer) -> Result<u64>{
   let user_info = &mut accounts.user_info;
   let pool_info =  &mut accounts.pool_info;
-  let now = Clock::get().unwrap().unix_timestamp;
   let mut amount = 0;
 
   if user_info.staked_amount > 0 {
