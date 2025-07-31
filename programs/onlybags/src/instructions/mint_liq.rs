@@ -71,4 +71,13 @@ pub struct MintLiq<'info> {
   pub token_2022: Interface<'info, TokenInterface>,
   pub associated_token_program: Program<'info, AssociatedToken>,
   pub system_program: Program<'info, System>,
+
+  // event_authority for the emit_cpi in the liq program
+  #[account(
+    mut,
+    seeds = [b"__event_authority"],
+    bump,
+    seeds::program = Liq::id(),
+  )]
+  pub liq_event_authority: AccountInfo<'info>,
 }

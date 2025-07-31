@@ -21,6 +21,8 @@ fn mint_liq_cpi<'info>(ctx: Context<MintLiq>, amount: u64) -> Result<()> {
     token_2022: ctx.accounts.token_2022.to_account_info(),
     associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
     system_program: ctx.accounts.system_program.to_account_info(),
+    event_authority: ctx.accounts.liq_event_authority.clone(),
+    program: ctx.accounts.liq_program.to_account_info(),
   };
 
   let bonding_curve = &ctx.accounts.bonding_curve;
