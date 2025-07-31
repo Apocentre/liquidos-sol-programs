@@ -4,7 +4,7 @@ import {provider} from "../helpers/provider.js";
 import * as accounts from "../helpers/accounts.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v2.1.json" with { type: "json" };
 import buyerKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
@@ -14,14 +14,14 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const onlyBagsProgram = anchor.workspace.Onlybags;
-  const swapProxyProgram = anchor.workspace.OnlybagsSwapProxy;
-  const onlybagsState = new PublicKey(config.onlyBagsState);
+  const liquidosCurveProgram = anchor.workspace.LiquidosCurve;
+  const swapProxyProgram = anchor.workspace.LiquidosSwapProxy;
+  const liquidosCurveState = new PublicKey(config.liquidosCurveState);
   const swapProxyState = new PublicKey(config.swapProxyState);
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const tokenName = "T_CURVE_2";
   const tokenSymbol= "S_CURVE_2";
-  const token = accounts.curveToken(onlybagsState, tokenName, tokenSymbol, onlyBagsProgram.programId)[0];
+  const token = accounts.curveToken(liquidosCurveState, tokenName, tokenSymbol, liquidosCurveProgram.programId)[0];
   const treasury = new PublicKey(config.treasury);
 
   const raydiumProgram = constants.raydiumProgramDevnet;

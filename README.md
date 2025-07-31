@@ -1,4 +1,10 @@
-## Onlybags Programs
+## Liquidos Programs
+
+## Build
+
+`RUSTUP_TOOLCHAIN=nightly-2025-04-01 anchor build`
+
+For referece read [here](https://solana.stackexchange.com/a/21556/7239)
 
 ## Production Config
 The following `config.json` was used in production
@@ -22,10 +28,10 @@ Config.json
 
 ```json
 {
-  "onlyBagsState": "rSk5DscxuhnGEFf7BH1HePao2B25ujBPk7yFx7TmcMT",
+  "liquidosCurveState": "rSk5DscxuhnGEFf7BH1HePao2B25ujBPk7yFx7TmcMT",
   "stakingState": "5SnHrPQbJZXgrYTz83jmLntTmNSCbaSykU87zozenVYZ",
   "swapProxyState": "HYdKHECDoXrFZtmsvyzv7z1QXfLEJbYUsDTBzwnFV51L",
-  "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
+  "liquidosLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
   "protocolFee": 0,
   "creatorFee": 20000000,

@@ -11,7 +11,7 @@ export const bondingCurve = (state, token, programId) => PublicKey.findProgramAd
 )
 
 export const curveToken = (state, tokenName, tokenSymbol, programId) => PublicKey.findProgramAddressSync(
-  [utf8.encode("onlybags_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
+  [utf8.encode("liquidos_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
   programId
 )
 
@@ -73,4 +73,16 @@ export const userLock = (state, token, user, programId) => PublicKey.findProgram
 export const eventAuthority = (programId) => PublicKey.findProgramAddressSync(
   [utf8.encode("__event_authority")],
   programId,
+)
+
+export const liqState = () => Keypair.generate()
+
+export const liqBondingCurve = (state, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("liq_bonding_curve"), state.toBuffer()],
+  programId
+)
+
+export const liqToken = (state, tokenName, tokenSymbol, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("liq_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
+  programId
 )

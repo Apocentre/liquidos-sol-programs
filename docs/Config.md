@@ -3,10 +3,10 @@
 ### v1
 
 ```
-"onlyBagsState": "rSk5DscxuhnGEFf7BH1HePao2B25ujBPk7yFx7TmcMT",
+"liquidosCurveState": "rSk5DscxuhnGEFf7BH1HePao2B25ujBPk7yFx7TmcMT",
 "stakingState": "5SnHrPQbJZXgrYTz83jmLntTmNSCbaSykU87zozenVYZ",
 "swapProxyState": "HYdKHECDoXrFZtmsvyzv7z1QXfLEJbYUsDTBzwnFV51L",
-"onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
+"liquidosLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
 "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
 "protocolFee": 0,
 "creatorFee": 20000000,
@@ -23,10 +23,10 @@
 ### v2
 
 ```
-  "onlyBagsState": "EEsZQBTkfPziXn9pppzTyQyw3vLMEuLXdUDA8LgRjH8e",
+  "liquidosCurveState": "EEsZQBTkfPziXn9pppzTyQyw3vLMEuLXdUDA8LgRjH8e",
   "stakingState": "9PQPKGJY5XJp1yyARN7UoEmDzTzXjPjfo6JU5hcZxaWp",
   "swapProxyState": "",
-  "onlybagsLockerState": "",
+  "liquidosLockerState": "",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
   "protocolFee": 0,
   "creatorFee": 2000000000,

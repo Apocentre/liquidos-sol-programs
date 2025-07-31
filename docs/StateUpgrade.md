@@ -1,7 +1,7 @@
 Upgrading State
 ===
 
-Along with the program logic upgrade, we might what to upgrade the existing account data. For example, as part of the v2 upgrade process, we changed the existing `bonding_curve` and `state` accounts of the onlybags program.
+Along with the program logic upgrade, we might what to upgrade the existing account data. For example, as part of the v2 upgrade process, we changed the existing `bonding_curve` and `state` accounts of the liquidos curve program.
 
 **V1 Account**
 
@@ -126,7 +126,7 @@ The workaround is using `Migration` account with a custom implementation of `Acc
 What is left to do is to simple run the resize script.
 
 ```bash
-ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/resizeBondingCurve.js
+ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/resizeBondingCurve.js
 ```
 
 Now we can use the old V1 accounts with the new program logic that uses the V2 accounts.

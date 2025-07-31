@@ -3,7 +3,7 @@ import Web3Pkg from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import * as accounts from "../helpers/accounts.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v2.1.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -11,7 +11,7 @@ const {SystemProgram, PublicKey} = anchor.web3
 
 const main = async () => {
   const state = accounts.state();
-  const program = anchor.workspace.OnlybagsSwapProxy;
+  const program = anchor.workspace.LiquidosSwapProxy;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
 
