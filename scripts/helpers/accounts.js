@@ -11,7 +11,7 @@ export const bondingCurve = (state, token, programId) => PublicKey.findProgramAd
 )
 
 export const curveToken = (state, tokenName, tokenSymbol, programId) => PublicKey.findProgramAddressSync(
-  [utf8.encode("onlybags_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
+  [utf8.encode("liquidos_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
   programId
 )
 

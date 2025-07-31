@@ -14,11 +14,11 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const program = anchor.workspace.Onlybags;
+  const program = anchor.workspace.LiquidosCurve;
   const amount = new BN(web3.toBase("2", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const state = new PublicKey(config.onlyBagsState);
+  const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = new PublicKey(config.tokenCreator);
   const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);

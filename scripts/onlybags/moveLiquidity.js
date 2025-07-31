@@ -13,9 +13,9 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3;
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const program = anchor.workspace.Onlybags;
+  const program = anchor.workspace.LiquidosCurve;
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const state = new PublicKey(config.onlyBagsState);
+  const state = new PublicKey(config.liquidosCurveState);
   const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   

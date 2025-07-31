@@ -11,8 +11,8 @@ const {SystemProgram, PublicKey} = anchor.web3
 
 const main = async () => {
   const state = accounts.state();
-  const program = anchor.workspace.OnlybagsStaking;
-  const onlyBagsProgram = anchor.workspace.Onlybags;
+  const program = anchor.workspace.LiquidosStaking;
+  const liquidosCurveProgram = anchor.workspace.LiquidosCurve;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
 
@@ -20,8 +20,8 @@ const main = async () => {
 
   const ix = await program.methods
   .initialize(
-    onlyBagsProgram.programId,
-    new PublicKey(config.onlyBagsState),
+    liquidosCurveProgram.programId,
+    new PublicKey(config.liquidosCurveState),
     new PublicKey(config.treasury),
     new BN(config.stakingDuration),
     new BN(config.stakingDelay),

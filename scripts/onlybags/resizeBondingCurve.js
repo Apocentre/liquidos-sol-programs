@@ -10,7 +10,7 @@ const {SystemProgram, PublicKey} = anchor.web3
 const main = async () => {
   const state = new PublicKey("G5M4aCmU4KFRqppB2hJAwvKFJyUioZB1WaFeZoV6C3cz");
   const bondingCurve = new PublicKey("2AZKPN9xYu84D8jT93w7LWFpno5MpKFzPYnM7hniFkhQ");
-  const program = anchor.workspace.Onlybags;
+  const program = anchor.workspace.LiquidosCurve;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const newSize = new BN(250);

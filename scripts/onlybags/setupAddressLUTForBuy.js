@@ -11,7 +11,7 @@ const main = async () => {
   const addressLUT = await createAddressLUT(provider);
   const ammConfig = constants.raydiumAmmConfigDevnet;
   const addresses = [
-    new PublicKey(config.onlyBagsState),
+    new PublicKey(config.liquidosCurveState),
     new PublicKey(config.treasury),
     ammConfig,
     constants.wsol,

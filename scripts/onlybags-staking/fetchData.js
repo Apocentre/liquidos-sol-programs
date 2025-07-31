@@ -7,15 +7,15 @@ import userKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 const {Keypair, PublicKey} = anchor.web3;
 
 const getTokenAccount = () => {
-  const program = anchor.workspace.Onlybags;
-  const state = new PublicKey(config.onlyBagsState);
+  const program = anchor.workspace.LiquidosCurve;
+  const state = new PublicKey(config.liquidosCurveState);
   const tokenName = "T_CURV_13";
   const tokenSymbol= "S_CURVE_13";
   return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
 }
 
 const main = async () => {
-  const program = anchor.workspace.OnlybagsStaking;
+  const program = anchor.workspace.LiquidosStaking;
   const state = new PublicKey(config.stakingState);
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
   const stateData = await program.account.state.fetch(state);
@@ -24,7 +24,7 @@ const main = async () => {
 
   console.log("state: ", {
   owner: stateData.owner.toString(),
-    onlybagsState: stateData.onlybagsState.toString(),
+    liquidosCurveState: stateData.liquidosCurveState.toString(),
     treasury: stateData.treasury.toString(),
     stakingDuration: stateData.stakingDuration.toString(),
     poolCount: stateData.poolCount.toString(),

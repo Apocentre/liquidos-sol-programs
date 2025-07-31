@@ -10,7 +10,7 @@ const {SystemProgram} = anchor.web3
 
 const main = async () => {
   const state = accounts.state();
-  const program = anchor.workspace.OnlybagsLocker;
+  const program = anchor.workspace.LiquidosLocker;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const escrow = accounts.escrow(state.publicKey, program.programId)[0];

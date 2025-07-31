@@ -13,7 +13,7 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3;
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const program = anchor.workspace.Onlybags;
+  const program = anchor.workspace.LiquidosCurve;
   const tokenName = "TOKEN_3";
   const tokenSymbol= "SYMBOL_3";
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))

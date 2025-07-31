@@ -11,9 +11,9 @@ const {BN} = anchor.default;
 const {SystemProgram, Keypair, PublicKey} = anchor.web3
 
 const main = async () => {
-  const state = new PublicKey(config.onlybagsLockerState)
+  const state = new PublicKey(config.liquidosLockerState)
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
-  const program = anchor.workspace.OnlybagsLocker;
+  const program = anchor.workspace.LiquidosLocker;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const testTs = new BN(Number.MAX_SAFE_INTEGER);

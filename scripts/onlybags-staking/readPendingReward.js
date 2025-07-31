@@ -8,7 +8,7 @@ const {Keypair, PublicKey} = anchor.web3
 
 const main = async () => {
   const stakingState = new PublicKey(config.stakingState);
-  const stakingProgram = anchor.workspace.OnlybagsStaking;
+  const stakingProgram = anchor.workspace.LiquidosStaking;
   const deployer = provider.wallet.payer;
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
 
