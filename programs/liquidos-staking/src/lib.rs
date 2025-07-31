@@ -14,7 +14,7 @@ use crate::instructions::{
 declare_id!("HxbEKU2EdXw5xK5XnG8XWK2uMNCj1A69N3YkD65CcRcb");
 
 #[program]
-pub mod onlybags_staking {
+pub mod liquidos_staking {
   use super::*;
 
   /// Initialize
@@ -22,8 +22,8 @@ pub mod onlybags_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `onlybags_program` - The onlybags program
-  /// * `onlybags_state` - The state of the main Onlybags program
+  /// * `liquidos_curve_program` - The liquidos-curve program
+  /// * `liquidos_curve_state` - The state of the main liquidos curve program
   /// * `treasury` - The treasury that will collect protocol fees
   /// * `staking_duration` - The total duration of each staking pool i.e. for how long users can stake and earn rewards.
   /// * `staking_delay` - How much the staking will be delayed for (in secs) from the moment the pool is created
@@ -31,8 +31,8 @@ pub mod onlybags_staking {
   /// * `protocol_fee` - The fee in the reward token the protocol receives.
   pub fn initialize(
     ctx: Context<Initialize>,
-    onlybags_program: Pubkey,
-    onlybags_state: Pubkey,
+    liquidos_curve_program: Pubkey,
+    liquidos_curve_state: Pubkey,
     treasury: Pubkey,
     staking_duration: i64,
     staking_delay: i64,
@@ -41,8 +41,8 @@ pub mod onlybags_staking {
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
-      onlybags_program,
-      onlybags_state,
+      liquidos_curve_program,
+      liquidos_curve_state,
       treasury,
       staking_duration,
       staking_delay,
@@ -83,7 +83,7 @@ pub mod onlybags_staking {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `total_rewards` - Total amount of rewards to be distributed. Note the caller (Onlybags program) of this ix should
+  /// * `total_rewards` - Total amount of rewards to be distributed. Note the caller (liquidos program) of this ix should
   ///                      first transfer this amount to `reward_token_vault_ata`
   pub fn create_pool(ctx: Context<CreatePool>, total_rewards: u64) -> Result<()> {
     processors::create_pool::exec(ctx, total_rewards)

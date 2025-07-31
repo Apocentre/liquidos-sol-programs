@@ -5,10 +5,10 @@ use anchor_lang::prelude::*;
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
-  /// The onlybags program
-  pub onlybags_program: Pubkey,
-  /// The state of the main Onlybags program
-  pub onlybags_state: Pubkey,
+  /// The Liquidos curve program
+  pub liquidos_curve_program: Pubkey,
+  /// The state of the main Liquidos curve program
+  pub liquidos_curve_state: Pubkey,
   /// The treasury that will collect protocol fees
   pub treasury: Pubkey,
   /// The total duration of each staking pool (in secs) i.e. for how long users can stake and earn rewards.
@@ -38,8 +38,8 @@ impl State {
 
   pub fn new(
     owner: Pubkey,
-    onlybags_program: Pubkey,
-    onlybags_state: Pubkey,
+    liquidos_curve_program: Pubkey,
+    liquidos_curve_state: Pubkey,
     treasury: Pubkey,
     staking_duration: i64,
     staking_delay: i64,
@@ -49,8 +49,8 @@ impl State {
   ) -> Self {
     Self {
       owner,
-      onlybags_program,
-      onlybags_state,
+      liquidos_curve_program,
+      liquidos_curve_state,
       treasury,
       staking_duration,
       staking_delay,

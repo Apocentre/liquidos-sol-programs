@@ -9,7 +9,7 @@ use crate::{
 
 #[derive(Accounts)]
 #[event_cpi]
-pub struct Withdraw<'info> {
+pub struct Deposit<'info> {
   #[account()]
   pub state: AccountLoader<'info, State>,
 
@@ -39,7 +39,8 @@ pub struct Withdraw<'info> {
 
   /// ATA that will store the reward tokens
   #[account(
-    mut,
+    init_if_needed,
+    payer = user,
     associated_token::mint = reward_token,
     associated_token::authority = treasury,
     associated_token::token_program = token_2022,
@@ -93,11 +94,11 @@ pub struct Withdraw<'info> {
   pub user_reward_ata: Box<InterfaceAccount<'info, TokenAccount>>,
   
   /// CHECK: The state of the bonding curve. We don't need to check explicitely that the owner of the
-  /// the account is `onlybags_program` since this is already baked into the PDA computation below.
+  /// the account is `liquidos_curve_program` since this is already baked into the PDA computation below. 
   #[account(
     mut,
-    seeds = [b"bonding_curve", state.load()?.onlybags_state.as_ref(), reward_token.key().as_ref()],
-    seeds::program = state.load()?.onlybags_program,
+    seeds = [b"bonding_curve", state.load()?.liquidos_curve_state.as_ref(), reward_token.key().as_ref()],
+    seeds::program = state.load()?.liquidos_curve_program,
     bump,
   )]
   pub bonding_curve: AccountInfo<'info>,
