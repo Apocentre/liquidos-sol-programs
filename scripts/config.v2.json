@@ -1,6 +1,6 @@
 {
-  "onlyBagsState": "XPG1SEWS3qi6gX5aCA6TpVKDaVF58f8CD6kCQ1jRohR",
-  "stakingState": "EJS3b4DFfJMMaXa3cV4rbUvCrQkYF5DqLVazTDn9zjNM",
+  "onlyBagsState": "AShAStvYC7fzgB9nx8YxBkNnoDp6Ay65fMiD2AgMjXH9",
+  "stakingState": "DsPJveMDrinMuFtgiQjMAMfn6pHZqDfCKf3f9LnanRU2",
   "swapProxyState": "",
   "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
@@ -11,7 +11,6 @@
   "totalTokenSupply": 1000000000000000,
   "stakingDuration": 604800,
   "stakingDelay": 1800,
-  "claimDelay": 86400,
   "withdrawDelay": 604800,
   "stakingProtocolFee": 100,
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
