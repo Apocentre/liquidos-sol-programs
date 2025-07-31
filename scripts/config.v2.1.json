@@ -1,6 +1,6 @@
 {
   "liquidosCurveState": "AShAStvYC7fzgB9nx8YxBkNnoDp6Ay65fMiD2AgMjXH9",
-  "liqState": "AShAStvYC7fzgB9nx8YxBkNnoDp6Ay65fMiD2AgMjXH9",
+  "liqState": "GjaELX5Ktx9F8WNr2JbzHqLsKjuqX96uMTXDnhmPn2bg",
   "stakingState": "DsPJveMDrinMuFtgiQjMAMfn6pHZqDfCKf3f9LnanRU2",
   "swapProxyState": "",
   "liquidosLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
@@ -17,5 +17,6 @@
   "stakingProtocolFee": 100,
   "tokenCreator": "85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X",
   "stakingToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu",
-  "rewardToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu"
+  "rewardToken": "5cBt6QdsTbwzMQFK66JJNTmAxC5u13MmmoCY1KzEC7tu",
+  "buyAddressLut": "JCYRrEvVgRvd1Gx5MQrAKThyrjUmRHEnKoAdE5V6Fpew"
 }

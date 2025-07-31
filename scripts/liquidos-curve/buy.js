@@ -15,7 +15,7 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.LiquidosCurve;
-  const amount = new BN(web3.toBase("2", 9));
+  const amount = new BN(web3.toBase("1", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.liquidosCurveState);
@@ -124,6 +124,8 @@ const main = async () => {
   })
   .instruction();
 
+  const lut =  (await provider.connection.getAddressLookupTable(new PublicKey(config.buyAddressLut))).value;
+
   const cbIx = web3.getComputationBudgetIx(750_000);
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
@@ -131,7 +133,7 @@ const main = async () => {
     [cbIx, priorityFeeIx, buyIx, mintLiqIx, moveLiquidityIx],
     buyer.publicKey,
     [buyer],
-    [],
+    [lut],
   );
 }
 
