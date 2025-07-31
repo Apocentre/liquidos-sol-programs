@@ -8,6 +8,7 @@
   "protocolFee": 0,
   "creatorFee": 2000000000,
   "tradeFeeBps": 100,
+  "liqCreatorFeeBps": 1000,
   "stakingAllocation": 50000000000000,
   "totalTokenSupply": 1000000000000000,
   "stakingDuration": 604800,

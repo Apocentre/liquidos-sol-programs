@@ -3,7 +3,7 @@ import {provider} from "../helpers/provider.js";
 import {spl} from "@apocentre/solana-web3";
 import * as constants from "../helpers/constants.js";
 import {createAddressLUT, addAddressesToAddressLUT} from "../helpers/tx.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v2.1.json" with { type: "json" };
 
 const {SystemProgram, PublicKey} = anchor.web3
 

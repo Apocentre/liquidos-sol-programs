@@ -3,7 +3,7 @@ import * as accounts from "../helpers/accounts.js";
 import Web3Pkg from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
-import config from "../config.v2.json" with { type: "json" }
+import config from "../config.v2.1.json" with { type: "json" }
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -11,6 +11,7 @@ const {SystemProgram, PublicKey} = anchor.web3
 
 const main = async () => {
   const program = anchor.workspace.Liq;
+  const liquidosProgram = anchor.workspace.LiquidosCurve;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const state = accounts.liqState();
@@ -20,12 +21,12 @@ const main = async () => {
 
   const ix = await program.methods
   .initialize(
-    new PublicKey(config.treasury),
-    new BN(config.protocolFee),
-    new BN(config.tradeFeeBps),
-    new BN(config.creatorFee),
-    new BN(config.totalTokenSupply),
-    new BN(config.stakingAllocation),
+    "LIQ IOU",
+    "LIQ",
+    "https://liquidos.fun/liq",
+    liquidosProgram.programId,
+    new PublicKey(config.liquidosCurveState),
+    new BN(config.liqCreatorFeeBps),
   )
   .accounts({
     state: state.publicKey,
