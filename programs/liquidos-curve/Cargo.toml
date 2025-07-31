@@ -1,14 +1,14 @@
 [package]
-name = "onlybags"
+name = "liquidos_curve"
 version = "0.1.0"
-description = "onlybags main program"
+description = "Liquidos main program"
 edition = "2021"
 license = "BUSL-1.1"
 
 [lib]
 doctest = false
 crate-type = ["cdylib", "lib"]
-name = "onlybags"
+name = "liquidos_curve"
 
 [features]
 default = ["devnet"]

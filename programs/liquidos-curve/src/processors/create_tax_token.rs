@@ -22,7 +22,7 @@ fn create_mint_account(ctx: &Context<CreateTaxToken>, name: &str, symbol: &str) 
   let state_key = &ctx.accounts.state.key();
   let name_symbol = format!("{}-{}", name, symbol);
   let seeds: &[&[u8]] = &[
-    b"onlybags_token",
+    b"liquidos_token",
     state_key.as_ref(),
     name_symbol.as_ref(),
     &[ctx.bumps.token],
