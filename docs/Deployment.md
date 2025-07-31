@@ -9,7 +9,7 @@ solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 1000
 ```
 
 ```bash
-solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 10000 --url https://patient-tiniest-shadow.solana-mainnet.quiknode.pro/9029d4502623bd7390578c2c811a62516ef4a826/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/v2/onlybags.json target/deploy/liquidos_curve.so
+solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 10000 --url https://patient-tiniest-shadow.solana-mainnet.quiknode.pro/9029d4502623bd7390578c2c811a62516ef4a826/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/v2/liquidos_curve.json target/deploy/liquidos_curve.so
 ```
 
 2. initialize liquidos curve program
