@@ -59,6 +59,9 @@ const main = async () => {
   const curveCreatorLiqAta = await web3.getAssociatedTokenAddress(liqToken, tokenCreator, true, spl.TOKEN_2022_PROGRAM_ID);
   const liqEventAuthority = accounts.eventAuthority(liqProgram.programId)
 
+  console.log("liqEventAuthority ", liqEventAuthority)
+  console.log("liqProgram.programId ", liqProgram.programId)
+
   const mintLiqIx = await program.methods
   .mintLiq(amount)
   .accounts({
@@ -78,7 +81,7 @@ const main = async () => {
     systemProgram: SystemProgram.programId,
     liqEventAuthority,
   })
-  .instruction();;
+  .instruction();
 
   const raydiumProgram = constants.raydiumProgramDevnet;
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];

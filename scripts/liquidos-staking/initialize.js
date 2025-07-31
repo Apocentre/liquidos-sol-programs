@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "../helpers/accounts.js";
-import Web3Pkg, {spl} from "@apocentre/solana-web3";
+import Web3Pkg from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import config from "../config.v2.1.json" with { type: "json" };

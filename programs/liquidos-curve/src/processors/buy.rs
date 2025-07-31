@@ -176,7 +176,7 @@ fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>, net_buy_amount: u64) -> Resu
   require!(discriminator.eq(&MintLiq::DISCRIMINATOR), ErrorCode::ExpectedMintLiqIx);
 
   // verify the ix amount
-  let mint_liq_ix =  MintLiq::deserialize(&mut &current_ix.data[..])?;
+  let mint_liq_ix = MintLiq::deserialize(&mut &current_ix.data[8..])?;
   require!(mint_liq_ix.amount == net_buy_amount, ErrorCode::WrongMintLiqAmount);
 
   // verify ix accounts. We need to make sure that MintLiq does not have the wrong accounts
