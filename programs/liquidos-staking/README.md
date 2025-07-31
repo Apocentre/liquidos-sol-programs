@@ -1,4 +1,4 @@
-# Onlybags Staking
+# Liquidos Staking
 
 Program that allows users to stake $BAGS and get rewarded in the meme coins that hit Raydium.
 

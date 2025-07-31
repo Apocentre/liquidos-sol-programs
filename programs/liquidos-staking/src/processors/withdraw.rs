@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{self, TransferChecked};
-use onlybags::{account_data::bonding_curve::BondingCurve, processors::common::deser};
+use liquidos_curve::{account_data::bonding_curve::BondingCurve, processors::common::deser};
 use crate::{
   instructions::withdraw::Withdraw, program_error::ErrorCode,
   staking::{release_pending, update_pool, AccountContainer, NORMALIZATION_FACTOR, TOKEN_DECIMALS},
