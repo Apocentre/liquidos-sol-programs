@@ -16,7 +16,7 @@ use crate::instructions::{
 declare_id!("HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV");
 
 #[program]
-pub mod onlybags {
+pub mod liquidos_curve {
   use super::*;
 
   /// Initialize

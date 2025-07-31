@@ -39,3 +39,7 @@ ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/onlybags/update
 > We deploy a new contract rather than upgrading. The reason is that the are currently tokens using the old curves so we don't what to upgrade because they will start using the new curves which are incompatible with the old ones.
 
 Same as above but do not deploy a new Staking program. Just the Onlybags program.
+
+## v2.1
+
+We need to deploy the `Liq` Program and upgrade the `Onlybags`
