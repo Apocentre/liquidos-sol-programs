@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import * as accounts from "../helpers/accounts.js";
-import Web3Pkg from "@apocentre/solana-web3";
+import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import config from "../config.v2.1.json" with { type: "json" }
@@ -15,7 +15,7 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const state = accounts.liqState();
-  const bondingCurve = accounts.liqBondingCurve(state.publicKey)[0];
+  const bondingCurve = accounts.liqBondingCurve(state.publicKey, program.programId)[0];
   const eventAuthority = accounts.eventAuthority(program.programId)[0];
   const liqToken = accounts.liqToken(state.publicKey, "LIQ IOU", "LIQ", program.programId)[0];
 

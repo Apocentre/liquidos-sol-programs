@@ -24,7 +24,9 @@
     "moveLiquidity:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/moveLiquidity.js",
     "moveLiquidity:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/moveLiquidity.js",
     "fetchData:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/fetchData.js",
-    "fetchData:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/fetchData.js"
+    "fetchData:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/fetchData.js",
+    "initLiq:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liq/initialize.js",
+    "initLiq:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liq/initialize.js"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1"

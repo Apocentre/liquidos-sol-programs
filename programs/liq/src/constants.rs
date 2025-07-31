@@ -6,9 +6,9 @@ use anchor_lang::prelude::Pubkey;
 pub const SPACE_MARGIN: usize = 1000;
 
 pub fn allowed_deployer() -> Pubkey {
-  #[cfg(not(feature = "localnet"))]
+  #[cfg(not(feature = "devnet"))]
   return Pubkey::from_str("DxVMyJ9YGahVLDXwEb5RaWcFx89JcAErCYGTJrPrneiw").unwrap();
 
-  #[cfg(feature = "localnet")]
+  #[cfg(feature = "devnet")]
   return Pubkey::from_str("85Wgv3aHVyrZpMzmyCvd47hNC4g3f25SwJnboDksU86X").unwrap();
 }
