@@ -71,7 +71,7 @@ pub struct MintLiq<'info> {
   #[account(
     seeds = [b"__event_authority"],
     bump,
-    seeds::program = Liq::id(),
+    seeds::program = liq_program.key(),
   )]
   pub liq_event_authority: AccountInfo<'info>,
 }
