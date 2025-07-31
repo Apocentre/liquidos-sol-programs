@@ -11,7 +11,7 @@ use crate::instructions::{initialize::*, swap::*};
 declare_id!("GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY");
 
 #[program]
-pub mod onlybags_swap_proxy {
+pub mod liquidos_swap_proxy {
   use super::*;
 
   /// Initialize
