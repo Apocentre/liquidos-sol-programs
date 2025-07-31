@@ -10,7 +10,7 @@ use crate::instructions::{initialize::*, lock::*, unlock::*};
 declare_id!("7Sntio7WMpXkPWTQMXLVYoH7hqwfLn1i4JP7xUFaDkaK");
 
 #[program]
-pub mod onlybags_locker {
+pub mod liquidos_locker {
   use super::*;
 
   /// Initialize
