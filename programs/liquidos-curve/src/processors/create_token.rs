@@ -8,7 +8,8 @@ use anchor_lang::{
 };
 use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
 use crate::{
-  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, instruction::CreateStakingPool, instructions::create_token::CreateToken, program_error::ErrorCode, ID
+  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION,
+  instruction::CreateStakingPool, instructions::create_token::CreateToken, program_error::ErrorCode, ID,
 };
 
 #[event]

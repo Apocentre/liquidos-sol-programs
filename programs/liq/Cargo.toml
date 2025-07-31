@@ -9,8 +9,7 @@ crate-type = ["cdylib", "lib"]
 name = "liq"
 
 [features]
-default = ["localnet"]
-localnet = []
+default = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
@@ -23,4 +22,4 @@ anchor-spl = { version = "0.30.1", features = ["metadata"] }
 anchor-safe-math = "0.5.1"
 rust_decimal = { version = "1.35.0", features = ["maths"] }
 rust_decimal_macros = "1.34.2"
-math = { path = "../math" }
+math = { path = "../../math" }

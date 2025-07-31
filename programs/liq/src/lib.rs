@@ -8,7 +8,7 @@ pub mod constants;
 use anchor_lang::prelude::*;
 use instructions::{initialize::*, mint::*};
 
-declare_id!("Fo5u8WAkf2H2JJe72RjwMV2ob4JeDk2shfm7kfAd3aCM");
+declare_id!("DP85qMfFbbi1PuotvRmD4mBTekdxDiL1vL68uDSCa6Gz");
 
 #[program]
 pub mod liq {
@@ -44,7 +44,6 @@ pub mod liq {
       uri,
     )
   }
-
 
   /// Mint
   ///

@@ -43,3 +43,7 @@ Same as above but do not deploy a new Staking program. Just the Liquidos Curve p
 ## v2.1
 
 We need to deploy the `Liq` Program and upgrade the `Liquidos Curve`
+
+```bash
+solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 10000 --url https://patient-tiniest-shadow.solana-mainnet.quiknode.pro/9029d4502623bd7390578c2c811a62516ef4a826/ --keypair ./wallets/deployer.json --upgrade-authority ./wallets/deployer.json --program-id ./wallets/v2.1/liq.json target/deploy/liq.so
+```
