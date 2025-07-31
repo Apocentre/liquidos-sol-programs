@@ -14,7 +14,7 @@ const main = async () => {
   web3.connection = provider.provider.connection;
 
   const stakingState = new PublicKey(config.stakingState);
-  const stakingProgram = anchor.workspace.OnlybagsStaking;
+  const stakingProgram = anchor.workspace.LiquidosStaking;
   const rewardToken = new PublicKey(config.rewardToken);
   const treasury = new PublicKey(config.treasury);
   const stakingToken = new PublicKey(config.stakingToken)

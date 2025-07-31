@@ -13,10 +13,10 @@ const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
   const deployer = provider.wallet.payer;
-  const program = anchor.workspace.Onlybags;
+  const program = anchor.workspace.LiquidosCurve;
   const web3 = Web3(deployer.publicKey);
   const seller = Keypair.fromSecretKey(Buffer.from(sellerKey))
-  const state = new PublicKey(config.onlyBagsState);
+  const state = new PublicKey(config.liquidosCurveState);
   const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const amount = new BN(14890926316);

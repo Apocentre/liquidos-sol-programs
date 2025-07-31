@@ -1,8 +1,8 @@
 {
-  "onlyBagsState": "AShAStvYC7fzgB9nx8YxBkNnoDp6Ay65fMiD2AgMjXH9",
+  "liquidosCurveState": "AShAStvYC7fzgB9nx8YxBkNnoDp6Ay65fMiD2AgMjXH9",
   "stakingState": "DsPJveMDrinMuFtgiQjMAMfn6pHZqDfCKf3f9LnanRU2",
   "swapProxyState": "",
-  "onlybagsLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
+  "liquidosLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasury": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ",
   "protocolFee": 0,
   "creatorFee": 2000000000,

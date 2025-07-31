@@ -14,14 +14,14 @@ const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const onlyBagsProgram = anchor.workspace.Onlybags;
-  const swapProxyProgram = anchor.workspace.OnlybagsSwapProxy;
-  const onlybagsState = new PublicKey(config.onlyBagsState);
+  const liquidosCurveProgram = anchor.workspace.LiquidosCurve;
+  const swapProxyProgram = anchor.workspace.LiquidosSwapProxy;
+  const liquidosCurveState = new PublicKey(config.liquidosCurveState);
   const swapProxyState = new PublicKey(config.swapProxyState);
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const tokenName = "T_CURVE_2";
   const tokenSymbol= "S_CURVE_2";
-  const token = accounts.curveToken(onlybagsState, tokenName, tokenSymbol, onlyBagsProgram.programId)[0];
+  const token = accounts.curveToken(liquidosCurveState, tokenName, tokenSymbol, liquidosCurveProgram.programId)[0];
   const treasury = new PublicKey(config.treasury);
 
   const raydiumProgram = constants.raydiumProgramDevnet;

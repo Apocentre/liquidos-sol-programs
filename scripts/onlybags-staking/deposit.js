@@ -11,10 +11,10 @@ const {BN} = anchor.default;
 const {SystemProgram, Keypair, PublicKey} = anchor.web3
 
 const main = async () => {
-  const onlybagsState = new PublicKey(config.onlyBagsState);
+  const liquidosCurveState = new PublicKey(config.liquidosCurveState);
   const stakingState = new PublicKey(config.stakingState);
-  const stakingProgram = anchor.workspace.OnlybagsStaking;
-  const onlybagsProgram = anchor.workspace.Onlybags;
+  const stakingProgram = anchor.workspace.LiquidosStaking;
+  const liquidosCurveProgram = anchor.workspace.LiquidosCurve;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const user = Keypair.fromSecretKey(Buffer.from(userKey))
@@ -30,7 +30,7 @@ const main = async () => {
   const userInfo = accounts.userInfo(stakingState, user.publicKey, rewardToken, stakingProgram.programId)[0];
   const userStakingAta = await web3.getAssociatedTokenAddress(stakingToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const userRewardAta = await web3.getAssociatedTokenAddress(rewardToken, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const bondingCurve = accounts.bondingCurve(onlybagsState, rewardToken, onlybagsProgram.programId)[0];
+  const bondingCurve = accounts.bondingCurve(liquidosCurveState, rewardToken, liquidosCurveProgram.programId)[0];
   const depositAmount = new BN(web3.toBase("100", 6));
   const eventAuthority = accounts.eventAuthority(stakingProgram.programId)[0];
 

@@ -11,10 +11,10 @@ const Web3 = Web3Pkg.default;
 const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
-  const state = new PublicKey(config.onlyBagsState);
+  const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = Keypair.fromSecretKey(Buffer.from(tokenCreatorKey))
-  const program = anchor.workspace.Onlybags;
-  const stakingProgram = anchor.workspace.OnlybagsStaking;
+  const program = anchor.workspace.LiquidosCurve;
+  const stakingProgram = anchor.workspace.LiquidosStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
   const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
@@ -31,7 +31,7 @@ const main = async () => {
   .createToken(
     constants.tokenName,
     constants.tokenSymbol,
-    "http://onlybags.fun",
+    "http://liquidos.fun",
     0,
   )
   .accounts({
