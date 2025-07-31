@@ -16,7 +16,7 @@ const main = async () => {
   const state = accounts.liqState();
   const bondingCurve = accounts.liqBondingCurve(state.publicKey)[0];
   const eventAuthority = accounts.eventAuthority(program.programId)[0];
-  const liqToken = accounts.liqToken(state.publicKey, "IOU Mint", "LIQ", program.programId)[0];
+  const liqToken = accounts.liqToken(state.publicKey, "LIQ IOU", "LIQ", program.programId)[0];
 
   const ix = await program.methods
   .initialize(

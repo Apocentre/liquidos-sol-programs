@@ -6,7 +6,6 @@ use crate::{account_data::{bonding_curve::BondingCurve, state::State}, program_e
 use liq::program::Liq;
 
 #[derive(Accounts)]
-#[instruction(curve_token: Pubkey)]
 pub struct MintLiq<'info> {
   /// The state account of each instance of this program
   #[account()]
@@ -26,12 +25,8 @@ pub struct MintLiq<'info> {
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 
-  /// CHECK: The state account of each instance of this program
-  #[account(
-    seeds = [b"liq_state"],
-    bump,
-    seeds::program = Liq::id(),
-  )]
+  /// CHECK: The liq_state account.
+  #[account()]
   pub liq_state: AccountInfo<'info>,
 
   #[account(mut)]

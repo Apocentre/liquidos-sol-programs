@@ -50,6 +50,36 @@ const main = async () => {
   })
   .instruction();
 
+  // mint_liq ix
+  const liqProgram = anchor.workspace.Liq;
+  const liqState = new PublicKey(config.liqState);
+  const liqBondingCurve = accounts.liqBondingCurve(liqState, liqProgram.programId)[0];
+  const liqToken = accounts.liqToken(liqState, "LIQ IOU", "LIQ", liqProgram.programId)[0];
+  const buyerLiqAta = await web3.getAssociatedTokenAddress(liqToken, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const curveCreatorLiqAta = await web3.getAssociatedTokenAddress(liqToken, tokenCreator, true, spl.TOKEN_2022_PROGRAM_ID);
+  const liqEventAuthority = accounts.eventAuthority(liqProgram.programId)
+
+  const mintLiqIx = await program.methods
+  .mintLiq(amount)
+  .accounts({
+    state,
+    bondingCurve,
+    token,
+    liqState,
+    buyer: buyer.publicKey,
+    liqBondingCurve,
+    liqToken,
+    buyerLiqAta,
+    curveCreator: tokenCreator,
+    curveCreatorLiqAta,
+    liqProgram: liqProgram.programId,
+    token2022: spl.TOKEN_2022_PROGRAM_ID,
+    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+    liqEventAuthority,
+  })
+  .instruction();;
+
   const raydiumProgram = constants.raydiumProgramDevnet;
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
@@ -98,7 +128,7 @@ const main = async () => {
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, buyIx, moveLiquidityIx],
+    [cbIx, priorityFeeIx, buyIx, mintLiqIx, moveLiquidityIx],
     buyer.publicKey,
     [buyer],
     [],
