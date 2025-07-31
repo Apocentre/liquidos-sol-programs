@@ -69,7 +69,6 @@ pub struct MintLiq<'info> {
 
   /// CHECK: event_authority for the emit_cpi in the liq program
   #[account(
-    mut,
     seeds = [b"__event_authority"],
     bump,
     seeds::program = Liq::id(),

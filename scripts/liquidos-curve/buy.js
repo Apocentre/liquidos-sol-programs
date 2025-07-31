@@ -57,10 +57,7 @@ const main = async () => {
   const liqToken = accounts.liqToken(liqState, "LIQ IOU", "LIQ", liqProgram.programId)[0];
   const buyerLiqAta = await web3.getAssociatedTokenAddress(liqToken, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const curveCreatorLiqAta = await web3.getAssociatedTokenAddress(liqToken, tokenCreator, true, spl.TOKEN_2022_PROGRAM_ID);
-  const liqEventAuthority = accounts.eventAuthority(liqProgram.programId)
-
-  console.log("liqEventAuthority ", liqEventAuthority)
-  console.log("liqProgram.programId ", liqProgram.programId)
+  const liqEventAuthority = accounts.eventAuthority(liqProgram.programId);
 
   const mintLiqIx = await program.methods
   .mintLiq(amount)
