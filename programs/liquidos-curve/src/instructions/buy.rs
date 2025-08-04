@@ -197,17 +197,7 @@ impl<'info> Buy<'info> {
 
       let mut data: &[u8] = &self.buy_state.try_borrow_data()?;
       BuyState::try_deserialize_unchecked(&mut data)?
-
-      // match Account::try_from_unchecked(&self.buy_state) {
-      //   Ok(val) => val,
-      //   Err(e) => return Err(e.with_account_name("buy_state")),
-      // } 
     } else {
-      // match Account::try_from(&self.buy_state) {
-      //   Ok(val) => val,
-      //   Err(e) => return Err(e.with_account_name("buy_state")),
-      // }
-
       let mut data: &[u8] = &self.buy_state.try_borrow_data()?;
       BuyState::try_deserialize(&mut data)?
     };
