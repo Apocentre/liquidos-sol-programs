@@ -230,6 +230,7 @@ impl<'info> Buy<'info> {
 
     buy_state_acc.buy_amount = buy_amount;
 
+    // persist the data changes
     let mut data = self.buy_state.try_borrow_mut_data()?;
     let dst: &mut [u8] = &mut data;
     let mut writer = BpfWriter::new(dst);
