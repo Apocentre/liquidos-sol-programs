@@ -7,7 +7,6 @@ const SPACE_MARGIN: usize = 100;
 #[derive(InitSpace, Debug)]
 pub struct BuyState {
   pub buy_amount: u64,
-  pub bump: u8,
 }
 
 impl BuyState {
