@@ -86,3 +86,8 @@ export const liqToken = (state, tokenName, tokenSymbol, programId) => PublicKey.
   [utf8.encode("liq_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
   programId
 )
+
+export const buy_state = (token, buyer, programId) => PublicKey.findProgramAddressSync(
+  [utf8.encode("buy_state"), token.toBuffer(), buyer.toBuffer()],
+  programId
+)

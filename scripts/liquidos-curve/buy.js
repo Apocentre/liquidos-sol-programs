@@ -21,6 +21,7 @@ const main = async () => {
   const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = new PublicKey(config.tokenCreator);
   const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const buyState = accounts.buy_state(token, buyer.publicKey, program.programId);
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;
@@ -35,6 +36,7 @@ const main = async () => {
     state,
     treasury: new PublicKey(config.treasury),
     bondingCurve,
+    buyState,
     tokenCreator,
     token,
     buyerAta,
@@ -60,10 +62,11 @@ const main = async () => {
   const liqEventAuthority = accounts.eventAuthority(liqProgram.programId);
 
   const mintLiqIx = await program.methods
-  .mintLiq(amount)
+  .mintLiq()
   .accounts({
     state,
     bondingCurve,
+    buyState,
     token,
     liqState,
     buyer: buyer.publicKey,
