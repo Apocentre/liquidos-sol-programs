@@ -1,4 +1,5 @@
 /// This is availbale in the from anchor 0.31.1 version and on. We simply copied it here
+/// https://docs.rs/anchor-lang/latest/src/anchor_lang/bpf_writer.rs.html
 use anchor_lang::solana_program::program_memory::sol_memcpy;
 use std::cmp;
 use std::io::{self, Write};
