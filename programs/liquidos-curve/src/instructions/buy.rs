@@ -1,11 +1,15 @@
 use std::str::FromStr;
 use anchor_lang::{prelude::*, solana_program::sysvar};
+use anchor_lang::{
+  system_program::{allocate, assign, create_account, Allocate, Assign, CreateAccount, Transfer,}
+};
 use anchor_spl::{
   token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
+use crate::ID;
 use crate::{
-  account_data::{bonding_curve::BondingCurve, state::State},
+  account_data::{bonding_curve::BondingCurve, buy_state::BuyState, state::State},
   program_error::ErrorCode, raydium,
 };
 
@@ -95,3 +99,129 @@ pub struct Buy<'info> {
   pub ix_sysvar: UncheckedAccount<'info>,
 }
 
+
+impl<'info> Buy<'info> {
+  pub fn create_buy_state_if_needed(&self, buy_amount: u64, bump: u8) -> Result<()> {
+    let actual_owner = self.buy_state.owner;
+    let current_lamports = self.buy_state.lamports();
+    let rent = Rent::get()?;
+    let space = BuyState::MAX_SIZE;
+
+    let mut pa: Account<'_, BuyState> = if actual_owner == &anchor_lang::solana_program::system_program::ID {
+      // create the account
+      if current_lamports == 0 {
+        let cpi_accounts = CreateAccount {
+          from: self.buyer.to_account_info(),
+          to: self.buy_state.clone(),
+        };
+        let cpi_context = CpiContext::new(
+          self.system_program.to_account_info(),
+          cpi_accounts,
+        );
+
+        let lamports = rent.minimum_balance(space);
+        create_account(
+          cpi_context.with_signer(
+            &[
+              &[
+                b"buy_state",
+                self.token.key().as_ref(),
+                self.buyer.key().as_ref(),
+                &[bump][..],
+              ][..],
+            ],
+          ),
+          lamports,
+          space as u64,
+          &ID,
+        )?;
+      } else {
+        let required_lamports = rent.minimum_balance(space)
+          .max(1)
+          .saturating_sub(current_lamports);
+
+        if required_lamports > 0 {
+          let cpi_accounts = Transfer {
+            from: self.buyer.to_account_info(),
+            to: self.buy_state.to_account_info(),
+          };
+          let cpi_context = anchor_lang::context::CpiContext::new(
+            self.system_program.to_account_info(),
+            cpi_accounts,
+          );
+          anchor_lang::system_program::transfer(cpi_context, required_lamports)?;
+        }
+
+        let cpi_accounts = Allocate {
+          account_to_allocate: self.buy_state.to_account_info(),
+        };
+        let cpi_context = anchor_lang::context::CpiContext::new(
+            self.system_program.to_account_info(),
+            cpi_accounts,
+        );
+        allocate(
+          cpi_context.with_signer(
+            &[
+              &[
+                b"buy_state",
+                self.token.key().as_ref(),
+                self.buyer.key().as_ref(),
+                &[bump][..],
+              ][..],
+            ],
+          ),
+          space as u64,
+        )?;
+        let cpi_accounts = Assign {
+          account_to_assign: self.buy_state.to_account_info(),
+        };
+        let cpi_context = anchor_lang::context::CpiContext::new(
+          self.system_program.to_account_info(),
+          cpi_accounts,
+        );
+        assign(
+          cpi_context.with_signer(
+            &[
+              &[
+                b"buy_state",
+                self.token.key().as_ref(),
+                self.buyer.key().as_ref(),
+                &[bump][..],
+              ][..],
+            ],
+          ),
+          &ID,
+        )?;
+      }
+      match Account::try_from_unchecked(&self.buy_state) {
+        Ok(val) => val,
+        Err(e) => return Err(e.with_account_name("buy_state")),
+      } 
+    } else {
+      match Account::try_from(&self.buy_state) {
+        Ok(val) => val,
+        Err(e) => return Err(e.with_account_name("buy_state")),
+      }
+    };
+
+    if actual_owner != &ID {
+      return Err(
+        Error::from(anchor_lang::error::ErrorCode::ConstraintOwner)
+        .with_account_name("buy_state")
+        .with_pubkeys((*actual_owner, ID)),
+      );
+    }
+
+    let required_lamports = rent.minimum_balance(space);
+    if self.buy_state.lamports() < required_lamports {
+      return Err(
+        Error::from(anchor_lang::error::ErrorCode::ConstraintRentExempt)
+        .with_account_name("buy_state"),
+      );
+    }
+
+    pa.buy_amount = buy_amount;
+
+    Ok(())
+  }
+}

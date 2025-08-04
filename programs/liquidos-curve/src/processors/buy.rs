@@ -1,13 +1,13 @@
 use anchor_lang::{
   prelude::{borsh::BorshSerialize, *}, solana_program::{
     program::invoke, system_instruction::transfer,
-    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
-  }, system_program::{allocate, assign, create_account, Allocate, Assign, CreateAccount, Transfer}, Discriminator
+    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked}
+  }, Discriminator
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
-  account_data::buy_state::BuyState, curve_formulas::constants::VERSION, instruction::{MintLiq, MoveLiquidity},
+  curve_formulas::constants::VERSION, instruction::{MintLiq, MoveLiquidity},
   instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium::{self, AmmConfig}, ID
 };
 
@@ -48,13 +48,11 @@ fn mint_tokens(
 }
 
 fn send_sol_to_curve<'info>(
-  ctx: &Context<'_, '_, '_, 'info, Buy<'info>>,
   amount: u64,
   curve_key: Pubkey,
+  buyer: AccountInfo<'info>,
   curve_acc_info: AccountInfo<'info>,
 ) -> Result<()> {
-  let buyer = &ctx.accounts.buyer;
-
   invoke(
     &transfer(&buyer.key(), &curve_key, amount),
     &[
@@ -182,140 +180,6 @@ fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>) -> Result<()> {
   Ok(())
 }
 
-fn create_buy_state_if_needed<'info>(
-  ctx: &Context<'_, '_, '_, 'info, Buy<'info>>,
-  buy_amount: u64,
-) -> Result<()> {
-  let buy_state = &ctx.accounts.buy_state;
-  let actual_owner = buy_state.owner;
-  let current_lamports = buy_state.lamports();
-  let rent = Rent::get()?;
-  let space = BuyState::MAX_SIZE;
-  let token = &ctx.accounts.token;
-  let buyer = &ctx.accounts.buyer;
-  let system_program = &ctx.accounts.system_program;
-  let bump = ctx.bumps.buy_state;
-
-  let mut pa: BuyState = if actual_owner == &anchor_lang::solana_program::system_program::ID {
-    // create the account
-    if current_lamports == 0 {
-      let cpi_accounts = CreateAccount {
-        from: ctx.accounts.buyer.to_account_info(),
-        to: buy_state.clone(),
-      };
-      let cpi_context = CpiContext::new(
-        system_program.to_account_info(),
-        cpi_accounts,
-      );
-
-      let lamports = rent.minimum_balance(space);
-      create_account(
-        cpi_context.with_signer(
-          &[
-            &[
-              b"buy_state",
-              token.key().as_ref(),
-              buyer.key().as_ref(),
-              &[bump][..],
-            ][..],
-          ],
-        ),
-        lamports,
-        space as u64,
-        &ID,
-      )?;
-    } else {
-      let required_lamports = rent.minimum_balance(space)
-        .max(1)
-        .saturating_sub(current_lamports);
-
-      if required_lamports > 0 {
-        let cpi_accounts = Transfer {
-          from: buyer.to_account_info(),
-          to: buy_state.to_account_info(),
-        };
-        let cpi_context = anchor_lang::context::CpiContext::new(
-          system_program.to_account_info(),
-          cpi_accounts,
-        );
-        anchor_lang::system_program::transfer(cpi_context, required_lamports)?;
-      }
-
-      let cpi_accounts = Allocate {
-        account_to_allocate: buy_state.to_account_info(),
-      };
-      let cpi_context = anchor_lang::context::CpiContext::new(
-          system_program.to_account_info(),
-          cpi_accounts,
-      );
-      allocate(
-        cpi_context.with_signer(
-          &[
-            &[
-              b"buy_state",
-              token.key().as_ref(),
-              buyer.key().as_ref(),
-              &[bump][..],
-            ][..],
-          ],
-        ),
-        space as u64,
-      )?;
-      let cpi_accounts = Assign {
-        account_to_assign: buy_state.to_account_info(),
-      };
-      let cpi_context = anchor_lang::context::CpiContext::new(
-        system_program.to_account_info(),
-        cpi_accounts,
-      );
-      assign(
-        cpi_context.with_signer(
-          &[
-            &[
-              b"buy_state",
-              token.key().as_ref(),
-              buyer.key().as_ref(),
-              &[bump][..],
-            ][..],
-          ],
-        ),
-        &ID,
-      )?;
-    }
-
-
-    let mut data: &[u8] = &buy_state.try_borrow_data()?;
-    BuyState::try_deserialize_unchecked(&mut data)?
-    
-  } else {
-    let mut data: &[u8] = &buy_state.try_borrow_data()?;
-    BuyState::try_deserialize(&mut data)?
-  };
-
-  if actual_owner != &ID {
-    return Err(
-      Error::from(anchor_lang::error::ErrorCode::ConstraintOwner)
-      .with_account_name("buy_state")
-      .with_pubkeys((*actual_owner, ID)),
-    );
-  }
-
-  let required_lamports = rent.minimum_balance(space);
-  if buy_state.lamports() < required_lamports {
-    return Err(
-      Error::from(anchor_lang::error::ErrorCode::ConstraintRentExempt)
-      .with_account_name("buy_state"),
-    );
-  }
-
-  pa.buy_amount = buy_amount;
-
-  match buy_state.serialize_data(&[&BuyState::discriminator()[..], &pa.try_to_vec()?[..]].concat()) {
-    Ok(_) => Ok(()),
-    Err(_) => return Err(Error::from(anchor_lang::error::ErrorCode::AccountDidNotSerialize)),
-  }
-}
-
 pub fn exec<'info>(
   ctx: Context<'_, '_, '_, 'info, Buy<'info>>,
   amount: u64,
@@ -361,7 +225,7 @@ pub fn exec<'info>(
 
   collect_trade_fees(&ctx, trade_fees)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
-  send_sol_to_curve(&ctx, net_amount, curve_key, curve_acc_info.clone())?;
+  send_sol_to_curve(net_amount, curve_key, ctx.accounts.buyer.to_account_info(), curve_acc_info.clone())?;
 
   let price = curve.price;
   let circulating_supply = curve.circulating_supply;
@@ -386,7 +250,7 @@ pub fn exec<'info>(
     let buyer_balance = ctx.accounts.buyer_ata.amount;
 
     // to be used in the mint_liq ix that comes next
-    create_buy_state_if_needed(&ctx, spendable_amount)?;
+    ctx.accounts.create_buy_state_if_needed(spendable_amount, ctx.bumps.buy_state)?;
 
     emit_cpi!(BuyEvent {
       curve_type, 
