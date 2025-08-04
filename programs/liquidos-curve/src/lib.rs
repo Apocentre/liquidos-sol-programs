@@ -193,9 +193,8 @@ pub mod liquidos_curve {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `amount` - Amount of tokens buyer used to buy meme coin in the previous ix
-  pub fn mint_liq(ctx: Context<MintLiq>, amount: u64) -> Result<()> {
-    processors::mint_liq::exec(ctx, amount)
+  pub fn mint_liq(ctx: Context<MintLiq>) -> Result<()> {
+    processors::mint_liq::exec(ctx)
   }
 
   /// ResizeState

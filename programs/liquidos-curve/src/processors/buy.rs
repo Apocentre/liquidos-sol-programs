@@ -166,7 +166,7 @@ fn instrospect_next_move_liquidity_ix(ctx: &Context<Buy>) -> Result<()> {
   Ok(())
 }
 
-fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>, net_buy_amount: u64) -> Result<()> {
+fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
 
   // check MintLiq
@@ -174,10 +174,6 @@ fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>, net_buy_amount: u64) -> Resu
   require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
   let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
   require!(discriminator.eq(&MintLiq::DISCRIMINATOR), ErrorCode::ExpectedMintLiqIx);
-
-  // verify the ix amount
-  let mint_liq_ix = MintLiq::deserialize(&mut &current_ix.data[8..])?;
-  require!(mint_liq_ix.amount == net_buy_amount, ErrorCode::WrongMintLiqAmount);
 
   // verify ix accounts. We need to make sure that MintLiq does not have the wrong accounts
   require!(current_ix.accounts[0].pubkey.eq(&ctx.accounts.state.key()), ErrorCode::WrongMintLiqAccount);
@@ -229,7 +225,7 @@ pub fn exec<'info>(
   let curve = &ctx.accounts.bonding_curve;
   let curve_type = (&curve.curve_type).into();
 
-  instrospect_next_mint_liq_ix(&ctx, spendable_amount)?;
+  instrospect_next_mint_liq_ix(&ctx)?;
 
   collect_trade_fees(&ctx, trade_fees)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
@@ -256,6 +252,10 @@ pub fn exec<'info>(
     let buyer = ctx.accounts.buyer.key();
     ctx.accounts.buyer_ata.reload()?;
     let buyer_balance = ctx.accounts.buyer_ata.amount;
+
+    // to be used in the mint_liq ix that comes next
+    let buy_state = &mut ctx.accounts.buy_state;
+    buy_state.buy_amount = spendable_amount;
 
     emit_cpi!(BuyEvent {
       curve_type, 
