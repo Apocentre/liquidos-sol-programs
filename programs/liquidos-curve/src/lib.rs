@@ -5,6 +5,7 @@ pub mod processors;
 pub mod program_error;
 pub mod raydium;
 pub mod curve_formulas;
+pub mod bpf_writer;
 
 use anchor_lang::prelude::*;
 use crate::instructions::{

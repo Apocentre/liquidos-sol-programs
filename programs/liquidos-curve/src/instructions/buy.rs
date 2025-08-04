@@ -7,6 +7,7 @@ use anchor_spl::{
   token::Token, token_interface::{TokenInterface, Mint, TokenAccount},
   associated_token::AssociatedToken,
 };
+use crate::bpf_writer::BpfWriter;
 use crate::ID;
 use crate::{
   account_data::{bonding_curve::BondingCurve, buy_state::BuyState, state::State},
@@ -107,7 +108,7 @@ impl<'info> Buy<'info> {
     let rent = Rent::get()?;
     let space = BuyState::MAX_SIZE;
 
-    let mut pa: Account<'_, BuyState> = if actual_owner == &anchor_lang::solana_program::system_program::ID {
+    let mut buy_state_acc: BuyState = if actual_owner == &anchor_lang::solana_program::system_program::ID {
       // create the account
       if current_lamports == 0 {
         let cpi_accounts = CreateAccount {
@@ -193,15 +194,22 @@ impl<'info> Buy<'info> {
           &ID,
         )?;
       }
-      match Account::try_from_unchecked(&self.buy_state) {
-        Ok(val) => val,
-        Err(e) => return Err(e.with_account_name("buy_state")),
-      } 
+
+      let mut data: &[u8] = &self.buy_state.try_borrow_data()?;
+      BuyState::try_deserialize_unchecked(&mut data)?
+
+      // match Account::try_from_unchecked(&self.buy_state) {
+      //   Ok(val) => val,
+      //   Err(e) => return Err(e.with_account_name("buy_state")),
+      // } 
     } else {
-      match Account::try_from(&self.buy_state) {
-        Ok(val) => val,
-        Err(e) => return Err(e.with_account_name("buy_state")),
-      }
+      // match Account::try_from(&self.buy_state) {
+      //   Ok(val) => val,
+      //   Err(e) => return Err(e.with_account_name("buy_state")),
+      // }
+
+      let mut data: &[u8] = &self.buy_state.try_borrow_data()?;
+      BuyState::try_deserialize(&mut data)?
     };
 
     if actual_owner != &ID {
@@ -220,7 +228,12 @@ impl<'info> Buy<'info> {
       );
     }
 
-    pa.buy_amount = buy_amount;
+    buy_state_acc.buy_amount = buy_amount;
+
+    let mut data = self.buy_state.try_borrow_mut_data()?;
+    let dst: &mut [u8] = &mut data;
+    let mut writer = BpfWriter::new(dst);
+    buy_state_acc.try_serialize(&mut writer)?;
 
     Ok(())
   }
