@@ -11,7 +11,7 @@ use curve_v2::CurveV2;
 use curve_v3::CurveV3;
 use crate::program_error::ErrorCode;
 
-#[derive(Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
+#[derive(InitSpace, Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
 pub enum CurveType {
   CurveV1,
   CurveV2,

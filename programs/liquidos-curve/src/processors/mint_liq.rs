@@ -1,13 +1,14 @@
 use anchor_lang::prelude::*;
 use crate::instructions::mint_liq::MintLiq;
 
-pub fn exec<'info>(ctx: Context<MintLiq>, amount: u64) -> Result<()> {
-  mint_liq_cpi(ctx, amount)?;
+pub fn exec<'info>(ctx: Context<MintLiq>) -> Result<()> {
+  mint_liq_cpi(ctx)?;
 
   Ok(())
 }
 
-fn mint_liq_cpi<'info>(ctx: Context<MintLiq>, amount: u64) -> Result<()> {
+fn mint_liq_cpi<'info>(ctx: Context<MintLiq>) -> Result<()> {
+  let amount = ctx.accounts.buy_state.buy_amount;
   let cpi_program = ctx.accounts.liq_program.to_account_info();
   let cpi_accounts = liq::cpi::accounts::Mint {
     state: ctx.accounts.liq_state.clone(),

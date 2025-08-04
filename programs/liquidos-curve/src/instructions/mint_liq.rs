@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
   associated_token::AssociatedToken, token_interface::{Mint, TokenInterface},
 };
-use crate::{account_data::{bonding_curve::BondingCurve, state::State}, program_error::ErrorCode};
+use crate::{account_data::{bonding_curve::BondingCurve, buy_state::BuyState, state::State}, program_error::ErrorCode};
 use liq::program::Liq;
 
 #[derive(Accounts)]
@@ -18,6 +18,12 @@ pub struct MintLiq<'info> {
     bump = bonding_curve.bump,
   )]
   pub bonding_curve: Box<Account<'info, BondingCurve>>,
+
+  #[account(
+    seeds = [b"buy_state", token.key().as_ref(), buyer.key().as_ref()],
+    bump,
+  )]
+  pub buy_state: Box<Account<'info, BuyState>>,
 
   #[account(
     mut,

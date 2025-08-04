@@ -1,16 +1,14 @@
 use anchor_lang::{
-  prelude::{borsh::BorshSerialize, *},
-  solana_program::{
+  prelude::{borsh::BorshSerialize, *}, solana_program::{
     program::invoke, system_instruction::transfer,
-    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
-  }, Discriminator,
+    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked}
+  }, Discriminator
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
   curve_formulas::constants::VERSION, instruction::{MintLiq, MoveLiquidity},
-  instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode,
-  raydium::{self, AmmConfig}, ID,
+  instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium::{self, AmmConfig}, ID
 };
 
 use super::common::deser;
@@ -50,13 +48,11 @@ fn mint_tokens(
 }
 
 fn send_sol_to_curve<'info>(
-  ctx: &Context<'_, '_, '_, 'info, Buy<'info>>,
   amount: u64,
   curve_key: Pubkey,
+  buyer: AccountInfo<'info>,
   curve_acc_info: AccountInfo<'info>,
 ) -> Result<()> {
-  let buyer = &ctx.accounts.buyer;
-
   invoke(
     &transfer(&buyer.key(), &curve_key, amount),
     &[
@@ -166,7 +162,7 @@ fn instrospect_next_move_liquidity_ix(ctx: &Context<Buy>) -> Result<()> {
   Ok(())
 }
 
-fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>, net_buy_amount: u64) -> Result<()> {
+fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
 
   // check MintLiq
@@ -175,15 +171,11 @@ fn instrospect_next_mint_liq_ix(ctx: &Context<Buy>, net_buy_amount: u64) -> Resu
   let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
   require!(discriminator.eq(&MintLiq::DISCRIMINATOR), ErrorCode::ExpectedMintLiqIx);
 
-  // verify the ix amount
-  let mint_liq_ix = MintLiq::deserialize(&mut &current_ix.data[8..])?;
-  require!(mint_liq_ix.amount == net_buy_amount, ErrorCode::WrongMintLiqAmount);
-
   // verify ix accounts. We need to make sure that MintLiq does not have the wrong accounts
   require!(current_ix.accounts[0].pubkey.eq(&ctx.accounts.state.key()), ErrorCode::WrongMintLiqAccount);
-  require!(current_ix.accounts[2].pubkey.eq(&ctx.accounts.token.key()), ErrorCode::WrongMintLiqAccount);
-  require!(current_ix.accounts[4].pubkey.eq(&ctx.accounts.buyer.key()), ErrorCode::WrongMintLiqAccount);
-  require!(current_ix.accounts[8].pubkey.eq(&ctx.accounts.bonding_curve.token_creator), ErrorCode::WrongMintLiqAccount);
+  require!(current_ix.accounts[3].pubkey.eq(&ctx.accounts.token.key()), ErrorCode::WrongMintLiqAccount);
+  require!(current_ix.accounts[5].pubkey.eq(&ctx.accounts.buyer.key()), ErrorCode::WrongMintLiqAccount);
+  require!(current_ix.accounts[9].pubkey.eq(&ctx.accounts.bonding_curve.token_creator), ErrorCode::WrongMintLiqAccount);
 
   Ok(())
 }
@@ -229,11 +221,11 @@ pub fn exec<'info>(
   let curve = &ctx.accounts.bonding_curve;
   let curve_type = (&curve.curve_type).into();
 
-  instrospect_next_mint_liq_ix(&ctx, spendable_amount)?;
+  instrospect_next_mint_liq_ix(&ctx)?;
 
   collect_trade_fees(&ctx, trade_fees)?;
   mint_tokens(&ctx, token_amount, signer_seeds)?;
-  send_sol_to_curve(&ctx, net_amount, curve_key, curve_acc_info.clone())?;
+  send_sol_to_curve(net_amount, curve_key, ctx.accounts.buyer.to_account_info(), curve_acc_info.clone())?;
 
   let price = curve.price;
   let circulating_supply = curve.circulating_supply;
@@ -256,6 +248,9 @@ pub fn exec<'info>(
     let buyer = ctx.accounts.buyer.key();
     ctx.accounts.buyer_ata.reload()?;
     let buyer_balance = ctx.accounts.buyer_ata.amount;
+
+    // to be used in the mint_liq ix that comes next
+    ctx.accounts.create_buy_state_if_needed(spendable_amount, ctx.bumps.buy_state)?;
 
     emit_cpi!(BuyEvent {
       curve_type, 

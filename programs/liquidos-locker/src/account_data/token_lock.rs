@@ -1,8 +1,7 @@
-
-use std::mem::size_of;
 use anchor_lang::prelude::*;
 
 #[account]
+#[derive(InitSpace)]
 pub struct TokenLock {
   /// Total tokens locked
   pub total_locked: u64,
@@ -12,8 +11,7 @@ pub struct TokenLock {
 }
 
 impl TokenLock {
-  pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  pub const MAX_SIZE: usize = 8 + Self::INIT_SPACE;
 
   pub fn new(bump: u8) -> Self {
     Self {
