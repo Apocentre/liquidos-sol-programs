@@ -5,7 +5,7 @@ use anchor_spl::{
   associated_token::AssociatedToken,
 };
 use crate::{
-  account_data::{bonding_curve::BondingCurve, buy_state::BuyState, state::State},
+  account_data::{bonding_curve::BondingCurve, state::State},
   program_error::ErrorCode, raydium,
 };
 
@@ -41,14 +41,13 @@ pub struct Buy<'info> {
   )]
   pub bonding_curve: Box<Account<'info, BondingCurve>>,
 
+  /// CHECK: the buy_state. All checks take place in the processor
   #[account(
-    init_if_needed,
-    space = BuyState::MAX_SIZE,
-    payer = buyer,
+    mut,
     seeds = [b"buy_state", token.key().as_ref(), buyer.key().as_ref()],
     bump,
   )]
-  pub buy_state: Box<Account<'info, BuyState>>,
+  pub buy_state: AccountInfo<'info>,
 
   /// The ATA of the WSOL token that is owned by the buyer. Create one if no already exists
   #[account(
