@@ -17,13 +17,13 @@ const main = async () => {
   const state = accounts.liqState();
   const bondingCurve = accounts.liqBondingCurve(state.publicKey, program.programId)[0];
   const eventAuthority = accounts.eventAuthority(program.programId)[0];
-  const liqToken = accounts.liqToken(state.publicKey, "LIQ IOU", "LIQ", program.programId)[0];
+  const liqToken = accounts.liqToken(state.publicKey, "IOU (LiquidOS)", "IOU", program.programId)[0];
 
   const ix = await program.methods
   .initialize(
-    "LIQ IOU",
-    "LIQ",
-    "https://liquidos.fun/liq",
+    "IOU (LiquidOS)",
+    "IOU",
+    "https://liquidos.fun/iou",
     liquidosProgram.programId,
     new PublicKey(config.liquidosCurveState),
     new BN(config.liqCreatorFeeBps),

@@ -56,7 +56,7 @@ const main = async () => {
   const liqProgram = anchor.workspace.Liq;
   const liqState = new PublicKey(config.liqState);
   const liqBondingCurve = accounts.liqBondingCurve(liqState, liqProgram.programId)[0];
-  const liqToken = accounts.liqToken(liqState, "LIQ IOU", "LIQ", liqProgram.programId)[0];
+  const liqToken = accounts.liqToken(liqState, "IOU (LiquidOS)", "IOU", liqProgram.programId)[0];
   const buyerLiqAta = await web3.getAssociatedTokenAddress(liqToken, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const curveCreatorLiqAta = await web3.getAssociatedTokenAddress(liqToken, tokenCreator, true, spl.TOKEN_2022_PROGRAM_ID);
   const liqEventAuthority = accounts.eventAuthority(liqProgram.programId);
