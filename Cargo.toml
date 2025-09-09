@@ -1,5 +1,6 @@
 [workspace]
 members = [
+  "math",
   "programs/*"
 ]
 resolver = "2"

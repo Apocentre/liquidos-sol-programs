@@ -1,0 +1,135 @@
+use anchor_lang::{
+  prelude::{borsh::BorshSerialize, *},
+  solana_program::{
+    program::invoke, system_instruction::transfer,
+    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
+  },
+  Discriminator,
+};
+use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
+use crate::{
+  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, instruction::CreateStakingPool, instructions::create_token::CreateToken, program_error::ErrorCode, ID
+};
+
+#[event]
+pub struct TokenCreatedEvent {
+  pub curve_type: u8,
+  pub creator: Pubkey,
+  pub address: Pubkey,
+  pub name: String,
+  pub symbol: String,
+  pub uri: String,
+  pub curve: Pubkey,
+  pub tax: Option<u16>,
+  pub version: u8,
+}
+
+pub fn update_account_lamports_to_minimum_balance<'info>(
+  account: AccountInfo<'info>,
+  payer: AccountInfo<'info>,
+  system_program: AccountInfo<'info>,
+) -> Result<()> {
+  let extra_lamports = Rent::get()?.minimum_balance(account.data_len()) - account.get_lamports();
+
+  if extra_lamports > 0 {
+    invoke(
+      &transfer(payer.key, account.key, extra_lamports),
+      &[payer, account, system_program],
+    )?;
+  }
+  Ok(())
+}
+
+fn create_metadata(
+  ctx: &Context<CreateToken>,
+  name: String,
+  symbol: String,
+  uri: String,
+) -> Result<()> {
+  let token_key = &ctx.accounts.token.key();
+  let state_key = &ctx.accounts.state.key();
+  let seeds: &[&[u8]] = &[
+    b"bonding_curve",
+    state_key.as_ref(),
+    token_key.as_ref(),
+    &[ctx.bumps.bonding_curve],
+  ];
+  let signer_seeds:&[&[&[u8]]] = &[&seeds[..]];
+
+  let cpi_accounts = TokenMetadataInitialize {
+    token_program_id: ctx.accounts.token_2022.to_account_info(),
+    mint: ctx.accounts.token.to_account_info(),
+    metadata: ctx.accounts.token.to_account_info(), // metadata account is the mint, since data is stored in mint
+    mint_authority: ctx.accounts.bonding_curve.to_account_info(),
+    update_authority: ctx.accounts.bonding_curve.to_account_info(),
+  };
+  
+  let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.token_2022.to_account_info(), cpi_accounts, signer_seeds);
+  token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
+
+  // the new metadata will be stored on the Mint account. However, we have allocated enough space for
+  // the MetadataPoint and the Mint data. We need to allocate additional space to fit the metadata.
+  update_account_lamports_to_minimum_balance(
+    ctx.accounts.token.to_account_info(),
+    ctx.accounts.token_creator.to_account_info(),
+    ctx.accounts.system_program.to_account_info(),
+  )?;
+
+  Ok(())
+}
+
+/// When creating a token, the buyer will send two ixs: the CreateToken and CreateStakingPool
+/// This is important so we know that user never skips the CreateStakingPool IX
+fn instrospect_next_ix(ctx: &Context<CreateToken>) -> Result<()> {
+  let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+
+  // check CreateStakingPool
+  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+  require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+  let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+  require!(discriminator.eq(&CreateStakingPool::DISCRIMINATOR), ErrorCode::ExpectedCreateStakingPoolIx);
+  Ok(())
+}
+
+pub fn exec(
+  ctx: Context<CreateToken>,
+  name: String,
+  symbol: String,
+  uri: String,
+  curve_type: u8,
+) -> Result<()> {
+  instrospect_next_ix(&ctx)?;
+
+  let state = &ctx.accounts.state;
+  let token_creator = ctx.accounts.token_creator.key();
+  let curve_key = ctx.accounts.bonding_curve.key();
+  let curve = &mut ctx.accounts.bonding_curve;
+
+  ***curve = BondingCurve::try_new(
+    curve_type,
+    token_creator,
+    ctx.accounts.token.key(),
+    state.protocol_fee,
+    state.trade_fee_bps,
+    state.creator_fee,
+    state.total_token_supply,
+    state.staking_allocation,
+    ctx.bumps.bonding_curve,
+  )?;
+
+  create_metadata(&ctx, name.clone(), symbol.clone(), uri.clone())?;
+
+  emit_cpi!(TokenCreatedEvent {
+    curve_type,
+    creator: token_creator,
+    address: ctx.accounts.token.key(),
+    name,
+    symbol,
+    uri,
+    curve: curve_key,
+    tax: None,
+    version: VERSION,
+  });
+
+  Ok(())
+}
