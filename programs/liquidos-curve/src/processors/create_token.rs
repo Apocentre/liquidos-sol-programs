@@ -8,7 +8,8 @@ use anchor_lang::{
 };
 use anchor_spl::token_interface::{token_metadata_initialize, TokenMetadataInitialize};
 use crate::{
-  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, instruction::CreateStakingPool, instructions::create_token::CreateToken, program_error::ErrorCode, ID
+  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, program_error::ErrorCode,
+  instruction::CreateStakingPool, instructions::create_token::CreateToken, ID
 };
 
 #[event]
@@ -98,6 +99,7 @@ pub fn exec(
   uri: String,
   curve_type: u8,
 ) -> Result<()> {
+  require!(ctx.accounts.token.key().to_string().ends_with("os"), ErrorCode::WrongTokenSuffix);
   instrospect_next_ix(&ctx)?;
 
   let state = &ctx.accounts.state;

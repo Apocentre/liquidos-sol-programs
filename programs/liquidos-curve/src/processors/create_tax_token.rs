@@ -187,6 +187,7 @@ pub fn exec(
   max_fee: u64,
   curve_type: u8,
 ) -> Result<()> {
+  require!(ctx.accounts.token.key().to_string().ends_with("os"), ErrorCode::WrongTokenSuffix);
   instrospect_next_ix(&ctx)?;
 
   let state = &ctx.accounts.state;

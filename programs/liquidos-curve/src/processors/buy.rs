@@ -8,7 +8,8 @@ use anchor_lang::{
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
 use crate::{
-  curve_formulas::constants::VERSION, instruction::MoveLiquidity, instructions::buy::Buy, processors::common::transfer_from_pda, program_error::ErrorCode, raydium::{self, AmmConfig}, ID
+  curve_formulas::constants::VERSION, instruction::MoveLiquidity, instructions::buy::Buy,
+  processors::common::transfer_from_pda, program_error::ErrorCode, raydium::{self, AmmConfig}, ID
 };
 
 use super::common::deser;
