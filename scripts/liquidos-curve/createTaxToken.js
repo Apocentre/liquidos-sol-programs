@@ -18,7 +18,7 @@ const main = async () => {
   const stakingProgram = anchor.workspace.LiquidosStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
-  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const token = new PublicKey("")
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const stakingState = new PublicKey(config.stakingState);
   const poolAuthority = accounts.poolAuthority(stakingState, stakingProgram.programId)[0];

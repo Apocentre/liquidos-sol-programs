@@ -18,7 +18,7 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
   const testTs = new BN(Number.MAX_SAFE_INTEGER);
   const escrow = accounts.escrow(state, program.programId)[0];
-  const token = new PublicKey("DZCmJsjGWgydsDKHMfsAE3m6hUMFPBP5PWgHoryJHAKS");
+  const token = new PublicKey("")
   const tokenLock = accounts.tokenLock(state, token, program.programId)[0];
   const userLock = accounts.userLock(state, token, user.publicKey, program.programId)[0];
   const userAta = await web3.getAssociatedTokenAddress(token, user.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);

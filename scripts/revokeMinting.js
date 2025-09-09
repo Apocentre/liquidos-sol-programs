@@ -18,7 +18,7 @@ const main = async () => {
   const tokenSymbol= "SYMBOL_3";
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.state);
-  const token = accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
+  const token = new PublicKey("")
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   
   const wsol = constants.wsol;

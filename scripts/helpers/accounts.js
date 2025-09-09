@@ -10,11 +10,6 @@ export const bondingCurve = (state, token, programId) => PublicKey.findProgramAd
   programId
 )
 
-export const curveToken = (state, tokenName, tokenSymbol, programId) => PublicKey.findProgramAddressSync(
-  [utf8.encode("liquidos_token"), state.toBuffer(), utf8.encode(`${tokenName}-${tokenSymbol}`)],
-  programId
-)
-
 export const raydiumAuthority = (programId) => PublicKey.findProgramAddressSync(
   [utf8.encode("vault_and_lp_mint_auth_seed")],
   programId

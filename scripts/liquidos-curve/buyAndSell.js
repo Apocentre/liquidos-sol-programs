@@ -130,7 +130,7 @@ const main = async () => {
   const buyer1 = Keypair.fromSecretKey(Buffer.from(buyerKey1))
   const buyer2 = Keypair.fromSecretKey(Buffer.from(buyerKey2))
   const state = new PublicKey(config.liquidosCurveState);
-  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const token = new PublicKey("")
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   
   await buy(web3, buyer1, state, token, bondingCurve, new BN(web3.toBase("5", 8))); // receives 21167548551095
