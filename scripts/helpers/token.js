@@ -13,12 +13,17 @@ import {
 } from "@solana/spl-token";
 
 
-export const createToken = async (state, tokenCreator, tokenName, tokenSymbol) => {
+export const createToken = async (state, tokenCreator, tokenName, tokenSymbol, isTaxToken) => {
   const program = anchor.workspace.LiquidosCurve;
   // Define the extensions to be used by the mint
-  const extensions = [
-    ExtensionType.MetadataPointer,
-  ];
+  const extensions = isTaxToken 
+  ? [
+      ExtensionType.MetadataPointer,
+      ExtensionType.TransferFeeConfig,
+    ]
+  : [
+      ExtensionType.MetadataPointer,
+    ];
 
   // Calculate the length of the mint
   const mintLen = getMintLen(extensions);
