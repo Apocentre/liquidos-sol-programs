@@ -4,7 +4,7 @@ import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v3.json" with { type: "json" };
 import buyerKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
@@ -15,12 +15,12 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.LiquidosCurve;
-  const amount = new BN(web3.toBase("2", 9));
+  const amount = new BN(web3.toBase("1", 4));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = new PublicKey(config.tokenCreator);
-  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const token = new PublicKey("EsUaDvf629FaxSvRrdKk7ianTvqGuhagFUPW298uswif")
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;

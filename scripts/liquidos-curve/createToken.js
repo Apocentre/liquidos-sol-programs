@@ -3,8 +3,9 @@ import * as accounts from "../helpers/accounts.js";
 import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
+import {createToken} from "../helpers/token.js";
 import * as constants from "../helpers/constants.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v3.json" with { type: "json" };
 import tokenCreatorKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
@@ -17,7 +18,12 @@ const main = async () => {
   const stakingProgram = anchor.workspace.LiquidosStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
-  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const [token, createTokenixs] = await createToken(
+    state,
+    tokenCreator.publicKey,
+    constants.tokenName,
+    constants.tokenSymbol,
+  );
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const stakingState = new PublicKey(config.stakingState);
   const poolAuthority = accounts.poolAuthority(stakingState, stakingProgram.programId)[0];
@@ -69,10 +75,10 @@ const main = async () => {
   })
   .instruction();
 
-  const priorityFeeIx = web3.setComputeUnitPrice(20000);
+  const priorityFeeIx = web3.setComputeUnitPrice(50000);
   await createAndSendV0Tx(
     provider,
-    [priorityFeeIx, ix, createStakingPoolIx],
+    [priorityFeeIx, ...createTokenixs, ix, createStakingPoolIx],
     tokenCreator.publicKey,
     [tokenCreator]
   );

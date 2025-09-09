@@ -1,50 +1,56 @@
 import * as anchor from "@coral-xyz/anchor";
 import {provider} from "./provider.js";
+import * as accounts from "./accounts.js";
 
-const {PublicKey, sendAndConfirmTransaction} = anchor.web3;
+const {PublicKey, sendAndConfirmTransaction, Transaction, SystemProgram} = anchor.web3;
 
 import {
   ExtensionType,
   getMintLen,
+  createInitializeMintInstruction,
+  createInitializeMetadataPointerInstruction,
   TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
 
 
-export const createToken = async (state, tokenName, tokenSymbol) => {
-  const payer = provider.wallet.payer;
-
+export const createToken = async (state, tokenCreator, tokenName, tokenSymbol) => {
+  const program = anchor.workspace.LiquidosCurve;
   // Define the extensions to be used by the mint
   const extensions = [
     ExtensionType.MetadataPointer,
   ];
 
   // Calculate the length of the mint
-  const seed = `onlybags_token:${state.toString()}:${tokenName}-${tokenSymbol}`;
   const mintLen = getMintLen(extensions);
   const mintLamports = await provider.connection.getMinimumBalanceForRentExemption(mintLen);
-  const mintAcc = await PublicKey.createWithSeed(
-    payer.publicKey,
-    seed,
-    TOKEN_2022_PROGRAM_ID,
-  );
-
-  const tx = new Transaction().add(
+  const response = await fetch(`http://localhost:4000/tokens/vanity-addresses`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      token_name: tokenName,
+      token_symbol: tokenSymbol,
+      base: tokenCreator.toString(),
+    })
+  });
+  const {seed, token_addr} = await response.json();
+  const mint = new PublicKey(token_addr);
+  const bondingCurve = accounts.bondingCurve(state, mint, program.programId)[0];
+  const mintAuthority = bondingCurve;
+  const decimals = 6;
+  const ixs = [
     SystemProgram.createAccountWithSeed({
-      basePubkey: payer.publicKey,
-      fromPubkey: payer.publicKey,
+      basePubkey: tokenCreator,
+      fromPubkey: tokenCreator,
       space: mintLen,
       lamports: mintLamports,
-      newAccountPubkey: mintAcc,
+      newAccountPubkey: mint,
       programId: TOKEN_2022_PROGRAM_ID,
       seed,
-    })
-  );
-
-  const newTokenTx = await sendAndConfirmTransaction(
-    provider.connection,
-    tx,
-    [payer],
-  );
-
-  console.log("New Token Created:", newTokenTx);
+    }),
+    createInitializeMetadataPointerInstruction(mint, bondingCurve, mint, TOKEN_2022_PROGRAM_ID),
+    createInitializeMintInstruction(mint, decimals, mintAuthority, null, TOKEN_2022_PROGRAM_ID),
+  ]
+  return [mint, ixs]
 }

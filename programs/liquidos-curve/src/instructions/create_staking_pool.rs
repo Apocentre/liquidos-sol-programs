@@ -55,7 +55,7 @@ pub struct CreateStakingPool<'info> {
   pub reward_token_vault_ata: AccountInfo<'info>,
   /// CHECK: The staking program id.
   #[account(
-    constraint = staking_program.key() == state.staking_program.unwrap() @ ErrorCode::WrontStakingProgram,
+    constraint = staking_program.key() == state.staking_program.unwrap() @ ErrorCode::WrongStakingProgram,
   )]
   pub staking_program: AccountInfo<'info>,
 

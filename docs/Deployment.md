@@ -43,3 +43,7 @@ Same as above but do not deploy a new Staking program. Just the Liquidos Curve p
 ## v2.1
 
 We need to deploy the `Liq` Program and upgrade the `Liquidos Curve`
+
+## v3
+
+Same as #V1 above but use this program id `./wallets/v3/liquidos_curve.json`

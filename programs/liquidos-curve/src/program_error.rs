@@ -27,7 +27,7 @@ pub enum ErrorCode {
   #[msg("Curve type not supported")]
   CurveTypeNotSupported,
   #[msg("Wrong staking program")]
-  WrontStakingProgram,
+  WrongStakingProgram,
   #[msg("Wrong staking program state")]
   WrongStakingProgramState,
 }

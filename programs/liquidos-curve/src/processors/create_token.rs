@@ -67,7 +67,7 @@ fn create_metadata(
   let cpi_ctx = CpiContext::new_with_signer(ctx.accounts.token_2022.to_account_info(), cpi_accounts, signer_seeds);
   token_metadata_initialize(cpi_ctx, name, symbol, uri)?;
 
-  // the new metadata will be stored on the Mint account. However, we have allocated enougg space for
+  // the new metadata will be stored on the Mint account. However, we have allocated enough space for
   // the MetadataPoint and the Mint data. We need to allocate additional space to fit the metadata.
   update_account_lamports_to_minimum_balance(
     ctx.accounts.token.to_account_info(),
