@@ -30,4 +30,6 @@ pub enum ErrorCode {
   WrongStakingProgram,
   #[msg("Wrong staking program state")]
   WrongStakingProgramState,
+  #[msg("Wrong token suffix")]
+  WrongTokenSuffix,
 }
