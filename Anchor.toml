@@ -7,19 +7,19 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-liquidos_curve = "HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV"
+liquidos_curve = "os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR"
 liquidos_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
 liquidos_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
 liquidos_locker = "CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY"
 
 [programs.localnet]
-liquidos_curve = "HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV"
+liquidos_curve = "os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR"
 liquidos_staking = "BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem"
 liquidos_swap_proxy = "GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY"
 liquidos_locker = "CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY"
 
 [programs.mainnet]
-liquidos_curve = "HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV"
+liquidos_curve = "os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR"
 liquidos_staking = "HxbEKU2EdXw5xK5XnG8XWK2uMNCj1A69N3YkD65CcRcb"
 liquidos_swap_proxy = "5r8CvW57rPwHJJcyBhALpnJkpK5hMGabfrWpp83nMn7S"
 liquidos_locker = "7Sntio7WMpXkPWTQMXLVYoH7hqwfLn1i4JP7xUFaDkaK"
