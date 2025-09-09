@@ -65,6 +65,7 @@ export const createTaxToken = async (tokenCreator) => {
   });
 
   const {seed, token_addr} = await response.json();
+  const mint = new PublicKey(token_addr);
 
-  return [seed, token_addr]
+  return [seed, mint]
 }

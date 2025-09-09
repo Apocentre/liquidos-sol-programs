@@ -20,7 +20,7 @@ const main = async () => {
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = new PublicKey(config.tokenCreator);
-  const token = new PublicKey("EsUaDvf629FaxSvRrdKk7ianTvqGuhagFUPW298uswif")
+  const token = new PublicKey("7FNFp3HWQhedyNM2xifVSNKnuU9QS36kfaVvACiXBwif")
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;

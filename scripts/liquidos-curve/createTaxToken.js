@@ -5,7 +5,7 @@ import {provider} from "../helpers/provider.js";
 import * as constants from "../helpers/constants.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import {createTaxToken} from "../helpers/token.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v3.json" with { type: "json" };
 import tokenCreatorKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
@@ -27,6 +27,7 @@ const main = async () => {
   const rewardTokenVaultAta = await web3.getAssociatedTokenAddress(token, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
   const stakingToken = token;
   const stakingTokenVaultAta = await web3.getAssociatedTokenAddress(stakingToken, poolAuthority, true, spl.TOKEN_2022_PROGRAM_ID);
+  const eventAuthority = accounts.eventAuthority(program.programId)[0];
 
   const ix = await program.methods
   .createTaxToken(
@@ -36,6 +37,7 @@ const main = async () => {
     "http://liquidos.fun",
     new BN(200), // 2% transfer fee
     new BN(web3.toBase("20000000", 6)), // max fee that can be charged is 2% of the total supply i.e. 20M
+    0,
   )
   .accounts({
     state,

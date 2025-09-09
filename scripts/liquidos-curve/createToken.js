@@ -18,10 +18,7 @@ const main = async () => {
   const stakingProgram = anchor.workspace.LiquidosStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
-  const [token, createTokenixs] = await createToken(
-    state,
-    tokenCreator.publicKey,
-  );
+  const [token, createTokenIxs] = await createToken(state, tokenCreator.publicKey);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const stakingState = new PublicKey(config.stakingState);
   const poolAuthority = accounts.poolAuthority(stakingState, stakingProgram.programId)[0];
@@ -76,7 +73,7 @@ const main = async () => {
   const priorityFeeIx = web3.setComputeUnitPrice(50000);
   await createAndSendV0Tx(
     provider,
-    [priorityFeeIx, ...createTokenixs, ix, createStakingPoolIx],
+    [priorityFeeIx, ...createTokenIxs, ix, createStakingPoolIx],
     tokenCreator.publicKey,
     [tokenCreator]
   );
