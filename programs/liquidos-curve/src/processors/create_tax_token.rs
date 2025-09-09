@@ -1,8 +1,7 @@
 use anchor_lang::{
-  prelude::*,
-  system_program::{CreateAccount, create_account},
-  solana_program::sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
-  Discriminator,
+  Discriminator, prelude::*, 
+  solana_program::{sysvar::instructions::{load_current_index_checked, load_instruction_at_checked}},
+  system_program::{CreateAccountWithSeed, create_account_with_seed},
 };
 use anchor_spl::{associated_token, token_2022::{initialize_mint, InitializeMint}, token_interface::{
   metadata_pointer_initialize, token_metadata_initialize, transfer_fee_initialize,
@@ -18,27 +17,19 @@ use super::create_token::update_account_lamports_to_minimum_balance;
 pub const MINT_LEN: usize = 346;
 const DECIMALS: u8 = 6;
 
-fn create_mint_account(ctx: &Context<CreateTaxToken>, name: &str, symbol: &str) -> Result<()> {
-  let state_key = &ctx.accounts.state.key();
-  let name_symbol = format!("{}-{}", name, symbol);
-  let seeds: &[&[u8]] = &[
-    b"liquidos_token",
-    state_key.as_ref(),
-    name_symbol.as_ref(),
-    &[ctx.bumps.token],
-  ];
-  let signer_seeds: &[&[&[u8]]] = &[&seeds[..]];
-
-  let cpi_accounts = CreateAccount {
+fn create_mint_account(ctx: &Context<CreateTaxToken>, seed: &str) -> Result<()> {
+  let cpi_accounts = CreateAccountWithSeed {
     from: ctx.accounts.token_creator.to_account_info(),
     to:  ctx.accounts.token.to_account_info(),
-  };
+    base: ctx.accounts.token_creator.to_account_info(),
+};
 
   let cpi_ctx = CpiContext::new(ctx.accounts.system_program.to_account_info(), cpi_accounts);
   let lamports = Rent::get()?.minimum_balance(MINT_LEN);
 
-  create_account(
-    cpi_ctx.with_signer(signer_seeds),
+  create_account_with_seed(
+    cpi_ctx,
+    seed,
     lamports,
     MINT_LEN as u64,
     &ctx.accounts.token_2022.key(),
@@ -140,6 +131,7 @@ fn init_metadata(
 
 fn setup_mint(
   ctx: &Context<CreateTaxToken>,
+  seed: &str,
   name: String,
   symbol: String,
   uri: String,
@@ -147,7 +139,7 @@ fn setup_mint(
   max_fee: u64,
   signer_seeds: &[&[&[u8]]],
 ) -> Result<()> {
-  create_mint_account(ctx, &name, &symbol)?;
+  create_mint_account(ctx, &seed)?;
   register_transfer_fee_extention(ctx, fee_bps, max_fee, signer_seeds)?;
   register_metadata_pointer_extention(ctx, signer_seeds)?;
   init_mint(ctx, signer_seeds)?;
@@ -187,6 +179,7 @@ fn instrospect_next_ix(ctx: &Context<CreateTaxToken>) -> Result<()> {
 
 pub fn exec(
   ctx: Context<CreateTaxToken>,
+  seed: String,
   name: String,
   symbol: String,
   uri: String,
@@ -222,7 +215,16 @@ pub fn exec(
     &[ctx.bumps.bonding_curve],
   ];
   let signer_seeds: &[&[&[u8]]] = &[&seeds[..]];
-  setup_mint(&ctx, name.clone(), symbol.clone(), uri.clone(), fee_bps, max_fee, signer_seeds)?;
+  setup_mint(
+    &ctx,
+    &seed,
+    name.clone(),
+    symbol.clone(),
+    uri.clone(),
+    fee_bps,
+    max_fee,
+    signer_seeds,
+  )?;
   create_curve_ata(&ctx, signer_seeds)?;
 
   emit_cpi!(TokenCreatedEvent {

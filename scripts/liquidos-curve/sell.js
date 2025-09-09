@@ -17,7 +17,7 @@ const main = async () => {
   const web3 = Web3(deployer.publicKey);
   const seller = Keypair.fromSecretKey(Buffer.from(sellerKey))
   const state = new PublicKey(config.liquidosCurveState);
-  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const token = new PublicKey("")
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const amount = new BN(14890926316);
   const minAmountOut = new BN(0); // no slippage

@@ -12,7 +12,7 @@
     "setupAddressLUT:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/setupAddressLUTForBuy.js",
     "setupAddressLUT:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/setupAddressLUTForBuy.js",
     "createToken:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/createToken.js",
-    "createToken:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/createToken.js",
+    "createToken:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/createToken.js",
     "createTaxToken:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/createTaxToken.js",
     "createTaxToken:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/createTaxToken.js",
     "buy:mainnet": "ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liquidos-curve/buy.js",

@@ -7,7 +7,7 @@ import config from "../config.v2.1.json" with { type: "json" };
 const {PublicKey} = anchor.web3;
 
 const getTokenAccount = (state, program) => {
-  return accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  return new PublicKey("")
 }
 
 const main = async () => {

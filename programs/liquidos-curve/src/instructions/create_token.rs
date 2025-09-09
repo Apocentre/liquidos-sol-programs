@@ -15,15 +15,11 @@ pub struct CreateToken<'info> {
 
   /// The Mint account of the newly created token.
   #[account(
-    init,
-    payer = token_creator,
     mint::decimals = 6,
     mint::authority = bonding_curve,
     mint::token_program = token_2022,
     extensions::metadata_pointer::authority = bonding_curve.key(),
     extensions::metadata_pointer::metadata_address = token.key(),
-    seeds = [b"liquidos_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
-    bump,
   )]
   pub token: Box<InterfaceAccount<'info, Mint>>,
 

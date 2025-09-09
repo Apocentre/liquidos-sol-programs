@@ -57,3 +57,7 @@ solana program deploy --with-compute-unit-price 100000  --max-sign-attempts 1000
 ```bash
 ENV=mainnet ANCHOR_WALLET=./wallets/deployer.json node ./scripts/liq/initialize.js
 ```
+
+## v3
+
+Same as #V1 above but use this program id `./wallets/v3/liquidos_curve.json`

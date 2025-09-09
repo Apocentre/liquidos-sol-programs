@@ -13,7 +13,7 @@ use crate::instructions::{
   update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*, mint_liq::*,
 };
 
-declare_id!("HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV");
+declare_id!("os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR");
 
 #[program]
 pub mod liquidos_curve {
@@ -113,6 +113,7 @@ pub mod liquidos_curve {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
+  /// * `seed` - The seed that is used in the CreateAccountWithSeed
   /// * `name` - The name of the token (used in the metadata account)
   /// * `symbol` - The symbol of the token (used in the metadata account)
   /// * `uri` - The uri of the token (used in the metadata account)
@@ -121,6 +122,7 @@ pub mod liquidos_curve {
   /// * `curve_type` - The type of the curve. The numner defines the version e.g. CurveV1 then curve_type = 1
   pub fn create_tax_token(
     ctx: Context<CreateTaxToken>,
+    seed: String,
     name: String,
     symbol: String,
     uri: String,
@@ -128,7 +130,7 @@ pub mod liquidos_curve {
     max_fee: u64,
     curve_type: u8,
   ) -> Result<()> {
-    processors::create_tax_token::exec(ctx, name, symbol, uri, fee_bps, max_fee, curve_type)
+    processors::create_tax_token::exec(ctx, seed, name, symbol, uri, fee_bps, max_fee, curve_type)
   }
 
   /// Buy

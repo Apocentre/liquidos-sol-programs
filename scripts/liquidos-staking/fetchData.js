@@ -7,11 +7,7 @@ import userKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 const {Keypair, PublicKey} = anchor.web3;
 
 const getTokenAccount = () => {
-  const program = anchor.workspace.LiquidosCurve;
-  const state = new PublicKey(config.liquidosCurveState);
-  const tokenName = "T_CURV_13";
-  const tokenSymbol= "S_CURVE_13";
-  return accounts.curveToken(state, tokenName, tokenSymbol, program.programId)[0];
+  return new PublicKey("")
 }
 
 const main = async () => {

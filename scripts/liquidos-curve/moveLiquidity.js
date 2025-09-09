@@ -16,7 +16,7 @@ const main = async () => {
   const program = anchor.workspace.LiquidosCurve;
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.liquidosCurveState);
-  const token = accounts.curveToken(state, constants.tokenName, constants.tokenSymbol, program.programId)[0];
+  const token = new PublicKey("")
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   
   const wsol = constants.wsol;

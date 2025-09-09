@@ -14,11 +14,7 @@ pub struct CreateTaxToken<'info> {
 
   /// CHECK: The Mint account of the newly created token. The initialization and extension setup will
   /// take place in the processor function.
-  #[account(
-    mut,
-    seeds = [b"liquidos_token", state.key().as_ref(), format!("{}-{}", name, symbol).as_ref()],
-    bump,
-  )]
+  #[account(mut)]
   pub token: AccountInfo<'info>,
 
   /// CHECK: The ATA that will hold the liquidity of the curve (token side). The account will be initialized

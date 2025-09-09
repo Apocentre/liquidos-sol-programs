@@ -17,3 +17,6 @@ export const provider = anchor.AnchorProvider.local(
 )
 
 anchor.setProvider(provider);
+
+// https://solana-devnet.gateway.tatum.io
+// https://smart-convincing-gadget.solana-devnet.quiknode.pro/d014cd6f46918d8dca9642ca6905c92a63096884/
