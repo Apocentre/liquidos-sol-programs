@@ -2,7 +2,7 @@ use std::f64::consts::E;
 use anchor_lang::prelude::*;
 use rust_decimal::{Decimal, MathematicalOps};
 use rust_decimal_macros::dec;
-use crate::math::decimal_error::DecimalErrorHandler;
+use math::decimal_error::DecimalErrorHandler;
 use super::{constants::{LAMPORT_IN_SOL, ONE_TOKEN}, curve_formula::CurveFormula};
 
 #[derive(Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]

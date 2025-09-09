@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use rust_decimal::Decimal;
-use crate::math::decimal_error::DecimalErrorHandler;
+use math::decimal_error::DecimalErrorHandler;
 
 use super::constants::{LAMPORT_IN_SOL, ONE_TOKEN};
 

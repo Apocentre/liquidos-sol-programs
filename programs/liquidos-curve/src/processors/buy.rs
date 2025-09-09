@@ -152,7 +152,7 @@ fn fund_creator_account(ctx: &Context<Buy>, signer_seeds: &[&[&[u8]]]) -> Result
 /// The later will be executed but do nothing if the curve is not closed.
 /// This is important so we know that once the SOL is sent to the buyer_wsol_ata he atomically
 /// moves_liquidity
-fn instrospect_next_ix(ctx: &Context<Buy>) -> Result<()> {
+fn introspect_next_ix(ctx: &Context<Buy>) -> Result<()> {
   let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
 
   // check MoveLiquidity
@@ -223,7 +223,7 @@ pub fn exec<'info>(
     let curve = &mut ctx.accounts.bonding_curve;
     curve.close_curve();
     
-    instrospect_next_ix(&ctx)?;
+    introspect_next_ix(&ctx)?;
   }
   
   {
