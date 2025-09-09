@@ -21,8 +21,6 @@ const main = async () => {
   const [token, createTokenixs] = await createToken(
     state,
     tokenCreator.publicKey,
-    constants.tokenName,
-    constants.tokenSymbol,
   );
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const stakingState = new PublicKey(config.stakingState);

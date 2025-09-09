@@ -4,6 +4,7 @@ import Web3Pkg, {spl} from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import * as constants from "../helpers/constants.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
+import {createTaxToken} from "../helpers/token.js";
 import config from "../config.v2.json" with { type: "json" };
 import tokenCreatorKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
@@ -18,7 +19,7 @@ const main = async () => {
   const stakingProgram = anchor.workspace.LiquidosStaking;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey)
-  const token = new PublicKey("")
+  const [seed, token] = await createTaxToken(tokenCreator.publicKey);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const stakingState = new PublicKey(config.stakingState);
   const poolAuthority = accounts.poolAuthority(stakingState, stakingProgram.programId)[0];
@@ -29,6 +30,7 @@ const main = async () => {
 
   const ix = await program.methods
   .createTaxToken(
+    seed,
     constants.tokenName,
     constants.tokenSymbol,
     "http://liquidos.fun",

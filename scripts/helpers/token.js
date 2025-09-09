@@ -13,17 +13,12 @@ import {
 } from "@solana/spl-token";
 
 
-export const createToken = async (state, tokenCreator, tokenName, tokenSymbol, isTaxToken) => {
+export const createToken = async (state, tokenCreator) => {
   const program = anchor.workspace.LiquidosCurve;
   // Define the extensions to be used by the mint
-  const extensions = isTaxToken 
-  ? [
-      ExtensionType.MetadataPointer,
-      ExtensionType.TransferFeeConfig,
-    ]
-  : [
-      ExtensionType.MetadataPointer,
-    ];
+  const extensions = [
+    ExtensionType.MetadataPointer,
+  ];
 
   // Calculate the length of the mint
   const mintLen = getMintLen(extensions);
@@ -34,8 +29,6 @@ export const createToken = async (state, tokenCreator, tokenName, tokenSymbol, i
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      token_name: tokenName,
-      token_symbol: tokenSymbol,
       base: tokenCreator.toString(),
     })
   });
@@ -58,4 +51,20 @@ export const createToken = async (state, tokenCreator, tokenName, tokenSymbol, i
     createInitializeMintInstruction(mint, decimals, mintAuthority, null, TOKEN_2022_PROGRAM_ID),
   ]
   return [mint, ixs]
+}
+
+export const createTaxToken = async (tokenCreator) => {
+  const response = await fetch(`http://localhost:4000/tokens/vanity-addresses`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      base: tokenCreator.toString(),
+    })
+  });
+
+  const {seed, token_addr} = await response.json();
+
+  return [seed, token_addr]
 }
