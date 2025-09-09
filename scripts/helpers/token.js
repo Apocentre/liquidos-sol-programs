@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import {provider} from "./provider.js";
 import * as accounts from "./accounts.js";
 
-const {PublicKey, sendAndConfirmTransaction, Transaction, SystemProgram} = anchor.web3;
+const {PublicKey, SystemProgram} = anchor.web3;
 
 import {
   ExtensionType,
