@@ -12,7 +12,7 @@ use crate::instructions::{
   update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
 };
 
-declare_id!("HUGG29eLrsEjGyedD56AdFnZgejSJ7HuEB4wmNsLFfGV");
+declare_id!("os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR");
 
 #[program]
 pub mod liquidos_curve {
