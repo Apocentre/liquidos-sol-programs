@@ -1,14 +1,14 @@
 
 use std::mem::size_of;
 use anchor_lang::prelude::*;
+use anchor_safe_math::SafeMath;
 use crate::program_error::ErrorCode;
 
 #[account]
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
-  /// The treasury accounts that receives fees and the corresponding trade fees (BPS).
-  /// This is applied on each trade that takes place. Fees collected in SOL
+  /// The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
   pub treasuries: Vec<(Pubkey, u64)>,
   /// Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
@@ -57,7 +57,13 @@ impl State {
     })
   }
 
-  pub fn treasury_exists(&self, treasury: &Pubkey) -> bool {
-    self.treasuries.iter().find(|(t, _)| t.eq(treasury)).is_some()
+  pub fn calc_treasury_fee(&self, treasury: &Pubkey, total_fees: u64) -> Result<u64> {
+    let Some((_, fee)) = self.treasuries.iter().find(|(t, _)| t.eq(treasury)) else {
+      return Err(ErrorCode::WrongTreasury.into())
+    };
+
+    Ok(
+      total_fees.safe_mul(*fee)?.safe_div(10_000)?
+    )
   }
 }

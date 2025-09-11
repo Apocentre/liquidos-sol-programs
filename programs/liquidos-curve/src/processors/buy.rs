@@ -93,17 +93,24 @@ fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>)
 }
 
 /// Collects trade fees on each transaction. Fees collected in SOL
-fn collect_trade_fees(ctx: &Context<Buy>, trade_fees: u64) -> Result<()> {
+fn collect_trade_fees<'info>(
+  ctx: Context<'_, '_, '_, 'info, Buy<'info>>,
+  trade_fees: u64
+) -> Result<()> {
+  let state = &ctx.accounts.state;
   let buyer = &ctx.accounts.buyer;
-  let treasury = &ctx.accounts.treasury;
 
-  invoke(
-    &transfer(&buyer.key(), &treasury.key(), trade_fees),
-    &[
-      buyer.to_account_info(),
-      treasury.to_account_info(),
-    ],
-  )?;
+  for treasury in ctx.remaining_accounts {
+    let treasury_fee = state.calc_treasury_fee(&treasury.key(), trade_fees)?;
+
+    invoke(
+      &transfer(&buyer.key(), &treasury.key(), treasury_fee),
+      &[
+        buyer.to_account_info(),
+        treasury.to_account_info(),
+      ],
+    )?;
+  }
 
   Ok(())
 }
