@@ -7,11 +7,13 @@ use crate::program_error::ErrorCode;
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
-  /// The treasury account that receives fees and the corresponding trade fees (BPS).
+  /// The treasury accounts that receives fees and the corresponding trade fees (BPS).
   /// This is applied on each trade that takes place. Fees collected in SOL
   pub treasuries: Vec<(Pubkey, u64)>,
   /// Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
+  /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
+  pub trade_fee_bps: u64,
   /// Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub creator_fee: u64,
   /// The total supply of the newly created tokens in the lowest denomination i.e. decimals included
@@ -34,22 +36,28 @@ impl State {
     owner: Pubkey,
     treasuries: Vec<(Pubkey, u64)>,
     protocol_fee: u64,
+    trade_fee_bps: u64,
     creator_fee: u64,
     total_token_supply: u64,
     staking_allocation: u64,
   ) -> Result<Self> {
-    let total_trade_fees: u64 = treasuries.iter().map(|(_, trade_fee_bps)| trade_fee_bps).sum();
+    let total_trade_fees: u64 = treasuries.iter().map(|(_, t)| t).sum();
     require!(total_trade_fees == 10_000, ErrorCode::TradeFeesMisconfiguration);
 
     Ok(Self {
       owner,
       treasuries,
       protocol_fee,
+      trade_fee_bps,
       creator_fee,
       total_token_supply,
       staking_program: None,
       staking_program_state: None,
       staking_allocation,
     })
+  }
+
+  pub fn treasury_exists(&self, treasury: &Pubkey) -> bool {
+    self.treasuries.iter().find(|(t, _)| t.eq(treasury)).is_some()
   }
 }

@@ -22,7 +22,7 @@ pub struct Buy<'info> {
   /// CHECK: The treasury account that collects the protocol fees
   #[account(
     mut,
-    constraint = treasury.key() == state.treasury @ ErrorCode::WrongTreasury,
+    constraint = state.treasury_exists(&treasury.key()) @ ErrorCode::WrongTreasury,
   )]
   pub treasury: AccountInfo<'info>,
 

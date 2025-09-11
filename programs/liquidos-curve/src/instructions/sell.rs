@@ -21,7 +21,7 @@ pub struct Sell<'info> {
   /// CHECK: The treasury account that collects the fees
   #[account(
     mut,
-    constraint = treasury.key() == state.treasury @ ErrorCode::WrongTreasury,
+    constraint = state.treasury_exists(&treasury.key()) @ ErrorCode::WrongTreasury,
   )]
   pub treasury: AccountInfo<'info>,
 
