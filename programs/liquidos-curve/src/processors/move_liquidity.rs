@@ -6,10 +6,11 @@ use anchor_lang::{
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::{
-  associated_token, token::{Burn, SyncNative, burn, sync_native},
+  associated_token, token::{self, Burn, SyncNative, Transfer, burn, sync_native},
   token_2022::{SetAuthority, set_authority, spl_token_2022::instruction::AuthorityType},
   token_interface::TokenAccount,
 };
+use math::utils::calc_perc_value;
 use crate::{
   instructions::move_liquidity::MoveLiquidity,
   raydium::{self, AmmConfig},
@@ -148,11 +149,11 @@ fn sync_buyer_wsol_ata(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]) 
   Ok(())
 }
 
-/// Loads the create_lp_token which is passed as unchecked AccountInfo the program. This is because
+/// Loads the ata for the given ata address which is passed as unchecked AccountInfo the program. This is because
 /// this is created in the Raydium program so when this program is called the account doesn't exists
 /// and thus we can't just use an InterfaceAccount<'info, TokenAccount>.
 /// When this function is called we know for sure that the account is created so we just need to load it.
-fn get_creator_lp_token(creator_lp_token: &AccountInfo<'_>) -> Result<TokenAccount> {
+fn load_ata(creator_lp_token: &AccountInfo<'_>) -> Result<TokenAccount> {
   let mut data: &[u8] = &creator_lp_token.try_borrow_data()?;
   let account = TokenAccount::try_deserialize(&mut data)?;
 
@@ -184,7 +185,9 @@ fn create_treasury_lp_ata<'info>(
 
 /// Burns 90% of LP created in the move_liquidity. These LP tokens are sent to the buyer
 /// whose purchase triggered the liquidity move. We need to burn this liquidity
-fn burn_and_distribute_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
+fn burn_and_distribute_lp<'info>(
+  ctx: &Context<'_, '_, '_, 'info, MoveLiquidity<'info>>,
+) -> Result<()> {
   let creator_lp_token = &ctx.accounts.creator_lp_token;
   let cpi_accounts = Burn {
     mint: ctx.accounts.lp_mint.to_account_info(),
@@ -195,12 +198,29 @@ fn burn_and_distribute_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
   let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
   
   // reload the ata and check the new balance
-  let creator_lp_token = get_creator_lp_token(&ctx.accounts.creator_lp_token)?;
+  let creator_lp_token = load_ata(&ctx.accounts.creator_lp_token)?;
   let lp_balance = creator_lp_token.amount;
-
-  let 
+  let lp_to_keep = calc_perc_value(lp_balance, ctx.accounts.state.lp_tokens_to_keep_bps)?;
   
-  burn(cpi_ctx, lp_balance);
+  burn(cpi_ctx, lp_balance.safe_sub(lp_to_keep)?)?;
+
+  let state = &ctx.accounts.state;
+  // the first three element are the treasury accounts the other three are their coresponding atas
+  for treasury_lp_ata in ctx.remaining_accounts.iter().skip(3) {
+    let ata = load_ata(treasury_lp_ata)?;
+    
+    let cpi_accounts = Transfer {
+      from: ctx.accounts.creator_lp_token.to_account_info(),
+      to: treasury_lp_ata.to_account_info(),
+      authority: ctx.accounts.buyer.to_account_info(),
+    };
+
+    let cpi_program = ctx.accounts.token_program.to_account_info();
+    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+    let amount = state.calc_treasury_fee(&ata.owner, lp_to_keep)?;
+
+    token::transfer(cpi_ctx, amount)?;
+  }
 
   Ok(())
 }
@@ -217,7 +237,9 @@ fn revoke_mint_authority(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]
   set_authority(cpi_ctx, AuthorityType::MintTokens, None)
 }
 
-pub fn exec<'info>(ctx: Context<'_, '_, '_, 'info, MoveLiquidity<'info>>) -> Result<()> {
+pub fn exec<'info>(
+  ctx: Context<'_, '_, '_, 'info, MoveLiquidity<'info>>,
+) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
   
   // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.

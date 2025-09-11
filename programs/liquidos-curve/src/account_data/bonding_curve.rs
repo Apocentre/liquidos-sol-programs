@@ -2,7 +2,7 @@
 use std::mem::size_of;
 use anchor_lang::prelude::*;
 use anchor_safe_math::SafeMath;
-use math::utils::get_perc_value;
+use math::utils::calc_perc_value;
 use crate::curve_formulas::CurveType;
 
 #[account]
@@ -123,7 +123,7 @@ impl BondingCurve {
   }
 
   pub fn calc_trade_fees(&self, sol_amount: u64) -> Result<u64> {
-    Ok(get_perc_value(sol_amount, self.trade_fee_bps)?)
+    Ok(calc_perc_value(sol_amount, self.trade_fee_bps)?)
   }
 
   /// Find the net amount of reserve token that can be used as liquidity in the Raydium pool

@@ -1,7 +1,7 @@
 
 use std::mem::size_of;
 use anchor_lang::prelude::*;
-use math::utils::{BPS, get_perc_value};
+use math::utils::{BPS, calc_perc_value};
 use crate::program_error::ErrorCode;
 
 #[account]
@@ -67,7 +67,7 @@ impl State {
     };
 
     Ok(
-      get_perc_value(total_fees, *fee)?
+      calc_perc_value(total_fees, *fee)?
     )
   }
 }
