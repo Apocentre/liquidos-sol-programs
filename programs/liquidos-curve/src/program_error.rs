@@ -32,4 +32,6 @@ pub enum ErrorCode {
   WrongStakingProgramState,
   #[msg("Wrong token suffix")]
   WrongTokenSuffix,
+  #[msg("Trade fees must sum to 10000")]
+  TradeFeesMisconfiguration
 }

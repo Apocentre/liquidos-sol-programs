@@ -13,6 +13,7 @@ name = "liquidos_curve"
 [features]
 default = ["devnet"]
 devnet = []
+wif = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
