@@ -14,7 +14,12 @@ const main = async () => {
   const program = anchor.workspace.LiquidosCurve;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const treasuries = config.treasuries.map(([acc, bps]) => [new PublicKey(acc), bps]);
+  const treasuries = config.treasuries.map(({acc, feeBps}) => {
+    return {
+      acc: new PublicKey(acc),
+      feeBps: new BN(feeBps)
+    }
+  });
 
   const ix = await program.methods
   .initialize(

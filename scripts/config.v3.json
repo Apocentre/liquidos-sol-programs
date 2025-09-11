@@ -1,12 +1,12 @@
 {
-  "liquidosCurveState": "6mCKqtXx2LPbWuHX7YaJzcj3qbV3LBFaK7rs32F9DoEk",
+  "liquidosCurveState": "Ga32VHPaZKVGZKFnpWJ3hAdvNjQAraQxFLd9qpEhJ9yz",
   "stakingState": "D1zBwydLajExbxXSQFAefkssNQwRoc438eQQXqYwtneL",
   "swapProxyState": "",
   "liquidosLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasuries": [
-    ["A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ", 2000],
-    ["A34B8BqR2s2eBHv1knZAut6EDwc4xhCPPRFYV5s9hh1z", 7000],
-    ["6uKazJzK7Rgbw8YjU51QsvqAz2jfYY1qF1opQFPMM1Xd", 1000]
+    {"acc": "A7VthQSmR24rhShWatSiGBnaQVTbshzizLSoRNZPZbLJ", "feeBps": 2000},
+    {"acc": "A34B8BqR2s2eBHv1knZAut6EDwc4xhCPPRFYV5s9hh1z", "feeBps": 7000},
+    {"acc": "6uKazJzK7Rgbw8YjU51QsvqAz2jfYY1qF1opQFPMM1Xd", "feeBps": 1000}
   ],
   "protocolFee": 0,
   "creatorFee": 2000000000,
