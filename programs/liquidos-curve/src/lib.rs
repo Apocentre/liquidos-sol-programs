@@ -29,6 +29,7 @@ pub mod liquidos_curve {
   /// * `creator_fee` - Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
   /// * `total_token_supply` - The total supply of the newly created tokens in the lowest denomination i.e. decimals included
   /// * `staking_allocation` - Staking allocation. The exact amount that will be distributed though the staking program
+  /// * `lp_tokens_to_keep_bps` - Percentage of LP tokens that will be shared amongst the treasuries when liquidity is moved to the DEX
   pub fn initialize(
     ctx: Context<Initialize>,
     treasuries: Vec<(Pubkey, u64)>,
@@ -37,6 +38,7 @@ pub mod liquidos_curve {
     creator_fee: u64,
     total_token_supply: u64,
     staking_allocation: u64,
+    lp_tokens_to_keep_bps: u64,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
@@ -46,6 +48,7 @@ pub mod liquidos_curve {
       creator_fee,
       total_token_supply,
       staking_allocation,
+      lp_tokens_to_keep_bps,
     )
   }
 

@@ -1,7 +1,7 @@
 
 use std::mem::size_of;
 use anchor_lang::prelude::*;
-use anchor_safe_math::SafeMath;
+use math::utils::{BPS, get_perc_value};
 use crate::program_error::ErrorCode;
 
 #[account]
@@ -24,6 +24,8 @@ pub struct State {
   pub staking_program_state: Option<Pubkey>,
   /// Staking allocation. The exact amount that will be distributed though the staking program
   pub staking_allocation: u64,
+  /// Percentage of LP tokens that will be shared amongst the treasuries when liquidity is moved to the DEX
+  pub lp_tokens_to_keep_bps: u64,
 }
 
 impl State {
@@ -40,9 +42,10 @@ impl State {
     creator_fee: u64,
     total_token_supply: u64,
     staking_allocation: u64,
+    lp_tokens_to_keep_bps: u64,
   ) -> Result<Self> {
     let total_trade_fees: u64 = treasuries.iter().map(|(_, t)| t).sum();
-    require!(total_trade_fees == 10_000, ErrorCode::TradeFeesMisconfiguration);
+    require!(total_trade_fees == BPS, ErrorCode::TradeFeesMisconfiguration);
 
     Ok(Self {
       owner,
@@ -54,6 +57,7 @@ impl State {
       staking_program: None,
       staking_program_state: None,
       staking_allocation,
+      lp_tokens_to_keep_bps,
     })
   }
 
@@ -63,7 +67,7 @@ impl State {
     };
 
     Ok(
-      total_fees.safe_mul(*fee)?.safe_div(10_000)?
+      get_perc_value(total_fees, *fee)?
     )
   }
 }
