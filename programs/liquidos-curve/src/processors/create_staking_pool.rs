@@ -1,13 +1,14 @@
 
 use anchor_lang::{
-  prelude::{borsh::BorshSerialize, *},
+  prelude::{borsh::BorshSerialize, *}, Discriminator,
   solana_program::{
     instruction::Instruction, program::invoke_signed,
+    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
   },
 };
 use anchor_spl::token_2022::{MintTo, mint_to};
 use crate::{
-  instructions::create_staking_pool::CreateStakingPool, program_error::ErrorCode,
+  ID, instruction::{CreateTaxToken, CreateToken}, instructions::create_staking_pool::CreateStakingPool, program_error::ErrorCode
 };
 
 #[derive(BorshSerialize)]
@@ -94,9 +95,28 @@ fn tranfer_rewards_to_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&
   Ok(())
 }
 
+fn instrospect_prev_ix(ctx: &Context<CreateStakingPool>) -> Result<()> {
+  if ctx.accounts.bonding_curve.staking_allocation > 0 {
+    let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+
+    // check previous ix
+    let current_ix = load_instruction_at_checked((current_index - 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+    require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+    let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+
+    require!(
+      discriminator.eq(&CreateToken::DISCRIMINATOR) || discriminator.eq(&CreateTaxToken::DISCRIMINATOR),
+      ErrorCode::ExpectedCreateStakingPoolIx,
+    );
+  }
+
+  Ok(())
+}
+
 pub fn exec(ctx: Context<CreateStakingPool>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
   require!(curve.staking_allocation > 0, ErrorCode::CannotCreateStakingPool);
+  instrospect_prev_ix(&ctx)?;
 
   let state_key = &ctx.accounts.state.key();
   let token_key = &ctx.accounts.token.key();
