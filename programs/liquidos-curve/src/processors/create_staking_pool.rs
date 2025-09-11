@@ -6,7 +6,9 @@ use anchor_lang::{
   },
 };
 use anchor_spl::token_2022::{MintTo, mint_to};
-use crate::instructions::create_staking_pool::CreateStakingPool;
+use crate::{
+  instructions::create_staking_pool::CreateStakingPool, program_error::ErrorCode,
+};
 
 #[derive(BorshSerialize)]
 pub struct CreatePoolIx {
@@ -87,6 +89,8 @@ fn tranfer_rewards_to_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&
 
 pub fn exec(ctx: Context<CreateStakingPool>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
+  require!(curve.staking_allocation > 0, ErrorCode::CannotCreateStakingPool);
+
   let state_key = &ctx.accounts.state.key();
   let token_key = &ctx.accounts.token.key();
   let seeds: &[&[u8]] = &[
