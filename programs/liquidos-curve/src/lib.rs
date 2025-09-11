@@ -7,16 +7,20 @@ pub mod raydium;
 pub mod curve_formulas;
 
 use anchor_lang::prelude::*;
-use crate::instructions::{
-  initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
-  update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
+use crate::{
+  account_data::state::Treasury,
+  instructions::{
+    initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
+    update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
+  }
 };
 
 declare_id!("os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR");
 
 #[program]
 pub mod liquidos_curve {
-  use super::*;
+
+use super::*;
 
   /// Initialize
   ///
@@ -32,7 +36,7 @@ pub mod liquidos_curve {
   /// * `lp_tokens_to_keep_bps` - Percentage of LP tokens that will be shared amongst the treasuries when liquidity is moved to the DEX
   pub fn initialize(
     ctx: Context<Initialize>,
-    treasuries: Vec<(Pubkey, u64)>,
+    treasuries: Vec<Treasury>,
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,

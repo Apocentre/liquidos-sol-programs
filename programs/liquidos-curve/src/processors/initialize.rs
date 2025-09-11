@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
-use crate::{account_data::state::State, instructions::initialize::Initialize};
+use crate::{account_data::state::{State, Treasury}, instructions::initialize::Initialize};
 
 pub fn exec(
   ctx: Context<Initialize>,
-  treasuries: Vec<(Pubkey, u64)>,
+  treasuries: Vec<Treasury>,
   protocol_fee: u64,
   trade_fee_bps: u64,
   creator_fee: u64,
