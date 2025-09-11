@@ -19,10 +19,6 @@ pub struct CreatePoolIx {
 /// Creates a new staking pool. This will fail if we try to create a staking pool for the same meme coin
 /// This is due to the PDA constraints of the pool_info which will create a deterministic address
 /// for the same reward token and staking_pool_state.
-/// NOTE! However, one can dos the creation of the token by first calling this ix and then the create_token
-/// which will end up calling this ix again and thus the tx will fail. We can circumvent this by adding
-/// ix introspection i.e. making sure the previous tx is a create_token/create_tax_token. But for the time being
-/// we don't think this is a big issue.
 fn create_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
 
@@ -95,6 +91,9 @@ fn tranfer_rewards_to_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&
   Ok(())
 }
 
+/// NOTE! One can dos the creation of the token by first calling this ix and then the create_token
+/// which will end up calling this ix again and thus the tx will fail. We can circumvent this by adding
+/// ix introspection i.e. making sure the previous tx is a create_token/create_tax_token.
 fn instrospect_prev_ix(ctx: &Context<CreateStakingPool>) -> Result<()> {
   if ctx.accounts.bonding_curve.staking_allocation > 0 {
     let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;

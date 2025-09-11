@@ -6,8 +6,7 @@ use anchor_lang::{
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::{
-  token::{burn, sync_native, Burn, SyncNative}, token_interface::TokenAccount,
-  token_2022::{set_authority, spl_token_2022::instruction::AuthorityType, SetAuthority},
+  associated_token, token::{Burn, SyncNative, burn, sync_native}, token_2022::{SetAuthority, set_authority, spl_token_2022::instruction::AuthorityType}, token_interface::TokenAccount
 };
 use crate::{
   instructions::move_liquidity::MoveLiquidity,
@@ -156,6 +155,29 @@ fn get_creator_lp_token(creator_lp_token: &AccountInfo<'_>) -> Result<TokenAccou
   Ok(account)
 }
 
+/// Creates on LP ATA for each treasury
+fn create_treasury_lp_ata<'info>(
+  ctx: &Context<'_, '_, '_, 'info, MoveLiquidity<'info>>,
+  signer_seeds: &[&[&[u8]]],
+) -> Result<()> {
+  let associated_token_program = &ctx.accounts.associated_token_program;
+
+  for treasury in ctx.remaining_accounts {
+    let cpi_accounts = associated_token::Create {
+      payer: ctx.accounts.buyer.to_account_info(),
+      associated_token: treasury.to_account_info(),
+      authority: ctx.accounts.bonding_curve.to_account_info(),
+      mint: ctx.accounts.token.to_account_info(),
+      system_program: ctx.accounts.system_program.to_account_info(),
+      token_program: ctx.accounts.token_2022.to_account_info(),
+    };
+    let cpi_ctx = CpiContext::new_with_signer(associated_token_program.to_account_info(), cpi_accounts, signer_seeds);
+    associated_token::create(cpi_ctx)?;
+  }
+  
+  Ok(())
+}
+
 /// Burns the LP created in the move_liquidity. These LP tokens are sent to the buyer
 /// whose purchase triggered the liquidity move. We need to burn this liquidity
 fn burn_lp(ctx: &Context<MoveLiquidity>) -> Result<()> {
@@ -187,7 +209,7 @@ fn revoke_mint_authority(ctx: &Context<MoveLiquidity>, signer_seeds: &[&[&[u8]]]
   set_authority(cpi_ctx, AuthorityType::MintTokens, None)
 }
 
-pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
+pub fn exec<'info>(ctx: Context<'_, '_, '_, 'info, MoveLiquidity<'info>>,) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
   
   // This Ix might be called even if the pool is completed. Read the docs of `instrospect_next_ix` for more details.
@@ -205,6 +227,7 @@ pub fn exec(ctx: Context<MoveLiquidity>) -> Result<()> {
     
     sync_buyer_wsol_ata(&ctx, signer_seeds)?;
     move_liquidity(&ctx)?;
+    create_treasury_lp_ata(&ctx, signer_seeds)?;
     burn_lp(&ctx)?;
     revoke_mint_authority(&ctx, signer_seeds)?;
   }

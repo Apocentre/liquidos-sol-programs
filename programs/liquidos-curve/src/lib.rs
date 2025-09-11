@@ -156,7 +156,7 @@ pub mod liquidos_curve {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  pub fn move_liquidity(ctx: Context<MoveLiquidity>) -> Result<()> {
+  pub fn move_liquidity<'info>(ctx: Context<'_, '_, '_, 'info, MoveLiquidity<'info>>) -> Result<()> {
     processors::move_liquidity::exec(ctx)
   }
 
