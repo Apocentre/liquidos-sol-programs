@@ -70,12 +70,15 @@ fn send_sol_to_curve<'info>(
 /// Collects fees from the SOL accumulated in the pool and sends to the treasury
 fn collect_protocol_fees(ctx: &Context<Buy>, curve_acc_info: &AccountInfo<'_>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
+  let main_treasury = &ctx.remaining_accounts[0];
 
-  transfer_from_pda(
-    &mut curve_acc_info.to_account_info(),
-    &mut ctx.accounts.treasury.to_account_info(),
-    curve.protocol_fee,
-  )?;
+  if curve.protocol_fee > 0 {
+    transfer_from_pda(
+      &mut curve_acc_info.to_account_info(),
+      &mut main_treasury.to_account_info(),
+      curve.protocol_fee,
+    )?;
+  }
 
   Ok(())
 }
@@ -94,7 +97,7 @@ fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>)
 
 /// Collects trade fees on each transaction. Fees collected in SOL
 fn collect_trade_fees<'info>(
-  ctx: Context<'_, '_, '_, 'info, Buy<'info>>,
+  ctx: &Context<'_, '_, '_, 'info, Buy<'info>>,
   trade_fees: u64
 ) -> Result<()> {
   let state = &ctx.accounts.state;

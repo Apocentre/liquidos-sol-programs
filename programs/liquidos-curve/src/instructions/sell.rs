@@ -18,13 +18,6 @@ pub struct Sell<'info> {
   #[account()]
   pub state: Account<'info, State>,
 
-  /// CHECK: The treasury account that collects the fees
-  #[account(
-    mut,
-    constraint = state.treasury_exists(&treasury.key()) @ ErrorCode::WrongTreasury,
-  )]
-  pub treasury: AccountInfo<'info>,
-
   /// The state of the bonding curve that will be used during buys and sells
   #[account(
     mut,
