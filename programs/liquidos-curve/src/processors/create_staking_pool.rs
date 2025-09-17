@@ -1,18 +1,24 @@
 
 use anchor_lang::{
-  prelude::{borsh::BorshSerialize, *},
+  prelude::{borsh::BorshSerialize, *}, Discriminator,
   solana_program::{
     instruction::Instruction, program::invoke_signed,
+    sysvar::instructions::{load_current_index_checked, load_instruction_at_checked},
   },
 };
 use anchor_spl::token_2022::{MintTo, mint_to};
-use crate::instructions::create_staking_pool::CreateStakingPool;
+use crate::{
+  ID, instruction::{CreateTaxToken, CreateToken}, instructions::create_staking_pool::CreateStakingPool, program_error::ErrorCode
+};
 
 #[derive(BorshSerialize)]
 pub struct CreatePoolIx {
   pub total_rewards: u64,
 }
 
+/// Creates a new staking pool. This will fail if we try to create a staking pool for the same meme coin
+/// This is due to the PDA constraints of the pool_info which will create a deterministic address
+/// for the same reward token and staking_pool_state.
 fn create_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&[u8]]]) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
 
@@ -85,8 +91,32 @@ fn tranfer_rewards_to_pool(ctx: &Context<CreateStakingPool>, signer_seeds: &[&[&
   Ok(())
 }
 
+/// NOTE! One can dos the creation of the token by first calling this ix and then the create_token
+/// which will end up calling this ix again and thus the tx will fail. We can circumvent this by adding
+/// ix introspection i.e. making sure the previous tx is a create_token/create_tax_token.
+fn instrospect_prev_ix(ctx: &Context<CreateStakingPool>) -> Result<()> {
+  if ctx.accounts.bonding_curve.staking_allocation > 0 {
+    let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+
+    // check previous ix
+    let current_ix = load_instruction_at_checked((current_index - 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+    require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+    let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+
+    require!(
+      discriminator.eq(&CreateToken::DISCRIMINATOR) || discriminator.eq(&CreateTaxToken::DISCRIMINATOR),
+      ErrorCode::ExpectedCreateStakingPoolIx,
+    );
+  }
+
+  Ok(())
+}
+
 pub fn exec(ctx: Context<CreateStakingPool>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
+  require!(curve.staking_allocation > 0, ErrorCode::CannotCreateStakingPool);
+  instrospect_prev_ix(&ctx)?;
+
   let state_key = &ctx.accounts.state.key();
   let token_key = &ctx.accounts.token.key();
   let seeds: &[&[u8]] = &[

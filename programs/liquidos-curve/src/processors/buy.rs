@@ -7,9 +7,10 @@ use anchor_lang::{
 };
 use anchor_safe_math::SafeMath;
 use anchor_spl::token_2022::{mint_to, MintTo};
+use math::utils::BPS;
 use crate::{
-  curve_formulas::constants::VERSION, instruction::MoveLiquidity, instructions::buy::Buy,
-  processors::common::transfer_from_pda, program_error::ErrorCode, raydium::{self, AmmConfig}, ID
+  ID, curve_formulas::constants::VERSION, instruction::MoveLiquidity, instructions::buy::Buy,
+  processors::common::transfer_from_pda, program_error::ErrorCode, raydium::{self, AmmConfig},
 };
 
 use super::common::deser;
@@ -70,12 +71,15 @@ fn send_sol_to_curve<'info>(
 /// Collects fees from the SOL accumulated in the pool and sends to the treasury
 fn collect_protocol_fees(ctx: &Context<Buy>, curve_acc_info: &AccountInfo<'_>) -> Result<()> {
   let curve = &ctx.accounts.bonding_curve;
+  let main_treasury = &ctx.remaining_accounts[0];
 
-  transfer_from_pda(
-    &mut curve_acc_info.to_account_info(),
-    &mut ctx.accounts.treasury.to_account_info(),
-    curve.protocol_fee,
-  )?;
+  if curve.protocol_fee > 0 {
+    transfer_from_pda(
+      &mut curve_acc_info.to_account_info(),
+      &mut main_treasury.to_account_info(),
+      curve.protocol_fee,
+    )?;
+  }
 
   Ok(())
 }
@@ -93,17 +97,24 @@ fn collect_creator_fees(ctx: &Context<Buy>, mut curve_acc_info: AccountInfo<'_>)
 }
 
 /// Collects trade fees on each transaction. Fees collected in SOL
-fn collect_trade_fees(ctx: &Context<Buy>, trade_fees: u64) -> Result<()> {
+fn collect_trade_fees<'info>(
+  ctx: &Context<'_, '_, '_, 'info, Buy<'info>>,
+  trade_fees: u64
+) -> Result<()> {
+  let state = &ctx.accounts.state;
   let buyer = &ctx.accounts.buyer;
-  let treasury = &ctx.accounts.treasury;
 
-  invoke(
-    &transfer(&buyer.key(), &treasury.key(), trade_fees),
-    &[
-      buyer.to_account_info(),
-      treasury.to_account_info(),
-    ],
-  )?;
+  for treasury in ctx.remaining_accounts {
+    let treasury_fee = state.calc_treasury_fee(&treasury.key(), trade_fees)?;
+
+    invoke(
+      &transfer(&buyer.key(), &treasury.key(), treasury_fee),
+      &[
+        buyer.to_account_info(),
+        treasury.to_account_info(),
+      ],
+    )?;
+  }
 
   Ok(())
 }
@@ -182,8 +193,8 @@ pub fn exec<'info>(
   // the trader fees 1.08888888889 (given a 10% trader fee) and thus the net_amount will be 9.8
   // which is exactly as much is needed to fill a curve v1 that accepts 89.8 max SOL.
   let max_accepted_amount = curve.max_accepted_amount()?
-  .safe_mul(10_000)?
-  .safe_div(10_000 - curve.trade_fee_bps)?;
+  .safe_mul(BPS)?
+  .safe_div(BPS - curve.trade_fee_bps)?;
 
   let spendable_amount = u64::min(max_accepted_amount, amount);
   let trade_fees = curve.calc_trade_fees(spendable_amount)?;

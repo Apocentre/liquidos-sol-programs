@@ -7,23 +7,27 @@ pub mod raydium;
 pub mod curve_formulas;
 
 use anchor_lang::prelude::*;
-use crate::instructions::{
-  initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
-  update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
+use crate::{
+  account_data::state::Treasury,
+  instructions::{
+    initialize::*, create_token::*, create_tax_token::*, buy::*, sell::*, move_liquidity::*,
+    update_state::*, create_staking_pool::*, resize_state::*, resize_bonding_curve::*,
+  }
 };
 
 declare_id!("os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR");
 
 #[program]
 pub mod liquidos_curve {
-  use super::*;
+
+use super::*;
 
   /// Initialize
   ///
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `treasury` - The treasury account that receives fees
+  /// * `treasuries` - The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
   /// * `protocol_fee` - Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   /// * `trade_fee_bps` - Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
   /// * `creator_fee` - Current creator fees (fixed lamports amount). This is applied when the pool is created on Raydium
@@ -31,7 +35,7 @@ pub mod liquidos_curve {
   /// * `staking_allocation` - Staking allocation. The exact amount that will be distributed though the staking program
   pub fn initialize(
     ctx: Context<Initialize>,
-    treasury: Pubkey,
+    treasuries: Vec<Treasury>,
     protocol_fee: u64,
     trade_fee_bps: u64,
     creator_fee: u64,
@@ -40,7 +44,7 @@ pub mod liquidos_curve {
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
-      treasury,
+      treasuries,
       protocol_fee,
       trade_fee_bps,
       creator_fee,

@@ -107,7 +107,7 @@ pub fn exec(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Resu
   let input_token = &ctx.accounts.input_token_mint;
   let output_token = &ctx.accounts.output_token_mint;
 
-  // We need to creat this here instead of using Anchor macros bacause we don't know
+  // We need to create this here instead of using Anchor macros bacause we don't know
   // that token program each tokens belongs to e.g. token_program or token_2022
   create_ata_if_needed(
     ctx.accounts.payer.to_account_info(),

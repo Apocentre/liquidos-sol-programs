@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
-use crate::{account_data::state::State, instructions::initialize::Initialize};
+use crate::{account_data::state::{State, Treasury}, instructions::initialize::Initialize};
 
 pub fn exec(
   ctx: Context<Initialize>,
-  treasury: Pubkey,
+  treasuries: Vec<Treasury>,
   protocol_fee: u64,
   trade_fee_bps: u64,
   creator_fee: u64,
@@ -14,13 +14,13 @@ pub fn exec(
   let state = &mut ctx.accounts.state;
   **state = State::new(
     owner,
-    treasury,
+    treasuries,
     protocol_fee,
     trade_fee_bps,
     creator_fee,
     total_token_supply,
     staking_allocation,
-  );
+  )?;
 
   Ok(())
 }

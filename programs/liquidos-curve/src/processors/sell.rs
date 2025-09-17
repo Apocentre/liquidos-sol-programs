@@ -44,11 +44,17 @@ fn burn_tokens(ctx: &Context<Sell>, amount: u64) -> Result<()> {
 
 /// Collects trade fees on each transaction. Fees collected in SOL
 fn collect_trade_fees(ctx: &Context<Sell>, fees: u64) -> Result<()> {
-  transfer_from_pda(
-    &mut ctx.accounts.bonding_curve.to_account_info(),
-    &mut ctx.accounts.treasury.to_account_info(),
-    fees,
-  )?;
+  let state = &ctx.accounts.state;
+
+  for treasury in ctx.remaining_accounts {
+    let treasury_fee = state.calc_treasury_fee(&treasury.key(), fees)?;
+
+    transfer_from_pda(
+      &mut ctx.accounts.bonding_curve.to_account_info(),
+      &mut treasury.to_account_info(),
+      treasury_fee,
+    )?;
+  }
 
   Ok(())
 }

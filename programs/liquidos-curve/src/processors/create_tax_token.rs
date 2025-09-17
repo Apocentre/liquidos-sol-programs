@@ -8,7 +8,9 @@ use anchor_spl::{associated_token, token_2022::{initialize_mint, InitializeMint}
   MetadataPointerInitialize, TokenMetadataInitialize, TransferFeeInitialize,
 }};
 use crate::{
-  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION, instruction::CreateStakingPool, instructions::create_tax_token::CreateTaxToken, processors::create_token::TokenCreatedEvent, program_error::ErrorCode, ID
+  account_data::bonding_curve::BondingCurve, curve_formulas::constants::VERSION,
+  instruction::CreateStakingPool, instructions::create_tax_token::CreateTaxToken,
+  processors::create_token::TokenCreatedEvent, program_error::ErrorCode, ID,
 };
 use super::create_token::update_account_lamports_to_minimum_balance;
 
@@ -167,13 +169,16 @@ fn create_curve_ata(ctx: &Context<CreateTaxToken>, signer_seeds: &[&[&[u8]]],) -
 /// When creating a token, the buyer will send two ixs: the CreateToken and CreateStakingPool
 /// This is important so we know that user never skips the CreateStakingPool IX
 fn instrospect_next_ix(ctx: &Context<CreateTaxToken>) -> Result<()> {
-  let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
+  if ctx.accounts.bonding_curve.staking_allocation > 0 {
+    let current_index = load_current_index_checked(&ctx.accounts.ix_sysvar.to_account_info())?;
 
-  // check CreateStakingPool
-  let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
-  require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
-  let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
-  require!(discriminator.eq(&CreateStakingPool::DISCRIMINATOR), ErrorCode::ExpectedCreateStakingPoolIx);
+    // check CreateStakingPool
+    let current_ix = load_instruction_at_checked((current_index + 1) as usize, &ctx.accounts.ix_sysvar.to_account_info())?;
+    require!(current_ix.program_id.eq(&ID), ErrorCode::WrongProgramId);
+    let discriminator: [u8; 8] = current_ix.data[..8].try_into().map_err(|_| ErrorCode::WrongIxData)?;
+    require!(discriminator.eq(&CreateStakingPool::DISCRIMINATOR), ErrorCode::ExpectedCreateStakingPoolIx);
+  }
+
   Ok(())
 }
 
