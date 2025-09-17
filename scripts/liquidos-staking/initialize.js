@@ -22,7 +22,7 @@ const main = async () => {
   .initialize(
     liquidosCurveProgram.programId,
     new PublicKey(config.liquidosCurveState),
-    new PublicKey(config.treasury),
+    new PublicKey(config.treasuries[0].acc),
     new BN(config.stakingDuration),
     new BN(config.stakingDelay),
     new BN(config.withdrawDelay),

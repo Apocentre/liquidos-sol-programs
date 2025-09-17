@@ -1,6 +1,6 @@
 {
-  "liquidosCurveState": "Ga32VHPaZKVGZKFnpWJ3hAdvNjQAraQxFLd9qpEhJ9yz",
-  "stakingState": "D1zBwydLajExbxXSQFAefkssNQwRoc438eQQXqYwtneL",
+  "liquidosCurveState": "7pPK6Vbw6gfr6HhtBySpXR3C9NVAXEfn7dage9n2cuVr",
+  "stakingState": "2snf1E3iLjw5d9YTsbpiwEiWiuPkGh96nofVuhKjcZM3",
   "swapProxyState": "",
   "liquidosLockerState": "HYzYrdLiAMSPuNqDbA2fwphxJvHNrfNeC7wtRhrp9Wuw",
   "treasuries": [
@@ -12,7 +12,6 @@
   "creatorFee": 2000000000,
   "tradeFeeBps": 100,
   "stakingAllocation": 50000000000000,
-  "lpTokensToKeepBps": 1000,
   "totalTokenSupply": 1000000000000000,
   "stakingDuration": 604800,
   "stakingDelay": 1800,

@@ -20,20 +20,24 @@ const main = async () => {
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = new PublicKey(config.tokenCreator);
-  const token = new PublicKey("7FNFp3HWQhedyNM2xifVSNKnuU9QS36kfaVvACiXBwif")
+  const token = new PublicKey("6MzojUhVkMjXG1TcwGfNd3pkX7fQay6aZwr9cSG9Hhos")
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;
   const buyerWsolAta = await web3.getAssociatedTokenAddress(wsol, buyer.publicKey);
   const ammConfig = constants.raydiumAmmConfigDevnet;
   const eventAuthority = accounts.eventAuthority(program.programId)[0];
+  const treasuries = config.treasuries.map(({acc}) => ({
+    pubkey: new PublicKey(acc),
+    isSigner: false,
+    isWritable: true,
+  }));
 
   const buyIx = await program.methods
   .buy(amount, minAmountOut)
   .accounts({
     buyer: buyer.publicKey,
     state,
-    treasury: new PublicKey(config.treasury),
     bondingCurve,
     tokenCreator,
     token,
@@ -48,6 +52,7 @@ const main = async () => {
     eventAuthority,
     program: program.programId,
   })
+  .remainingAccounts(treasuries)
   .instruction();
 
   const raydiumProgram = constants.raydiumProgramDevnet;

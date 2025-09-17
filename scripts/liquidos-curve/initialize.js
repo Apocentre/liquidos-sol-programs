@@ -29,7 +29,6 @@ const main = async () => {
     new BN(config.creatorFee),
     new BN(config.totalTokenSupply),
     new BN(config.stakingAllocation),
-    new BN(config.lpTokensToKeepBps),
   )
   .accounts({
     state: state.publicKey,
