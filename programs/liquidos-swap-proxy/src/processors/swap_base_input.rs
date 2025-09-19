@@ -7,8 +7,6 @@ use anchor_lang::{
 use anchor_safe_math::SafeMath;
 use crate::{instructions::swap::Swap, processors::common::{collect_fees, create_treasury_atas}, raydium};
 
-
-
 #[event]
 pub struct SwapBaseInputEvent {
   pub amount_sold: u64,

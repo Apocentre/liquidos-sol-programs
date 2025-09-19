@@ -44,12 +44,8 @@ pub fn exec(
   ctx: Context<Lock>,
   amount: u64,
   duration: i64,
-  _test_ts: i64,
 ) -> Result<()> {
-  #[cfg(not(feature = "localnet"))]
   let now = Clock::get().unwrap().unix_timestamp;
-  #[cfg(feature = "localnet")]
-  let now = _test_ts;
 
   {
     // init both account only once

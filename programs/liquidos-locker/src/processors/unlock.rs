@@ -40,11 +40,8 @@ fn unlock_funds(ctx: &Context<UnLock>, amount: u64) -> Result<()> {
   Ok(())
 }
 
-pub fn exec(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
-  #[cfg(not(feature = "localnet"))]
+pub fn exec(ctx: Context<UnLock>) -> Result<()> {
   let now = Clock::get().unwrap().unix_timestamp;
-  #[cfg(feature = "localnet")]
-  let now = _test_ts;
   
   let user_lock = &ctx.accounts.user_lock;
   require!(lock_expired(&user_lock, now)?, ErrorCode::LockNotExpired);

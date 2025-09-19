@@ -10,6 +10,10 @@ use crate::{
   instructions::{initialize::*, swap::*}, account_data::state::Treasury,
 };
 
+#[cfg(feature = "devnet")]
+declare_id!("GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY");
+
+#[cfg(not(feature = "devnet"))]
 declare_id!("GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY");
 
 #[program]

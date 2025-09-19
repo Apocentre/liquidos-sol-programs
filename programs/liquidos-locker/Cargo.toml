@@ -9,9 +9,9 @@ crate-type = ["cdylib", "lib"]
 name = "liquidos_locker"
 
 [features]
-default = ["localnet"]
+default = ["devnet"]
+devnet = []
 cpi = ["no-entrypoint"]
-localnet = []
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []

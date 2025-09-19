@@ -7,6 +7,10 @@ pub mod program_error;
 use anchor_lang::prelude::*;
 use crate::instructions::{initialize::*, lock::*, unlock::*};
 
+#[cfg(feature = "devnet")]
+declare_id!("CmccctV39SQpEiVsK3hgRo6i6QW55pLBTSsEmDLw9AXY");
+
+#[cfg(not(feature = "devnet"))]
 declare_id!("7Sntio7WMpXkPWTQMXLVYoH7hqwfLn1i4JP7xUFaDkaK");
 
 #[program]
@@ -30,8 +34,8 @@ pub mod liquidos_locker {
   /// * `ctx` - The Anchor context holding the accounts
   /// * `amount` - The amount to lock
   /// * `duration` - The duration of the lock
-  pub fn lock(ctx: Context<Lock>, amount: u64, duration: i64, _test_ts: i64) -> Result<()> {
-    processors::lock::exec(ctx, amount, duration, _test_ts)
+  pub fn lock(ctx: Context<Lock>, amount: u64, duration: i64) -> Result<()> {
+    processors::lock::exec(ctx, amount, duration)
   }
 
   /// Lock
@@ -40,7 +44,7 @@ pub mod liquidos_locker {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  pub fn unlock(ctx: Context<UnLock>, _test_ts: i64) -> Result<()> {
-    processors::unlock::exec(ctx, _test_ts)
+  pub fn unlock(ctx: Context<UnLock>) -> Result<()> {
+    processors::unlock::exec(ctx)
   }
 }

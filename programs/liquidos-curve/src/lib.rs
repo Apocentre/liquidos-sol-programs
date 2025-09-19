@@ -15,6 +15,10 @@ use crate::{
   }
 };
 
+#[cfg(feature = "devnet")]
+declare_id!("B2SyvBKgz6XojEvfmvcWCbjJr2kc2eHNc73eKxwLAfWJ");
+
+#[cfg(not(feature = "devnet"))]
 declare_id!("os2w2AnDK8GXgsjLwvJNdTj8y8856Qs8j4M8v7fnRmR");
 
 #[program]

@@ -11,6 +11,10 @@ use crate::instructions::{
   read_pending_reward::*, init_user_info::*,
 };
 
+#[cfg(feature = "devnet")]
+declare_id!("BysFb46aUfoNS9BEuAA63Ut61qSz4gjiJgNExN8KtYem");
+
+#[cfg(not(feature = "devnet"))]
 declare_id!("HxbEKU2EdXw5xK5XnG8XWK2uMNCj1A69N3YkD65CcRcb");
 
 #[program]
