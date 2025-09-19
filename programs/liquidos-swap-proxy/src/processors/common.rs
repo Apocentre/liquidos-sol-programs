@@ -76,6 +76,8 @@ pub fn collect_fees<'info>(
   let fees = calc_perc_value(token_amount_received, state.protocol_fee_bps)?;
 
   for treasury_accs in ctx.remaining_accounts.chunks(3) {
+    let treasury_fee = state.calc_treasury_fee(&treasury_accs[0].key(), fees)?;
+
     if is_wsol(&output_token_mint.key())? {
       let cpi_accounts = Transfer {
         from: ctx.accounts.output_token_account.to_account_info(),
@@ -86,7 +88,7 @@ pub fn collect_fees<'info>(
       let cpi_program = ctx.accounts.token_program.to_account_info();
       let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
     
-      token::transfer(cpi_ctx, fees)?;
+      token::transfer(cpi_ctx, treasury_fee)?;
     } else {
       let cpi_accounts = TransferChecked {
         from: ctx.accounts.output_token_account.to_account_info(),
@@ -98,7 +100,7 @@ pub fn collect_fees<'info>(
       let cpi_program = ctx.accounts.token_2022.to_account_info();
       let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
     
-      token_2022::transfer_checked(cpi_ctx, fees, TOKEN_DECIMALS)?;
+      token_2022::transfer_checked(cpi_ctx, treasury_fee, TOKEN_DECIMALS)?;
     }
   }
  

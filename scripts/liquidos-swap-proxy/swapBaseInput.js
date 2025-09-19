@@ -64,8 +64,6 @@ const main = async () => {
   const amountIn = new BN(web3.toBase("1000000", 6));
   const minimumAmountOut = new BN(web3.toBase("0", 9));
 
-  console.log(remainingAccounts)
-
   const swapBaseInputIx = await swapProxyProgram.methods
   .swapBaseInput(amountIn, minimumAmountOut)
   .accounts({

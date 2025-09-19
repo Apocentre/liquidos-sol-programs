@@ -67,7 +67,6 @@ fn swap(ctx: &Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<
   Ok(())
 }
 
-
 pub fn exec<'info>(
   ctx: Context<'_, '_, '_, 'info, Swap<'info>>,
   amount_in: u64,
