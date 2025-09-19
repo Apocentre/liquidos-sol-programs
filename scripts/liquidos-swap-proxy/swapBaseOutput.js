@@ -4,25 +4,21 @@ import {provider} from "../helpers/provider.js";
 import * as accounts from "../helpers/accounts.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
-import config from "../config.v2.json" with { type: "json" };
+import RaydiumHelper from "./raydium.js"
+import config from "../config.v3.json" with { type: "json" };
 import buyerKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
-const {SystemProgram, PublicKey, Keypair, SYSVAR_RENT_PUBKEY} = anchor.web3
+const {SystemProgram, PublicKey, Keypair} = anchor.web3
 
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
-  const liquidosCurveProgram = anchor.workspace.LiquidosCurve;
   const swapProxyProgram = anchor.workspace.LiquidosSwapProxy;
-  const liquidosCurveState = new PublicKey(config.liquidosCurveState);
   const swapProxyState = new PublicKey(config.swapProxyState);
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const tokenName = "T_CURVE_2";
-  const tokenSymbol= "S_CURVE_2";
-  const token = new PublicKey("")
-  const treasury = new PublicKey(config.treasury);
+  const token = new PublicKey("GQvnQnVVNdYsX1puzL5MAgoWtg7Bs4Toh5PQsNbyYwif")
 
   const raydiumProgram = constants.raydiumProgramDevnet;
   const ammConfig = constants.raydiumAmmConfigDevnet;
@@ -30,30 +26,78 @@ const main = async () => {
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
 
-  // Sell TOKEN for SOL but enter the amount of SOL to buyer want to receive
-  const inputTokenMint = token;
-  const outputTokenMint = wsol;
-  const inputTokenProgram = spl.TOKEN_2022_PROGRAM_ID;
-  const outputTokenProgram = spl.TOKEN_PROGRAM_ID;
-  const treasuryInputAta = await web3.getAssociatedTokenAddress(inputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
-  const treasuryOutputAta = await web3.getAssociatedTokenAddress(outputTokenMint, treasury);
-  const inputTokenAccount = await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const outputTokenAccount = await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey);
-  
+  // buy TOKEN by selling WSOL. In the UI this is when the WSOL in above and token is below and we enter
+  // the amount of TOKEN we want to buy.
+  // If we want to buy WSOL we need to switch moving WSOL down and TOKEN up and change 
+  // inputTokenMint = token1 and outputTokenMint = token0;
+  // Basically inputTokenMint is always the token that is up in the swap form
+  const inputTokenMint = token0;
+  const outputTokenMint = token1;
+  const inputTokenProgram = inputTokenMint.equals(wsol)
+    ? spl.TOKEN_PROGRAM_ID
+    : spl.TOKEN_2022_PROGRAM_ID;
+  const outputTokenProgram = outputTokenMint.equals(wsol)
+    ? spl.TOKEN_PROGRAM_ID
+    : spl.TOKEN_2022_PROGRAM_ID;
+
+  const inputTokenAccount = inputTokenMint.equals(wsol)
+    ? await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey)
+    : await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+
+  const outputTokenAccount = outputTokenMint.equals(wsol)
+    ? await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey)
+    : await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+
   const inputVault = accounts.raydiumTokenVault(poolState, inputTokenMint, raydiumProgram)[0];
   const outputVault = accounts.raydiumTokenVault(poolState, outputTokenMint, raydiumProgram)[0];
+  const eventAuthority = accounts.eventAuthority(swapProxyProgram.programId)[0];
 
-  const maxAmountIn = new BN(web3.toBase("1000000", 6));
-  const amountOutLessFee = new BN(web3.toBase("1", 6));
+  const remainingAccounts = [];
+  for(let t of config.treasuries) {
+    const treasury = new PublicKey(t.acc);
+    remainingAccounts.push({
+      pubkey: treasury,
+      isSigner: false,
+      isWritable: true,
+    });
+
+    const treasuryInputAta = inputTokenMint.equals(wsol)
+      ? await web3.getAssociatedTokenAddress(inputTokenMint, treasury)
+      : await web3.getAssociatedTokenAddress(inputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
+
+    remainingAccounts.push({
+      pubkey: treasuryInputAta,
+      isSigner: false,
+      isWritable: true,
+    });
+
+    const treasuryOutputAta = outputTokenMint.equals(wsol) 
+      ? await web3.getAssociatedTokenAddress(outputTokenMint, treasury)
+      : await web3.getAssociatedTokenAddress(outputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
+
+    remainingAccounts.push({
+      pubkey: new PublicKey(treasuryOutputAta),
+      isSigner: false,
+      isWritable: true,
+    });
+  }
+
+  const wsolAmountToReceive = new BN(web3.toBase("1", 5));
+  const tokenAmountToReceive = new BN(100_000000);
+  const amountOut = outputTokenMint.equals(wsol) ? wsolAmountToReceive : tokenAmountToReceive;
+  const raydium = new RaydiumHelper();
+  await raydium.create(provider.connection, "devnet");
+  const slippage = 0.01; // 1%
+  const swapResult = await raydium.getSwapBaseOutResult(poolState, outputTokenMint, amountOut, slippage)
+
+  const maxAmountIn = swapResult.inputAmount;
+  const amountOutLessFee = swapResult.outputAmount;
 
   const swapBaseOutputIx = await swapProxyProgram.methods
   .swapBaseOutput(maxAmountIn, amountOutLessFee)
   .accounts({
     payer: buyer.publicKey,
     state: swapProxyState,
-    treasury,
-    treasuryInputAta,
-    treasuryOutputAta,
     raydiumAuthority: accounts.raydiumAuthority(raydiumProgram)[0],
     ammConfig,
     poolState,
@@ -71,10 +115,13 @@ const main = async () => {
     tokenProgram: spl.TOKEN_PROGRAM_ID,
     token2022: spl.TOKEN_2022_PROGRAM_ID,
     systemProgram: SystemProgram.programId,
+    eventAuthority,
+    program: swapProxyProgram.programId,
   })
+  .remainingAccounts(remainingAccounts)
   .instruction();
 
-  const cbIx = web3.getComputationBudgetIx(200_000);
+  const cbIx = web3.getComputationBudgetIx(250_000);
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,

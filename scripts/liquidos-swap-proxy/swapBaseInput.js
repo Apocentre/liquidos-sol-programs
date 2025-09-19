@@ -27,8 +27,11 @@ const main = async () => {
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
 
-  // Sell TOKEN for SOL. Swap the following values if you want a reverse.
-  // Note! use TOKEN_2022_PROGRAM_ID where needed
+  // buy TOKEN by selling WSOL. In the UI this is when the WSOL in above and token is below and we enter
+  // the amount of WSOL we want to sell.
+  // If we want to buy WSOL we need to switch moving WSOL down and TOKEN up and change 
+  // inputTokenMint = token1 and outputTokenMint = token0;
+  // Basically inputTokenMint is always the token that is up in the swap form
   const inputTokenMint = token0;
   const outputTokenMint = token1;
   const inputTokenProgram = inputTokenMint.equals(wsol)
@@ -86,7 +89,7 @@ const main = async () => {
   const raydium = new RaydiumHelper();
   await raydium.create(provider.connection, "devnet");
   const slippage = 0.01; // 1%
-  const swapResult = await raydium.computeSwapData(poolState, inputTokenMint, amountIn, slippage)
+  const swapResult = await raydium.getSwapBaseInResult(poolState, inputTokenMint, amountIn, slippage)
   const minimumAmountOut = swapResult.outputAmount;
 
   const swapBaseInputIx = await swapProxyProgram.methods
@@ -117,7 +120,7 @@ const main = async () => {
   .remainingAccounts(remainingAccounts)
   .instruction();
 
-  const cbIx = web3.getComputationBudgetIx(1_000_000);
+  const cbIx = web3.getComputationBudgetIx(250_000);
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
