@@ -6,7 +6,9 @@ pub mod program_error;
 pub mod raydium;
 
 use anchor_lang::prelude::*;
-use crate::instructions::{initialize::*, swap::*};
+use crate::{
+  instructions::{initialize::*, swap::*}, account_data::state::Treasury,
+};
 
 declare_id!("GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY");
 
@@ -19,17 +21,17 @@ pub mod liquidos_swap_proxy {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
-  /// * `treasury` - The treasury account that receives fees
+  /// * `treasuries` - The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
   /// * `protocol_fee` - Current protocol fees i.e. fees collected on each swap
   pub fn initialize(
     ctx: Context<Initialize>,
-    treasury: Pubkey,
     protocol_fee_bps: u64,
+    treasuries: Vec<Treasury>,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
-      treasury,
       protocol_fee_bps,
+      treasuries,
     )
   }
 
@@ -42,8 +44,8 @@ pub mod liquidos_swap_proxy {
   /// * `ctx` - The Anchor context holding the accounts
   /// * `amount_in` - The amount of input token  to sell
   /// * `minimum_amount_out` - minimum amount of the output to receive
-  pub fn swap_base_input(
-    ctx: Context<Swap>,
+  pub fn swap_base_input<'info>(
+    ctx: Context<'_, '_, '_, 'info, Swap<'info>>,
     amount_in: u64,
     minimum_amount_out: u64,
   ) -> Result<()> {
@@ -63,8 +65,8 @@ pub mod liquidos_swap_proxy {
   /// * `ctx` - The Anchor context holding the accounts
   /// * `max_amount_in` - The max amount of input tokes to be sold
   /// * `amount_out_less_fee` - The amount of output token user wants to buy
-  pub fn swap_base_output(
-    ctx: Context<Swap>,
+  pub fn swap_base_output<'info>(
+    ctx: Context<'_, '_, '_, 'info, Swap<'info>>,
     max_amount_in: u64,
     amount_out_less_fee: u64,
   ) -> Result<()> {

@@ -5,7 +5,6 @@ use anchor_spl::{
 };
 use crate::{
   account_data::state::State, raydium,
-  program_error::ErrorCode,
 };
 
 #[derive(Accounts)]
@@ -17,20 +16,6 @@ pub struct Swap<'info> {
   /// The state account of each instance of this program
   #[account()]
   pub state: Box<Account<'info, State>>,
-
-  /// CHECK: This is the authority of all the ATA that will store the staked tokens
-  #[account(
-    constraint = treasury.key() == state.treasury @ ErrorCode::WrongTreasury,
-  )]
-  pub treasury: AccountInfo<'info>,
-
-  /// CHECK: The treasury output mint ata. Will be created in the processor (if_needed)
-  #[account(mut)]
-  pub treasury_input_ata: AccountInfo<'info>,
-  
-  /// CHECK: The treasury output mint ata. Will be created in the processor (if_needed)
-  #[account(mut)]
-  pub treasury_output_ata: AccountInfo<'info>,
     
   // ---------------- Raydium CP swap accounts ----------------
   
