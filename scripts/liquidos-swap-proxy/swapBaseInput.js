@@ -80,7 +80,7 @@ const main = async () => {
     });
   }
 
-  const wsolAmountToSwap = new BN(web3.toBase("1", 8));
+  const wsolAmountToSwap = new BN(web3.toBase("1", 6));
   const tokenAmountToSwap = new BN(100_000000);
   const amountIn = inputTokenMint.equals(wsol) ? wsolAmountToSwap : tokenAmountToSwap;
   const raydium = new RaydiumHelper();
@@ -88,9 +88,6 @@ const main = async () => {
   const slippage = 0.01; // 1%
   const swapResult = await raydium.computeSwapData(poolState, inputTokenMint, amountIn, slippage)
   const minimumAmountOut = swapResult.outputAmount;
-
-  console.log("amountIn >>>>>>>>>>>>>", amountIn.toString());
-  console.log("minimumAmountOut >>>>>>>>>>>>>", minimumAmountOut.toString());
 
   const swapBaseInputIx = await swapProxyProgram.methods
   .swapBaseInput(amountIn, minimumAmountOut)
