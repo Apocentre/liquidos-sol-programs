@@ -5,6 +5,7 @@ import * as accounts from "../helpers/accounts.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
 import * as constants from "../helpers/constants.js";
 import config from "../config.v3.json" with { type: "json" };
+import RaydiumHelper from "./raydium.js"
 import buyerKey from "../../wallets/deployer_devnet.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
@@ -14,6 +15,7 @@ const {SystemProgram, PublicKey, Keypair} = anchor.web3
 const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
+  await web3.init(provider.connection)
   const swapProxyProgram = anchor.workspace.LiquidosSwapProxy;
   const swapProxyState = new PublicKey(config.swapProxyState);
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
@@ -25,14 +27,25 @@ const main = async () => {
   const [token0, token1] = token.toBuffer() < wsol.toBuffer() ? [token, wsol] : [wsol, token];
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
 
-  // Sell TOKEN for SOL. Swap the following values if you want a reverse. Note! use TOKEN_2022_PROGRAM_ID
-  // where needed
-  const inputTokenMint = token;
-  const outputTokenMint = wsol;
-  const inputTokenProgram = spl.TOKEN_2022_PROGRAM_ID;
-  const outputTokenProgram = spl.TOKEN_PROGRAM_ID;
-  const inputTokenAccount = await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
-  const outputTokenAccount = await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey);
+  // Sell TOKEN for SOL. Swap the following values if you want a reverse.
+  // Note! use TOKEN_2022_PROGRAM_ID where needed
+  const inputTokenMint = token0;
+  const outputTokenMint = token1;
+  const inputTokenProgram = inputTokenMint.equals(wsol)
+    ? spl.TOKEN_PROGRAM_ID
+    : spl.TOKEN_2022_PROGRAM_ID;
+  const outputTokenProgram = outputTokenMint.equals(wsol)
+    ? spl.TOKEN_PROGRAM_ID
+    : spl.TOKEN_2022_PROGRAM_ID;
+
+  const inputTokenAccount = inputTokenMint.equals(wsol)
+    ? await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey)
+    : await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+
+  const outputTokenAccount = outputTokenMint.equals(wsol)
+    ? await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey)
+    : await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+
   const inputVault = accounts.raydiumTokenVault(poolState, inputTokenMint, raydiumProgram)[0];
   const outputVault = accounts.raydiumTokenVault(poolState, outputTokenMint, raydiumProgram)[0];
   const eventAuthority = accounts.eventAuthority(swapProxyProgram.programId)[0];
@@ -46,14 +59,20 @@ const main = async () => {
       isWritable: true,
     });
 
-    const treasuryInputAta = await web3.getAssociatedTokenAddress(inputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
+    const treasuryInputAta = inputTokenMint.equals(wsol)
+      ? await web3.getAssociatedTokenAddress(inputTokenMint, treasury)
+      : await web3.getAssociatedTokenAddress(inputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
+
     remainingAccounts.push({
       pubkey: treasuryInputAta,
       isSigner: false,
       isWritable: true,
     });
 
-    const treasuryOutputAta = await web3.getAssociatedTokenAddress(outputTokenMint, treasury);
+    const treasuryOutputAta = outputTokenMint.equals(wsol) 
+      ? await web3.getAssociatedTokenAddress(outputTokenMint, treasury)
+      : await web3.getAssociatedTokenAddress(outputTokenMint, treasury, true, spl.TOKEN_2022_PROGRAM_ID);
+
     remainingAccounts.push({
       pubkey: new PublicKey(treasuryOutputAta),
       isSigner: false,
@@ -61,8 +80,17 @@ const main = async () => {
     });
   }
 
-  const amountIn = new BN(web3.toBase("1000000", 6));
-  const minimumAmountOut = new BN(web3.toBase("0", 9));
+  const wsolAmountToSwap = new BN(web3.toBase("1", 8));
+  const tokenAmountToSwap = new BN(100_000000);
+  const amountIn = inputTokenMint.equals(wsol) ? wsolAmountToSwap : tokenAmountToSwap;
+  const raydium = new RaydiumHelper();
+  await raydium.create(provider.connection, "devnet");
+  const slippage = 0.01; // 1%
+  const swapResult = await raydium.computeSwapData(poolState, inputTokenMint, amountIn, slippage)
+  const minimumAmountOut = swapResult.outputAmount;
+
+  console.log("amountIn >>>>>>>>>>>>>", amountIn.toString());
+  console.log("minimumAmountOut >>>>>>>>>>>>>", minimumAmountOut.toString());
 
   const swapBaseInputIx = await swapProxyProgram.methods
   .swapBaseInput(amountIn, minimumAmountOut)

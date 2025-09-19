@@ -33,6 +33,7 @@
     "@apocentre/solana-web3": "Apocentre/solana-web3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^9.0.3"
+    "mocha": "^9.0.3",
+    "@raydium-io/raydium-sdk-v2": "0.2.29-alpha"
   }
 }

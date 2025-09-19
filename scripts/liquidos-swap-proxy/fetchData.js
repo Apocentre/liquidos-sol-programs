@@ -8,7 +8,7 @@ import raydiumIDL from "./raydium_idl_devnet.json" with { type: "json" };
 const Web3 = Web3Pkg.default;
 const {PublicKey} = anchor.web3
 
-const main = async () => {    
+export const fetchPoolState = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const token = new PublicKey("GQvnQnVVNdYsX1puzL5MAgoWtg7Bs4Toh5PQsNbyYwif")
@@ -20,7 +20,11 @@ const main = async () => {
 
   const raydiumCpmmProgram = await web3.createProgram(raydiumIDL);
   const poolState = accounts.raydiumPoolState(ammConfig, token0, token1, raydiumProgram)[0];
-  const poolStateData = await raydiumCpmmProgram.account.poolState.fetch(poolState);
+  return await raydiumCpmmProgram.account.poolState.fetch(poolState);
+}
+
+const main = async () => {    
+  const poolStateData = await fetchPoolState();
   console.log(">>>>>>>>>>>", poolStateData);
 }
 
