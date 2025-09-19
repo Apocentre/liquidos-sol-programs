@@ -13,8 +13,8 @@ pub fn create_treasury_atas<'info>(ctx: &Context<'_, '_, '_, 'info, Swap<'info>>
   let output_token = &ctx.accounts.output_token_mint;
   
   // comes in sets of 3 [treasury1, treasury1_input_ata, treasure_output_ata]
-  for treasury_accs in ctx.remaining_accounts.windows(3) {
-    // We need to creat this here instead of using Anchor macros bacause we don't know
+  for treasury_accs in ctx.remaining_accounts.chunks(3) {
+    // We need to create this here instead of using Anchor macros bacause we don't know
     // that token program each tokens belongs to e.g. token_program or token_2022
     create_ata_if_needed(
       ctx.accounts.payer.to_account_info(),
@@ -25,7 +25,6 @@ pub fn create_treasury_atas<'info>(ctx: &Context<'_, '_, '_, 'info, Swap<'info>>
       if is_wsol(&input_token.key())? {ctx.accounts.token_program.to_account_info()} else {ctx.accounts.token_2022.to_account_info()},
       ctx.accounts.associated_token_program.to_account_info(),
     )?;
-
     create_ata_if_needed(
       ctx.accounts.payer.to_account_info(),
       treasury_accs[2].clone(),
@@ -76,7 +75,7 @@ pub fn collect_fees<'info>(
   let output_token_mint = &ctx.accounts.output_token_mint;
   let fees = calc_perc_value(token_amount_received, state.protocol_fee_bps)?;
 
-  for treasury_accs in ctx.remaining_accounts.windows(3) {
+  for treasury_accs in ctx.remaining_accounts.chunks(3) {
     if is_wsol(&output_token_mint.key())? {
       let cpi_accounts = Transfer {
         from: ctx.accounts.output_token_account.to_account_info(),
