@@ -14,8 +14,8 @@ pub struct Treasury {
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
-  /// Current protocol fees i.e. fees collected on each swap
-  pub protocol_fee_bps: u64,
+  /// Current trade fees i.e. fees collected on each swap
+  pub trade_fee_bps: u64,
   /// The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
   /// NOTE! the first treasury is always our platform treasury wallet
   pub treasuries: Vec<Treasury>,
@@ -29,7 +29,7 @@ impl State {
 
   pub fn new(
     owner: Pubkey,
-    protocol_fee_bps: u64,
+    trade_fee_bps: u64,
     treasuries: Vec<Treasury>,
   ) -> Result<Self> {
     let total_trade_fees: u64 = treasuries.iter().map(|t| t.fee_bps).sum();
@@ -37,7 +37,7 @@ impl State {
 
     Ok(Self {
       owner,
-      protocol_fee_bps,
+      trade_fee_bps,
       treasuries,
     })
   }

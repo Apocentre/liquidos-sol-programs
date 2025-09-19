@@ -7,7 +7,7 @@ pub mod raydium;
 
 use anchor_lang::prelude::*;
 use crate::{
-  instructions::{initialize::*, swap::*}, account_data::state::Treasury,
+  instructions::{initialize::*, swap::*, update_state::*}, account_data::state::Treasury,
 };
 
 #[cfg(feature = "devnet")]
@@ -25,16 +25,16 @@ pub mod liquidos_swap_proxy {
   /// # Arguments
   ///
   /// * `ctx` - The Anchor context holding the accounts
+  /// * `trade_fee_bps` - Current protocol fees i.e. fees collected on each swap
   /// * `treasuries` - The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
-  /// * `protocol_fee` - Current protocol fees i.e. fees collected on each swap
   pub fn initialize(
     ctx: Context<Initialize>,
-    protocol_fee_bps: u64,
+    trade_fee_bps: u64,
     treasuries: Vec<Treasury>,
   ) -> Result<()> {
     processors::initialize::exec(
       ctx,
-      protocol_fee_bps,
+      trade_fee_bps,
       treasuries,
     )
   }
@@ -79,5 +79,18 @@ pub mod liquidos_swap_proxy {
       max_amount_in,
       amount_out_less_fee,
     )
+  }
+
+  /// UpdateState
+  ///
+  /// # Arguments
+  ///
+  /// * `ctx` - The Anchor context holding the accounts
+  /// * `trade_fee_bps` - Current protocol fees i.e. fees collected on each swap
+  pub fn update_state(
+    ctx: Context<UpdateState>,
+    trade_fee_bps: u64,
+  ) -> Result<()> {
+    processors::update_state::exec(ctx, trade_fee_bps)
   }
 }

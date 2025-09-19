@@ -73,7 +73,7 @@ pub fn collect_fees<'info>(
 ) -> Result<()> {
   let state = &ctx.accounts.state;
   let output_token_mint = &ctx.accounts.output_token_mint;
-  let fees = calc_perc_value(token_amount_received, state.protocol_fee_bps)?;
+  let fees = calc_perc_value(token_amount_received, state.trade_fee_bps)?;
 
   for treasury_accs in ctx.remaining_accounts.chunks(3) {
     let treasury_fee = state.calc_treasury_fee(&treasury_accs[0].key(), fees)?;
