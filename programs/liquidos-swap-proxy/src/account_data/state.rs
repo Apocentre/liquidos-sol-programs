@@ -1,7 +1,7 @@
 
 use std::mem::size_of;
 use anchor_lang::prelude::*;
-use math::utils::calc_perc_value;
+use math::utils::{BPS, calc_perc_value};
 use crate::program_error::ErrorCode;
 
 #[derive(Clone, AnchorSerialize, AnchorDeserialize)]
@@ -22,19 +22,24 @@ pub struct State {
 }
 
 impl State {
+  pub const MAX_TREASURY_ACCOUNTS: usize = 5;
   pub const MAX_SIZE: usize = 8
-  + size_of::<Self>();
+  + size_of::<Self>()
+  + Self::MAX_TREASURY_ACCOUNTS * size_of::<Treasury>();
 
   pub fn new(
     owner: Pubkey,
     protocol_fee_bps: u64,
     treasuries: Vec<Treasury>,
-  ) -> Self {
-    Self {
+  ) -> Result<Self> {
+    let total_trade_fees: u64 = treasuries.iter().map(|t| t.fee_bps).sum();
+    require!(total_trade_fees == BPS, ErrorCode::TradeFeesMisconfiguration);
+
+    Ok(Self {
       owner,
       protocol_fee_bps,
       treasuries,
-    }
+    })
   }
 
   pub fn calc_treasury_fee(&self, treasury: &Pubkey, total_fees: u64) -> Result<u64> {

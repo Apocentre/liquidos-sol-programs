@@ -12,7 +12,7 @@ pub fn exec(
     owner,
     protocol_fee_bps,
     treasuries,
-  );
+  )?;
 
   Ok(())
 }

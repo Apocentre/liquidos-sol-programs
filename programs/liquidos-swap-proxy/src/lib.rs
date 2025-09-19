@@ -14,7 +14,7 @@ use crate::{
 declare_id!("GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY");
 
 #[cfg(not(feature = "devnet"))]
-declare_id!("GdyU6f76XkkeWF63CqhXDVXqx56Ldva4saVxEDpWJiaY");
+declare_id!("5r8CvW57rPwHJJcyBhALpnJkpK5hMGabfrWpp83nMn7S");
 
 #[program]
 pub mod liquidos_swap_proxy {

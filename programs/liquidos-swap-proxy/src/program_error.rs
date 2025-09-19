@@ -6,4 +6,6 @@ pub enum ErrorCode {
   OnlyOwner,
   #[msg("Wrong treasury")]
   WrongTreasury,
+  #[msg("Trade fees must sum to 10000")]
+  TradeFeesMisconfiguration,
 }

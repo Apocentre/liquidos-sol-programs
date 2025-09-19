@@ -3,7 +3,7 @@ import Web3Pkg from "@apocentre/solana-web3";
 import {provider} from "../helpers/provider.js";
 import * as accounts from "../helpers/accounts.js";
 import {createAndSendV0Tx} from "../helpers/tx.js";
-import config from "../config.v2.json" with { type: "json" };
+import config from "../config.v3.json" with { type: "json" };
 
 const Web3 = Web3Pkg.default;
 const {BN} = anchor.default;
@@ -14,11 +14,17 @@ const main = async () => {
   const program = anchor.workspace.LiquidosSwapProxy;
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
+  const treasuries = config.treasuries.map(({acc, feeBps}) => {
+    return {
+      acc: new PublicKey(acc),
+      feeBps: new BN(feeBps)
+    }
+  });
 
   const ix = await program.methods
   .initialize(
-    new PublicKey(config.treasury),
     new BN(100),
+    treasuries,
   )
   .accounts({
     state: state.publicKey,
