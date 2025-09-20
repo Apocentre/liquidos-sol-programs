@@ -83,7 +83,7 @@ const main = async () => {
     });
   }
 
-  const wsolAmountToSwap = new BN(web3.toBase("1", 6));
+  const wsolAmountToSwap = new BN(web3.toBase("2", 4));
   const tokenAmountToSwap = new BN(100_000000);
   const amountIn = inputTokenMint.equals(wsol) ? wsolAmountToSwap : tokenAmountToSwap;
   const raydium = new RaydiumHelper();

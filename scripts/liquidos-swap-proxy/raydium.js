@@ -45,7 +45,7 @@ class RaydiumHelper {
   /// * inputMint - the token we are selling
   /// * slippage - 0 - 1 where 1 is 100%
   async getSwapBaseInResult(poolId, inputMint, inputAmount, slippage) {
-    const {poolInfo, rpcData} = this.getPoolInfo(poolId)
+    const {poolInfo, rpcData} = await this.getPoolInfo(poolId);
 
     const baseIn = inputMint.toBase58() === poolInfo.mintA.address
     // swap pool mintA for mintB
@@ -68,7 +68,7 @@ class RaydiumHelper {
   /// * outputMint - the token we are buying
   /// * slippage - 0 - 1 where 1 is 100%
   async getSwapBaseOutResult(poolId, outputMint, outputAmount, slippage) {
-    const {poolInfo, rpcData} = this.getPoolInfo(poolId)
+    const {poolInfo, rpcData} = await this.getPoolInfo(poolId)
     const baseIn = outputMint.toBase58() === poolInfo.mintB.address
     // swap pool mintA for mintB
     const swapResult = CurveCalculator.swapBaseOutput(
