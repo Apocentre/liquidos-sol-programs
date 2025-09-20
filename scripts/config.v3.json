@@ -9,7 +9,7 @@
     {"acc": "6uKazJzK7Rgbw8YjU51QsvqAz2jfYY1qF1opQFPMM1Xd", "feeBps": 1000}
   ],
   "protocolFee": 0,
-  "creatorFee": 20000000,
+  "creatorFee": 2000000000,
   "tradeFeeBps": 100,
   "stakingAllocation": 50000000000000,
   "totalTokenSupply": 1000000000000000,
