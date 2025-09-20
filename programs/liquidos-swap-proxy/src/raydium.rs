@@ -6,7 +6,7 @@ pub fn id() -> Pubkey {
   return Pubkey::from_str("CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C").unwrap();
 
   #[cfg(feature = "devnet")]
-  return Pubkey::from_str("CPMDWBwJDtYax9qW7AyRuVC19Cc4L4Vcy4n2BHAbHkCW").unwrap();
+  return Pubkey::from_str("DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb").unwrap();
 }
 
 pub fn amm_config() -> Pubkey {
