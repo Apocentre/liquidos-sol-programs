@@ -20,10 +20,7 @@ class RaydiumHelper {
     this.raydium = await Raydium.load({connection, cluster});
   }
 
-  /// * poolID - the pool state account
-  /// * inputMint - the token we are selling
-  /// * slippage - 0 - 1 where 1 is 100%
-  async getSwapBaseInResult(poolId, inputMint, inputAmount, slippage) {
+  async getPoolInfo(poolId) {
     let poolInfo;
     let poolKeys;
     let rpcData;
@@ -40,6 +37,15 @@ class RaydiumHelper {
       poolKeys = data.poolKeys
       rpcData = data.rpcData
     }
+
+    return {poolInfo, poolKeys, rpcData}
+  }
+
+  /// * poolID - the pool state account
+  /// * inputMint - the token we are selling
+  /// * slippage - 0 - 1 where 1 is 100%
+  async getSwapBaseInResult(poolId, inputMint, inputAmount, slippage) {
+    const {poolInfo, rpcData} = this.getPoolInfo(poolId)
 
     const baseIn = inputMint.toBase58() === poolInfo.mintA.address
     // swap pool mintA for mintB
@@ -62,23 +68,7 @@ class RaydiumHelper {
   /// * outputMint - the token we are buying
   /// * slippage - 0 - 1 where 1 is 100%
   async getSwapBaseOutResult(poolId, outputMint, outputAmount, slippage) {
-    let poolInfo;
-    let poolKeys;
-    let rpcData;
-
-    if (this.raydium.cluster === 'mainnet') {
-      // if you wish to get pool info from rpc, also can modify logic to go rpc method directly
-      const data = await this.raydium.api.fetchPoolById({ ids: poolId })
-      poolInfo = data[0];
-      if (!isValidCpmm(poolInfo.programId)) throw new Error('target pool is not CPMM pool')
-      rpcData = await this.raydium.cpmm.getRpcPoolInfo(poolInfo.id, true)
-    } else {
-      const data = await this.raydium.cpmm.getPoolInfoFromRpc(poolId)
-      poolInfo = data.poolInfo
-      poolKeys = data.poolKeys
-      rpcData = data.rpcData
-    }
-
+    const {poolInfo, rpcData} = this.getPoolInfo(poolId)
     const baseIn = outputMint.toBase58() === poolInfo.mintB.address
     // swap pool mintA for mintB
     const swapResult = CurveCalculator.swapBaseOutput(

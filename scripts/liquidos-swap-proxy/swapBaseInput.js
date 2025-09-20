@@ -19,7 +19,7 @@ const main = async () => {
   const swapProxyProgram = anchor.workspace.LiquidosSwapProxy;
   const swapProxyState = new PublicKey(config.swapProxyState);
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
-  const token = new PublicKey("GQvnQnVVNdYsX1puzL5MAgoWtg7Bs4Toh5PQsNbyYwif")
+  const token = new PublicKey("CGBxx98yFbipyDSR4TXX1P4NmfjHzfup69aghA6HPqos")
 
   const raydiumProgram = constants.raydiumProgramDevnet;
   const ammConfig = constants.raydiumAmmConfigDevnet;

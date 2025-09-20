@@ -15,12 +15,12 @@ const main = async () => {
   const deployer = provider.wallet.payer;
   const web3 = Web3(deployer.publicKey);
   const program = anchor.workspace.LiquidosCurve;
-  const amount = new BN(web3.toBase("1", 9));
+  const amount = new BN(web3.toBase("2", 9));
   const minAmountOut = new BN(0); // no slippage
   const buyer = Keypair.fromSecretKey(Buffer.from(buyerKey))
   const state = new PublicKey(config.liquidosCurveState);
   const tokenCreator = new PublicKey(config.tokenCreator);
-  const token = new PublicKey("GQvnQnVVNdYsX1puzL5MAgoWtg7Bs4Toh5PQsNbyYwif")
+  const token = new PublicKey("CGBxx98yFbipyDSR4TXX1P4NmfjHzfup69aghA6HPqos")
   const buyerAta = await web3.getAssociatedTokenAddress(token, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
   const bondingCurve = accounts.bondingCurve(state, token, program.programId)[0];
   const wsol = constants.wsol;

@@ -14,7 +14,7 @@ pub fn amm_config() -> Pubkey {
   return Pubkey::from_str("D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2").unwrap();
 
   #[cfg(feature = "devnet")]
-  return Pubkey::from_str("9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6").unwrap();
+  return Pubkey::from_str("5MxLgy9oPdTC3YgkiePHqr3EoCRD9uLVYRQS2ANAs7wy").unwrap();
 }
 
 /// The last buyer will have to pay for the rent of the accounts created by the Raydium CP swap program.
@@ -49,6 +49,8 @@ pub struct AmmConfig {
   pub protocol_owner: Pubkey,
   /// Address of the fund fee owner
   pub fund_owner: Pubkey,
+  /// The pool creator fee, denominated in hundredths of a bip (10^-6)
+  pub creator_fee_rate: u64,
   /// padding
-  pub padding: [u64; 16],
+  pub padding: [u64; 15],
 }
