@@ -120,11 +120,11 @@ const main = async () => {
   .remainingAccounts(remainingAccounts)
   .instruction();
 
-  const cbIx = web3.getComputationBudgetIx(250_000);
+  const cbIx = web3.getComputationBudgetIx(500_000);
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, swapBaseInputIx],
+    [cbIx, priorityFeeIx, swapBaseInputIx, swapBaseInputIx],
     buyer.publicKey,
     [buyer],
     [],

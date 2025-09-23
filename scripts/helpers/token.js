@@ -1,9 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import {provider} from "./provider.js";
 import * as accounts from "./accounts.js";
-
-const {PublicKey, SystemProgram} = anchor.web3;
-
 import {
   ExtensionType,
   getMintLen,
@@ -11,9 +8,34 @@ import {
   createInitializeMetadataPointerInstruction,
   TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
+import nacl from "tweetnacl";
+import naclUtil from "tweetnacl-util";
 
+const {PublicKey, SystemProgram} = anchor.web3;
+
+const login = async (tokenCreator) => {
+  const ts = Date.now();
+  const message = naclUtil.decodeUTF8(`WIF Auth:${ts}`);
+  const sig = Buffer.from(
+    nacl.sign.detached(message, tokenCreator.secretKey)
+  ).toString("hex");
+
+  const response = await fetch(`http://localhost:4000/accounts`, {
+    method: 'POST',
+    headers: {
+      "X-Chain": "solana",
+      "X-Platform": "wif",
+      "X-Auth": `${ts}:${tokenCreator.publicKey.toString()}:${sig}`,
+    }
+  });
+
+  const {jwt} = await response.json();
+
+  return jwt;
+}
 
 export const createToken = async (state, tokenCreator) => {
+  const jwt = await login(tokenCreator);
   const program = anchor.workspace.LiquidosCurve;
   // Define the extensions to be used by the mint
   const extensions = [
@@ -23,14 +45,12 @@ export const createToken = async (state, tokenCreator) => {
   // Calculate the length of the mint
   const mintLen = getMintLen(extensions);
   const mintLamports = await provider.connection.getMinimumBalanceForRentExemption(mintLen);
-  const response = await fetch(`http://localhost:4000/tokens/vanity-addresses`, {
+  const response = await fetch(`http://localhost:4000/tokens/vanity-addresses?platform=wif`, {
     method: 'POST',
     headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      base: tokenCreator.toString(),
-    })
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}`
+    }
   });
   const {seed, token_addr} = await response.json();
   const mint = new PublicKey(token_addr);
@@ -39,8 +59,8 @@ export const createToken = async (state, tokenCreator) => {
   const decimals = 6;
   const ixs = [
     SystemProgram.createAccountWithSeed({
-      basePubkey: tokenCreator,
-      fromPubkey: tokenCreator,
+      basePubkey: tokenCreator.publicKey,
+      fromPubkey: tokenCreator.publicKey,
       space: mintLen,
       lamports: mintLamports,
       newAccountPubkey: mint,
@@ -54,14 +74,13 @@ export const createToken = async (state, tokenCreator) => {
 }
 
 export const createTaxToken = async (tokenCreator) => {
+  const jwt = await login(tokenCreator);
   const response = await fetch(`http://localhost:4000/tokens/vanity-addresses`, {
     method: 'POST',
     headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      base: tokenCreator.toString(),
-    })
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}`
+    }
   });
 
   const {seed, token_addr} = await response.json();

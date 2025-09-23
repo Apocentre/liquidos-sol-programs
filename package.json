@@ -27,13 +27,15 @@
     "fetchData:devnet": "ENV=devnet ANCHOR_WALLET=./wallets/deployer_devnet.json node ./scripts/liquidos-curve/fetchData.js"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.1"
+    "@coral-xyz/anchor": "^0.30.1",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@apocentre/solana-web3": "Apocentre/solana-web3",
+    "@raydium-io/raydium-sdk-v2": "0.2.29-alpha",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^9.0.3",
-    "@raydium-io/raydium-sdk-v2": "0.2.29-alpha"
+    "mocha": "^9.0.3"
   }
 }
