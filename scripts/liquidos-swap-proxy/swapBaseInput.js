@@ -41,13 +41,15 @@ const main = async () => {
     ? spl.TOKEN_PROGRAM_ID
     : spl.TOKEN_2022_PROGRAM_ID;
 
-  const inputTokenAccount = inputTokenMint.equals(wsol)
-    ? await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey)
-    : await web3.getAssociatedTokenAddress(inputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const [createInputAtaIx, inputTokenAccount] = inputTokenMint.equals(wsol)
+  ? await web3.createATAIxIfNeeded(buyer.publicKey, inputTokenMint)
+  : await web3.createATAIxIfNeeded(buyer.publicKey, inputTokenMint, true, spl.TOKEN_2022_PROGRAM_ID);
 
-  const outputTokenAccount = outputTokenMint.equals(wsol)
-    ? await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey)
-    : await web3.getAssociatedTokenAddress(outputTokenMint, buyer.publicKey, true, spl.TOKEN_2022_PROGRAM_ID);
+  const [createOutputAtaIx, outputTokenAccount] = outputTokenMint.equals(wsol)
+  ? await web3.createATAIxIfNeeded(buyer.publicKey, outputTokenMint)
+  : await web3.createATAIxIfNeeded(buyer.publicKey, outputTokenMint, true, spl.TOKEN_2022_PROGRAM_ID);
+
+  const createAtaIxs = [createInputAtaIx, createOutputAtaIx].filter(Boolean);
 
   const inputVault = accounts.raydiumTokenVault(poolState, inputTokenMint, raydiumProgram)[0];
   const outputVault = accounts.raydiumTokenVault(poolState, outputTokenMint, raydiumProgram)[0];
@@ -124,7 +126,7 @@ const main = async () => {
   const priorityFeeIx = web3.setComputeUnitPrice(80000);
   await createAndSendV0Tx(
     provider,
-    [cbIx, priorityFeeIx, swapBaseInputIx, swapBaseInputIx],
+    [cbIx, priorityFeeIx, ...createAtaIxs, swapBaseInputIx],
     buyer.publicKey,
     [buyer],
     [],
