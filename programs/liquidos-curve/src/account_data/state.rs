@@ -14,9 +14,6 @@ pub struct Treasury {
 pub struct State {
   /// The owner that can handle various admin related tasks
   pub owner: Pubkey,
-  /// The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
-  /// NOTE! the first treasury is always our platform treasury wallet
-  pub treasuries: Vec<Treasury>,
   /// Current protocol fees (fixed lamports amount). This is applied when the pool is created on Raydium
   pub protocol_fee: u64,
   /// Current trade fees (BPS). This is applied on each trade that takes place. Fees collected in SOL
@@ -31,6 +28,9 @@ pub struct State {
   pub staking_program_state: Option<Pubkey>,
   /// Staking allocation. The exact amount that will be distributed though the staking program
   pub staking_allocation: u64,
+  /// The treasury accounts that receives fees and the corresponding portion each received from the trade_fee
+  /// NOTE! the first treasury is always our platform treasury wallet
+  pub treasuries: Vec<Treasury>,
 }
 
 impl State {
